@@ -882,19 +882,20 @@ function wow(region,toonName,realmName) {
   lockout_lookup['9278'] = "tarlna";
   
   
-  var legendary = ".";
+    var legendary = ".";
   var quests = ['No Progress',0,0,0,0,0,0,0,0];
   
   
   var stuff =toon.quests.length;
   var things = 0;
+  var cores = 0;
   
   for(i=0; i<stuff; i++)
   {
     
     if(toon.quests[i] == 36006)
     {
-      quests[6] = "Done for now!";
+      quests[6] = "Elemental Runes";
     }
     
     else if (toon.quests[i] == 36004) //Power Unleashed
@@ -905,17 +906,30 @@ function wow(region,toonName,realmName) {
     {
       quests[4]= "Nagrand";
     }
+    
+    //35990 35991 35992 all core quests
+    
+    else if (toon.quests[i] == 35990 ||  toon.quests[i] == 35991 || toon.quests[i] == 35992)    
+    {
+      cores++;
+    }
+    
+    
+    
     else if (toon.quests[i] ==  35989 )
     {
-      quests[3] = "Cores";
+      quests[2] = "Cores";
     }
     else if (toon.quests[i] == 36157 )
     {
-      quests[2] = "Skyreach";
+      quests[1] = "Skyreach";
     }
   }
   
-  
+  if(cores == 3)
+  {
+    quests[2] = "Auchindoun";
+  }
   
   
   
@@ -928,6 +942,8 @@ function wow(region,toonName,realmName) {
       break;
     }
   }
+  
+  
   
   
   
