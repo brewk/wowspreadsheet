@@ -1,3 +1,7 @@
+// google doc spreadsheet template availible here: http://drive.google.com/previewtemplate?id=1xqMVdgLLZdpRVRz1PiN7Mz_4ghHt0MxIYcBfXYS1phw&mode=public
+// really want this to be a standalone page but this was easiest for now
+
+
 function guild(region,realmName,guildName) {
 
   if(!guildName || !realmName )
