@@ -79,8 +79,10 @@ function wow(region,toonName,realmName) {
 
   Utilities.sleep(Math.floor((Math.random() * 10000) + 1000)); // This is a random sleepy time so that we dont spam the api and get bonked with an error
 
-
-
+//Getting rid of any sort of pesky no width white spaces we may run into
+  toonName = toonName.replace(/[\u200B-\u200D\uFEFF]/g, '');
+  region = region.replace(/[\u200B-\u200D\uFEFF]/g, '');
+  realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, '');
 
   var toonJSON = UrlFetchApp.fetch(""+region+".battle.net/api/wow/character/"+realmName+"/"+toonName+"?fields=items,quests,achievements,audit,progression,feed,professions,talents");
 
@@ -1118,6 +1120,7 @@ HFCMythicprogress = HFCMythicprogress  + "/13 [" + MythicActiveWeeks +"]";
   if(toon.professions.primary[1]) {
     profession2 =  toon.professions.primary[1].rank + " " + toon.professions.primary[1].name;
   }
+
 
 
 
