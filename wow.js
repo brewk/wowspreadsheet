@@ -92,13 +92,16 @@ function wow(region,toonName,realmName) {
   var offspec = "none";
 
 
-  if(toon.talents[0].selected == true) //our first spec is selected, so we'll assume that's the mainspec since you're using it
+  if(toon.talents[0].spec) //Has no main spec
   {
-    mainspec = toon.talents[0].spec.name;
-  }
-  else //it isn't selected, so it's our secondary spec
-  {
-    offspec = toon.talents[0].spec.name;
+    if(toon.talents[0].selected ==  true) //our first spec is selected, so we'll assume that's the mainspec since  you're using it
+     {
+        mainspec = toon.talents[0].spec.name;
+     }
+    else //it isn't  selected, so it's our secondary spec
+    {
+        offspec = toon.talents[0].spec.name;
+    }
   }
 
 
