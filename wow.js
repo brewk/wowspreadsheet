@@ -29,16 +29,6 @@
 //       There are some variables below that you need to change
 //
 //
-
-
-//your api key, request one here:
-// https://dev.battle.net/apps/register
-
-var apikey = "y8xfmj9mctbxcer2fgebtfub4gzzdaun";
-
-
-
-
 // Added in this variable to easily fix if you're having problems with the time of the daily dungeon resets being flakey
 // Just set it to a positive or negative number to get it to what you need. Positive numbers if the reset is happening
 // too soon, negative number if it's happening too late.
@@ -47,17 +37,6 @@ var offset = 0;
 
 // Everything below this, you shouldn't have to edit
 //***************************************************************
-
-
-
-
-
-
-
-
-
-
-var key = "?locale=en_US&jsonp=callback&apikey=" + apikey
 
 
 
@@ -101,12 +80,10 @@ function wow(region,toonName,realmName) {
   Utilities.sleep(Math.floor((Math.random() * 10000) + 1000)); // This is a random sleepy time so that we dont spam the api and get bonked with an error
 
 
-  var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=items,quests,achievements,audit,progression,feed,professions,talents&"+key+"");
 
 
-  toonJSON = toonJSON.toString().substring(9);
-  toonJSON = toonJSON.substring(0, toonJSON.length - 2);
-  toonInfo =  toonJSON;
+  var toonJSON = UrlFetchApp.fetch(""+region+".battle.net/api/wow/character/"+realmName+"/"+toonName+"?fields=items,quests,achievements,audit,progression,feed,professions,talents");
+
   var toon = JSON.parse(toonJSON);
 
 
