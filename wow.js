@@ -708,7 +708,7 @@ eIlvl = (eIlvl / equippedItems);
 
 
 
-//progression.raids[33].bosses[9].lfrKills
+
 if(toon.progression.raids[34])
 {
   for (i= 0; i < 13; i++)
@@ -937,6 +937,7 @@ HFCMythicprogress = HFCMythicprogress  + "/13 [" + MythicActiveWeeks +"]";
   lockout_lookup['9277'] = "drov";
   lockout_lookup['9279'] = "rukhmar";
   lockout_lookup['9278'] = "tarlna";
+  lockout_lookup['10200'] = "kazzak";
 
 
     var legendary = ".";
@@ -1036,6 +1037,7 @@ HFCMythicprogress = HFCMythicprogress  + "/13 [" + MythicActiveWeeks +"]";
     'tarlna' : 0,
     'rukhmar' : 0,
     'drov' : 0,
+    'kazzak': 0,
     'heroic' : 0
   }
 
@@ -1083,17 +1085,21 @@ HFCMythicprogress = HFCMythicprogress  + "/13 [" + MythicActiveWeeks +"]";
     heroicLocks =  heroicLocks+heroicDungeons[i]
   }
 
+
+
   var worldBoss = 0;
 
-  if(lockout_counters['drov'] > 0)
+
+  if(lockout_counters['kazzak'] > 0)
   {
-    worldBoss = "D:\u2714 ";  // pretty lil checkmark :>
+    worldBoss = "K:\u2714 ";  // pretty lil checkmark :>
+
   }
   else
-    worldBoss = "D:- ";
+    worldBoss =  "K:- ";
 
 
-  if(lockout_counters['rukhmar'] > 0)
+    if(lockout_counters['rukhmar'] > 0)
   {
     worldBoss = worldBoss + "R:\u2714 ";  // pretty lil checkmark :>
 
@@ -1102,6 +1108,13 @@ HFCMythicprogress = HFCMythicprogress  + "/13 [" + MythicActiveWeeks +"]";
     worldBoss =  worldBoss +"R:- ";
 
 
+  if(lockout_counters['drov'] > 0)
+  {
+    worldBoss = worldBoss + "D:\u2714 ";  // pretty lil checkmark :>
+  }
+  else
+    worldBoss = worldBoss + "D:- ";
+
   if(lockout_counters['tarlna'] > 0)
   {
     worldBoss =  worldBoss + "T:\u2714 ";  // pretty lil checkmark :>
@@ -1109,6 +1122,8 @@ HFCMythicprogress = HFCMythicprogress  + "/13 [" + MythicActiveWeeks +"]";
   }
   else
     worldBoss =  worldBoss +"T:- ";
+
+
 
   var profession1 = "none";
 
@@ -1153,13 +1168,15 @@ HFCMythicprogress = HFCMythicprogress  + "/13 [" + MythicActiveWeeks +"]";
 
     legendary,
 
+     worldBoss,
+
     lockout_counters['heroic']+"/8 ",
 
     lockout_counters['HMLFR']+"/7 " +lockout_counters['BFLFR']+"/10 ",
     lockout_counters['HMNorm']+"/7 " +lockout_counters['BFNorm']+"/10 ",
     lockout_counters['HMHeroic']+"/7 " +lockout_counters['BFHeroic']+"/10 ",
     lockout_counters['HMMythic']+"/7 " +lockout_counters['BFMythic']+"/10 ",
-    worldBoss,
+
     heroicsProg, LFRprogress, normalProgress, heroicRaidProgress, mythicProgress,
 
     profession1, profession2, auditInfo
