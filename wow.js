@@ -955,14 +955,14 @@ HFCMythicprogress = HFCMythicprogress  + "/13 [" + MythicActiveWeeks +"]";
           quests[8] = "???";   // yet to be determined
     }
 
-    if(toon.quests[i] == 37841)
+    if(toon.quests[i] == 39057)
     {
     quests[7] = "Tome of Chaos";
     }
 
     if(toon.quests[i] == 37837)
     {
-      quests[6] = "Build Shipyard";
+      quests[6] = "Build Shipyard Level 2";
     }
 
     if(toon.quests[i] == 36006)
