@@ -277,91 +277,26 @@ function wow(region,toonName,realmName) {
      var thumbnail = "http://"+region+".battle.net/static-render/"+region+"/"+  toon.thumbnail; 
   var armory = "http://"+region+".battle.net/wow/en/character/"+realmName+"/"+toonName+"/advanced";
     
-      var tierHead = " ";
-  var tierShoulder = " ";
-  var tierChest = " ";
-  var tierGlove = " ";
-  var tierLeg = " ";
-  var tierFeet = " ";
+   var tier = " ";
+  var tier_pieces = [toon.items.head,toon.items.shoulder,toon.items.chest,toon.items.hands,toon.items.legs];
   
-         if(toon.items.head.tooltipParams.set)
-        { 
-          if(toon.items.head.tooltipParams.set.length > 3)
-            tierHead = 4; 
-          else if(toon.items.head.tooltipParams.set.length > 2)
-            tierHead = "¾"; 
-          else if(toon.items.head.tooltipParams.set.length > 1)
-            tierHead =2;
-          else
-            tierHead = "¼";
-        }
+  var set1 = [];
+  var set2 = [];
   
+  for (var i = 0; i < tier_pieces.length; i++) {
+    if(tier_pieces[i].tooltipParams.set){
+      if(!set1.length)
+        set1 = tier_pieces[i].tooltipParams.set;
+      if(!set2.length && set1.indexOf(tier_pieces[i].id) < 0){
+        set2 = tier_pieces[i].tooltipParams.set;
+      }
+    }
+  }
   
-         if(toon.items.shoulder.tooltipParams.set)
-        { 
-          
-          if(toon.items.shoulder.tooltipParams.set.length > 3)
-            tierShoulder = 4; 
-          else if(toon.items.shoulder.tooltipParams.set.length > 2)
-            tierShoulder = "¾"; 
-          else if(toon.items.shoulder.tooltipParams.set.length > 1)
-            tierShoulder =2;
-          else
-            tierShoulder = "¼";
-        }
-         if(toon.items.chest.tooltipParams.set)
-        { 
-          if(toon.items.chest.tooltipParams.set.length > 3)
-            tierChest = 4; 
-          else if(toon.items.chest.tooltipParams.set.length > 2)
-            tierChest = "¾"; 
-          else if(toon.items.chest.tooltipParams.set.length > 1)
-            tierChest =2;
-          else
-            tierChest = "¼";
-        }
-  
-         if(toon.items.hands.tooltipParams.set)
-        { 
-          if(toon.items.hands.tooltipParams.set.length > 3)
-            tierGlove = 4; 
-          else if(toon.items.hands.tooltipParams.set.length > 2)
-            tierGlove = "¾"; 
-          else if(toon.items.hands.tooltipParams.set.length > 1)
-            tierGlove =2;
-          else
-            tierGlove = "¼";
-        }
-         if(toon.items.legs.tooltipParams.set)
-        { 
-          if(toon.items.legs.tooltipParams.set.length > 3)
-            tierLeg = 4; 
-          else if(toon.items.legs.tooltipParams.set.length > 2)
-            tierLeg = "¾"; 
-          else if(toon.items.legs.tooltipParams.set.length > 1)
-            tierLeg =2;
-          else
-            tierLeg = "¼";
-        }
-         if(toon.items.feet.tooltipParams.set)
-        { 
-          if(toon.items.feet.tooltipParams.set.length > 3)
-            tierFeet = 4; 
-          else if(toon.items.feet.tooltipParams.set.length > 2)
-            tierFeet = "¾"; 
-          else if(toon.items.feet.tooltipParams.set.length > 1)
-            tierFeet =2;
-          else
-            tierFeet = "¼";
-        }
-      
-      
-      
-      
-      
-    
-    
-    
+  if(set2.length)
+    tier = set1.length + '/' + set2.length;
+  else
+    tier = set1.length;
     
     
     var mainHandId = "\u2063";
@@ -1453,17 +1388,17 @@ function wow(region,toonName,realmName) {
     
     var toonInfo = new Array(
       
-      class, toon.level, mainspec, offspec, eIlvl,
-      headId, tierHead,
+      class, toon.level, mainspec, offspec, eIlvl, tier,
+      headId,
       neckId,
-      shoulderId, tierShoulder,
+      shoulderId,
       backId,
-      chestId, tierChest,
+      chestId,
       wristId,
-      handsId, tierGlove,
+      handsId,
       waistId,
-      legsId, tierLeg,
-      feetId, tierFeet,
+      legsId,
+      feetId,
       finger1Id,
       finger2Id,
       trinket1Id,
