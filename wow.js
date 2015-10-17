@@ -64,10 +64,6 @@ var offset = 0;
 
 function wow(region,toonName,realmName) {
   
-  
-  
-
-  
   if(!toonName || !realmName)
   {
     return " ";  // If there's nothing in the column, don't even bother calling the API
@@ -82,7 +78,7 @@ function wow(region,toonName,realmName) {
   region = region.replace(/[\u200B-\u200D\uFEFF]/g, '');
   realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, '');
   
-    region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
+  region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
   
   var toonJSON = UrlFetchApp.fetch(""+region+".battle.net/api/wow/character/"+realmName+"/"+toonName+"?fields=items,quests,achievements,audit,progression,feed,professions,talents");
     
@@ -92,9 +88,9 @@ function wow(region,toonName,realmName) {
     
     var mainspec = "none";
     var offspec = "none";
-  
-
-  
+    
+    
+    
     
     
     if(toon.talents[0].spec) //Has no main spec
@@ -163,7 +159,7 @@ function wow(region,toonName,realmName) {
     var nonEpicGems = "Non-Epic Gems:"
     
     
-
+    
     
     
     // I love me some look up tables! These are to check if you have a crappy enchant or gem
@@ -272,31 +268,31 @@ function wow(region,toonName,realmName) {
     
     var eIlvl = 0;
     
-  
-
-     var thumbnail = "http://"+region+".battle.net/static-render/"+region+"/"+  toon.thumbnail; 
-  var armory = "http://"+region+".battle.net/wow/en/character/"+realmName+"/"+toonName+"/advanced";
     
-   var tier = " ";
-  var tier_pieces = [toon.items.head,toon.items.shoulder,toon.items.chest,toon.items.hands,toon.items.legs];
-  
-  var set1 = [];
-  var set2 = [];
-  
-  for (var i = 0; i < tier_pieces.length; i++) {
-    if(tier_pieces[i].tooltipParams.set){
-      if(!set1.length)
-        set1 = tier_pieces[i].tooltipParams.set;
-      if(!set2.length && set1.indexOf(tier_pieces[i].id) < 0){
-        set2 = tier_pieces[i].tooltipParams.set;
+    
+    var thumbnail = "http://"+region+".battle.net/static-render/"+region+"/"+  toon.thumbnail;
+    var armory = "http://"+region+".battle.net/wow/en/character/"+realmName+"/"+toonName+"/advanced";
+    
+    var tier = " ";
+    var tier_pieces = [toon.items.head,toon.items.shoulder,toon.items.chest,toon.items.hands,toon.items.legs];
+    
+    var set1 = [];
+    var set2 = [];
+    
+    for (var i = 0; i < tier_pieces.length; i++) {
+      if(tier_pieces[i].tooltipParams.set){
+        if(!set1.length)
+          set1 = tier_pieces[i].tooltipParams.set;
+        if(!set2.length && set1.indexOf(tier_pieces[i].id) < 0){
+          set2 = tier_pieces[i].tooltipParams.set;
+        }
       }
     }
-  }
-  
-  if(set2.length)
-    tier = set1.length + '/' + set2.length;
-  else
-    tier = set1.length;
+    
+    if(set2.length)
+      tier = set1.length + '/' + set2.length;
+    else
+      tier = set1.length;
     
     
     var mainHandId = "\u2063";
@@ -304,15 +300,15 @@ function wow(region,toonName,realmName) {
     if( toon.items.mainHand){
       equippedItems++;
       
-  
+      
       mainHandId = toon.items.mainHand.itemLevel;
       eIlvl = eIlvl +  mainHandId;
       
       
-
+      
       if(toon.items.mainHand.itemLevel > CONST_AUDIT_ILVL)
       {
-
+        
         if(toon.items.mainHand.tooltipParams.gem0)
         {
           if(toon.items.mainHand.itemLevel > CONST_EPICGEM_ILVL)
@@ -410,7 +406,7 @@ function wow(region,toonName,realmName) {
       headId = toon.items.head.itemLevel;
       eIlvl = eIlvl + headId;
       
-
+      
       
       if(toon.items.head.itemLevel > CONST_AUDIT_ILVL)
       {
@@ -851,15 +847,25 @@ function wow(region,toonName,realmName) {
       equippedItems++;
       var trinket1Id =  toon.items.trinket1.itemLevel;
       eIlvl = eIlvl + trinket1Id;
-      if(toon.items.trinket1.itemLevel > CONST_AUDIT_ILVL)
+      if(toon.items.trinket1.tooltipParams.gem0)
       {
-        if(toon.items.trinket1.tooltipParams.gem0 && audit_lookup[toon.items.trinket1.tooltipParams.gem0]!=1)
+        if(toon.items.trinket1.itemLevel > CONST_EPICGEM_ILVL)
+        {
+          if (audit_lookup[toon.items.trinket1.tooltipParams.gem0]!=2)
+          {
+            boolNonEpicGems = 1;
+            nonEpicGems = nonEpicGems + " trinket1";
+            totalAudit++;
+          }
+        }
+        else if (audit_lookup[toon.items.trinket1.tooltipParams.gem0]<1)
         {
           boolCheapGems = 1;
           cheapGems = cheapGems + " trinket1";
           totalAudit++;
         }
       }
+      
     }
     
     var trinket2Id = "\u2063";
@@ -867,9 +873,18 @@ function wow(region,toonName,realmName) {
       equippedItems++;
       var trinket2Id =  toon.items.trinket2.itemLevel;
       eIlvl = eIlvl + trinket2Id;
-      if(toon.items.trinket2.itemLevel > CONST_AUDIT_ILVL)
+      if(toon.items.trinket2.tooltipParams.gem0)
       {
-        if(toon.items.trinket2.tooltipParams.gem0 && audit_lookup[toon.items.trinket2.tooltipParams.gem0]!=1)
+        if(toon.items.trinket2.itemLevel > CONST_EPICGEM_ILVL)
+        {
+          if (audit_lookup[toon.items.trinket2.tooltipParams.gem0]!=2)
+          {
+            boolNonEpicGems = 1;
+            nonEpicGems = nonEpicGems + " trinket2";
+            totalAudit++;
+          }
+        }
+        else if (audit_lookup[toon.items.trinket2.tooltipParams.gem0]<1)
         {
           boolCheapGems = 1;
           cheapGems = cheapGems + " trinket2";
@@ -902,7 +917,7 @@ function wow(region,toonName,realmName) {
       auditInfo = auditInfo + "Empty Gem Sockets: " + toon.audit.emptySockets;
     }
     
-  
+    
     if(boolCheapGems == 1)
       auditInfo = auditInfo + cheapGems;
     
@@ -912,9 +927,9 @@ function wow(region,toonName,realmName) {
     }
     
     
-
-  
-  var missingGlyphs = "\u2063";
+    
+    
+    var missingGlyphs = "\u2063";
     if(toon.audit.emptyGlyphSlots > 1)
     {
       
@@ -1076,20 +1091,29 @@ function wow(region,toonName,realmName) {
     var today = todayStamp.getDay();
     
     // now we have to figure out how long it's been since tuesday
+    
+    
+    var reset = 0;
     var sinceTuesday = 0;
     
+    var reset = 2;  // 2 for tuesday, 3 for wednesday
+    
+    if(region=="eu")
+    {
+      reset = 3;
+    }
     
     var midnight = new Date();
     midnight.setHours(0,0,0,0);
     
-    if(today == 2)  //it IS tuesday!
+    if(today == reset)  //it IS tuesday!
       sinceTuesday = todayStamp - midnight + 32400;
     
-    else  if(today > 2) // wednesday - saturday
+    else  if(today > reset) // wednesday - saturday
       sinceTuesday = (today-1)*86400000;
     
-    else if(today < 2) // sunday + monday
-      sinceTuesday = (today+6)*86400000;
+    else if(today < reset) // sunday + monday
+      sinceTuesday = (today+(8-reset))*86400000; // this was 6, but to account for EU it was changed to 8-reset to be either 6 or 5 to account for Wednesday resets
     
     
     
@@ -1442,7 +1466,3 @@ function wow(region,toonName,realmName) {
     
     return toonInfo;
   }
-
-
-
-
