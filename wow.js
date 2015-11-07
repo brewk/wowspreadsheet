@@ -18,6 +18,15 @@
  ************************************* */
 
 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IMPORTANT!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//    You need to put your api key here, inside the quotes of line 25 
+//    Request one here: https://dev.battle.net/apps/register
+//    Step by step instructions: http://bruk.org/api
+var apikey = "";  
+
+
+
+
 
 
 // Change this to the threshold you want to start checking for epic gems (ie: if it's 709 anything 710 or above will be checked for epic gems)
@@ -80,9 +89,12 @@ function wow(region,toonName,realmName) {
   
   region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
   
-  var toonJSON = UrlFetchApp.fetch(""+region+".battle.net/api/wow/character/"+realmName+"/"+toonName+"?fields=items,quests,achievements,audit,progression,feed,professions,talents");
+  var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&jsonp=callback&apikey="+apikey+"");
     
-    var toon = JSON.parse(toonJSON);
+   toonJSON = toonJSON.toString().substring(9);
+   toonJSON = toonJSON.substring(0, toonJSON.length - 2);
+
+   var toon = JSON.parse(toonJSON);
     
     
     
