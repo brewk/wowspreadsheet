@@ -292,7 +292,7 @@ function wow(region,toonName,realmName) {
     var set2 = [];
     
     for (var i = 0; i < tier_pieces.length; i++) {
-      if(tier_pieces[i].tooltipParams.set){
+      if(tier_pieces[i] && tier_pieces[i].tooltipParams.set){
         if(!set1.length)
           set1 = tier_pieces[i].tooltipParams.set;
         if(!set2.length && set1.indexOf(tier_pieces[i].id) < 0){
