@@ -26,9 +26,6 @@ var apikey = "";
 
 
 
-
-
-
 // Change this to the threshold you want to start checking for epic gems (ie: if it's 709 anything 710 or above will be checked for epic gems)
 var CONST_EPICGEM_ILVL = 709;
 
@@ -40,9 +37,6 @@ var offset = 0;
 
 // Everything below this, you shouldn't have to edit
 //***************************************************************
-
-
-
 
 /* for reference, here's each items id number
 
@@ -89,22 +83,13 @@ function wow(region,toonName,realmName) {
   
   region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
   
-  var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&jsonp=callback&apikey="+apikey+"");
-  
-  toonJSON = toonJSON.toString().substring(9);
-  toonJSON = toonJSON.substring(0, toonJSON.length - 2);
-  
-  var toon = JSON.parse(toonJSON);
+  var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"");
+  var toon = JSON.parse(toonJSON.toString());
   
   
   
   var mainspec = "none";
   var offspec = "none";
-  
-  
-  
-  
-  
   if(toon.talents[0].spec) //Has no main spec
   {
     if(toon.talents[0].selected ==  true) //our first spec is selected, so we'll assume that's the mainspec since  you're using it
@@ -148,17 +133,6 @@ function wow(region,toonName,realmName) {
   else  {class == "Broken"}
     
   
-  
-  
-  
-  
-  
-  
-  //  Gear checking code
-  var equippedItems = 0; // we're going to need this later to calculate the average item level
-  
-  
-  
   // Time to do some gear audits
   var totalAudit = 0;
   var auditInfo =" ";
@@ -169,25 +143,9 @@ function wow(region,toonName,realmName) {
   var boolNonEpicGems = 0;
   var cheapGems = "Cheap Gems:"
   var nonEpicGems = "Non-Epic Gems:"
-  
-  
-  
-  
-  
+
   // I love me some look up tables! These are to check if you have a crappy enchant or gem
   var audit_lookup = {};
-  
-  
-  //variables for enchants
-  var neckEnchant = " ";
-  var backEnchant = " ";
-  var ring1Enchant = " ";
-  var ring2Enchant = " ";
-  var mainEnchant = " ";
-  var offEnchant = " ";
-  
-  
-  
   
   //cheap enchants and gems
   audit_lookup['4443'] =  //"!!Elemental force";
@@ -275,33 +233,6 @@ function wow(region,toonName,realmName) {
   audit_lookup['3595'] =  "(DK)Spellbreaking";
   audit_lookup['3370'] =  "(DK)Razorice";
   
-  
-  
-  var eIlvl = 0;
-  
-  
-  var headUpgrade = "-";
-  var neckUpgrade = "-";
-  var shoulderUpgrade = "-";
-  var backUpgrade = "-";
-  var chestUpgrade = "-";
-  var wristUpgrade = "-";
-  var handsUpgrade = "-";
-  var waistUpgrade = "-";
-  var legsUpgrade = "-";
-  var feetUpgrade = "-";
-  var finger1Upgrade = "-";
-  var finger2Upgrade = "-";
-  var trinket1Upgrade = "-";
-  var trinket2Upgrade = "-";
-  var mainHandUpgrade = "-";
-  var offHandUpgrade = "-";
-  
-  
-  var upgradeTotal = 0;
-  var upgradeDone = 0;
-  
-  
   var thumbnail = "http://"+region+".battle.net/static-render/"+region+"/"+  toon.thumbnail;
   var armory = "http://"+region+".battle.net/wow/en/character/"+realmName+"/"+toonName+"/advanced";
   
@@ -315,19 +246,20 @@ function wow(region,toonName,realmName) {
     if(tier_pieces[i] && tier_pieces[i].tooltipParams.set){
       if(!set1.length)
         set1 = tier_pieces[i].tooltipParams.set;
-      if(!set2.length && set1.indexOf(tier_pieces[i].id) < 0){
+      if(!set2.length && set1.indexOf(tier_pieces[i].id) !=-1){
         set2 = tier_pieces[i].tooltipParams.set;
       }
     }
   }
   
-  if(set2.length)
-    tier = set1.length + '/' + set2.length;
-  else
-    tier = set1.length;
+	if(set2.length){
+		tier = set1.length + '/' + set2.length;
+	} else {
+		tier = set1.length;
+	}
   
 	var allItems={}
-	var enchantableItems=["neck","back","finger1","finger2","trinket1","trinket2","mainHand","offHand"]
+	var enchantableItems=["mainHand","offHand","neck","back","finger1","finger2","trinket1","trinket2"]
 	var getItemInfo = function (item, slot){
 		allItems[slot].ilvl = "\u2063"
 		if (item){
@@ -335,6 +267,8 @@ function wow(region,toonName,realmName) {
 				allItems[slot].upgrade=item.tooltipParams.upgrade.current + "/" + item.tooltipParams.upgrade.total
 				allItems.upgrade.total+=item.tooltipParams.upgrade.total
 				allItems.upgrade.current+=item.tooltipParams.upgrade.current
+			} else {
+				allItems[slot].upgrade = "-"
 			}
 			allItems.equippedItems++
 			allItems[slot].ilvl = item.itemLevel
@@ -355,13 +289,25 @@ function wow(region,toonName,realmName) {
 					}
 				}
 				if (slot.indexOf(enchantableItems)!=-1){
-					var getEnchantInfo = function (){
-						allItems[slot].enchant = audit_lookup[item.tooltipParams.encahnt]
-					}
-					if (slot!="offHand"&&item.tooltipParams.enchant){
-						getEnchantInfo()
-					}else if (item.weaponInfo&&item.tooltipParams.enchant){
-						getEnchantInfo()
+					if (slot!="offHand"||slot!="mainHand"){
+						if (item.tooltipParams.enchant){
+							var enchantResults = audit_lookup[item.tooltipParams.enchant]
+							if (enchantResults == 1){
+								allItems[slot].enchant = "Gift"
+							} else if (enchantResults == 0){
+								allItems[slot].enchant = "Breath"
+							} else {
+								allItems[slot].enchant = "Unknown"
+							}							
+						} else {
+							allItems[slot].enchant = "None"
+						}
+					} else if (item.weaponInfo) {
+						if (item.tooltipParams.enchant&&audit_lookup[item.tooltipParams.enchant]){
+							allItems[slot].enchant = audit_lookup[item.tooltipParams.enchant]
+						} else {
+							allItems[slot].enchant = "None"
+						} 
 					}
 				}
 			}
@@ -385,6 +331,9 @@ function wow(region,toonName,realmName) {
 		"mainHand",
 		"offHand"//fix7.0? depends on how Artifact works
 	]
+	for (var i = 0; i<sortOrder.length;i++){
+		getItemInfo(toon.items[sortOrder[i]],sortOrder[i])
+	}
 	var bruksOCDswap = function (item1,item2){
 		if (allItems[item1].ilvl<allItems[item2].ilvl){
 			var swapValue = allItems[item1].ilvl
@@ -394,12 +343,13 @@ function wow(region,toonName,realmName) {
 	}
 	bruksOCDswap("finger1","finger2")
 	bruksOCDswap("trinket1","trinket2")
+	allItems.averageIlvl = allItems.totalIlvl / allItems.equippedItems
 	/*
 	Values that have to be changed:
-	eIlvl -> allItems.totalIlvl
-	[slot]Id -> allItems[slot].ilvl
-	equippedItems -> allItems.equippedItems
-	[slot]Enchants -> allItems[slot].enchant
+	eIlvl -> allItems.totalIlvl fixed
+	[slot]Id -> allItems[slot].ilvl fixed
+	equippedItems -> allItems.equippedItems fixed
+	[slot]Enchants -> allItems[slot].enchant fixed
  	*/
 
   /* if(boolMissingEnchants == 1)
@@ -410,7 +360,7 @@ function wow(region,toonName,realmName) {
   
   if(toon.audit.emptySockets != 0)
   {
-    totalAudit = totalAudit+toon.audit.emptySockets;
+    totalAudit += toon.audit.emptySockets;
     auditInfo = auditInfo + "Empty Gem Sockets: " + toon.audit.emptySockets;
   }
   
@@ -429,7 +379,6 @@ function wow(region,toonName,realmName) {
   var missingGlyphs = "\u2063";
   if(toon.audit.emptyGlyphSlots > 1)
   {
-    
     totalAudit = totalAudit+toon.audit.emptyGlyphSlots;
     missingGlyphs = toon.audit.emptyGlyphSlots;
   }
@@ -557,15 +506,9 @@ function wow(region,toonName,realmName) {
   var  heroicRaidProgress = ""+HMHeroicprogress+"/7 "+BFHeroicprogress+"/10";
   var mythicProgress = ""+HMMythicprogress+"/7 "+BFMythicprogress+"/10";
   
-  
-  
   var heroicsProg = 0; // unfortunately this is account wide
-  
-  
-  
   var stuff =toon.achievements.achievementsCompleted.length;
-  var things = 0;
-  
+ 
   for(i=0; i<stuff; i++)
   {
     if(toon.achievements.achievementsCompleted[i] ==	'9046'	) { heroicsProg++; }
@@ -589,12 +532,8 @@ function wow(region,toonName,realmName) {
   
   // now we have to figure out how long it's been since tuesday
   var sinceTuesday = 0;
-  var reset = 2;  // 2 for tuesday, 3 for wednesday
-  
-  if(region=="eu")
-  {
-    reset = 3;
-  }
+  var reset = region == "eu" ? 3 : 2;  // 2 for tuesday, 3 for wednesday
+
   
   var midnight = new Date();
   midnight.setHours(0,0,0,0);
@@ -607,25 +546,15 @@ function wow(region,toonName,realmName) {
   
   else if(today < reset) // sunday + monday
     sinceTuesday = (today+(8-reset))*86400000; // this was 6, but to account for EU it was changed to 8-reset to be either 6 or 5 to account for Wednesday resets
-  
-  
-  
-  
+
   // now we have to figure out how long it's been since yesterday's reset
   
   
   var sinceYesterday  = 0;
-  
-  
   var now = todayStamp.getHours();
-  
   var resetTime = new Date();
-  
   var hrm = resetTime.getDate();
-  
-  
-  
-  
+
   resetTime.setHours(9+offset,0,0,0);
   sinceYesterday = resetTime;
   
@@ -635,9 +564,7 @@ function wow(region,toonName,realmName) {
     sinceYesterday.setDate(hrm-1)
   }
   
-  
-  
-  someDate = sinceYesterday.getTime();  //not sure if this is needed to convert to epoch
+	someDate = sinceYesterday.getTime();  //not sure if this is needed to convert to epoch
   
   
   
@@ -700,7 +627,6 @@ function wow(region,toonName,realmName) {
   
   
   var stuff =toon.quests.length;
-  var things = 0;
   var cores = 0;
   
   for(i=0; i<stuff; i++)
@@ -822,21 +748,19 @@ function wow(region,toonName,realmName) {
       {
         if (toon.feed[i].achievement.id)
         {
-          
-          
           cheevoID = toon.feed[i].achievement.id;
           type = lockout_lookup[cheevoID];
           if(type =="heroic")
           {
             if(toon.feed[i].timestamp  > sinceYesterday)
             {
-              
               lockout_counters[type]++;
             }
             
           }
-          else
+          else{
             lockout_counters[type]++;
+		  }
         }
       }
     }
@@ -901,36 +825,17 @@ function wow(region,toonName,realmName) {
   }
   
   
-  var upgradePercent = Math.round(upgradeDone/upgradeTotal*100) + "%";
+  var upgradePercent = Math.round(allItems.upgrade.current/allItems.upgrade.total*100) + "%";
   
   var toonInfo = new Array(
     
-    class, toon.level, mainspec, offspec, eIlvl, upgradePercent, tier,
-    headId,
-    neckId,
-    shoulderId,
-    backId,
-    chestId,
-    wristId,
-    handsId,
-    waistId,
-    legsId,
-    feetId,
-    finger1Id,
-    finger2Id,
-    trinket1Id,
-    trinket2Id,
-    mainHandId,
-    offHandId,
-    
-    mainEnchant,
-    offEnchant,
-    neckEnchant,
-    backEnchant,
-    ring1Enchant,
-    ring2Enchant,
-    
-    
+    class, 
+	toon.level, 
+	mainspec, 
+	offspec, 
+	allItems.averageIlvl, 
+	upgradePercent, 
+	tier,
     totalAudit,
     lockout_counters['HFCLFR']+"/13",
     lockout_counters['HFCNorm']+"/13",
@@ -952,19 +857,19 @@ function wow(region,toonName,realmName) {
     
     heroicsProg, LFRprogress, normalProgress, heroicRaidProgress, mythicProgress,
     
-    profession1, profession2, missingGlyphs, auditInfo, thumbnail, armory,       headUpgrade,       neckUpgrade,       shoulderUpgrade,       backUpgrade,       chestUpgrade,       wristUpgrade,       handsUpgrade,
-    waistUpgrade,
-    legsUpgrade,
-    feetUpgrade,
-    finger1Upgrade,
-    finger2Upgrade,
-    trinket1Upgrade,
-    trinket2Upgrade,
-    mainHandUpgrade,
-    offHandUpgrade
-    
-    
+    profession1, profession2, missingGlyphs, auditInfo, thumbnail, armory,
   )
-  
+  	var possision = 7
+	for (var i = 0; i<sortOrder.length;i++){
+		toonInfo.splice(possision,0,allItems[sortOrder[i]].ilvl)
+		possision++
+	}
+	for (var i = 0; i < enchantableItems.length;i++){
+		toonInfo.splice(possision,0,allItems[enchantableItems[i]].enchant)
+		possision++
+	}
+	for (var i = 0;i>sortOrder.lenght;i+){
+		toonInfo.splice(-1,0,allItems[sortOrder[i]].upgrade)
+	}
   return toonInfo;
 }
