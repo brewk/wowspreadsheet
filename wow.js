@@ -246,7 +246,7 @@ function wow(region,toonName,realmName) {
     if(tier_pieces[i] && tier_pieces[i].tooltipParams.set){
       if(!set1.length)
         set1 = tier_pieces[i].tooltipParams.set;
-      if(!set2.length && set1.indexOf(tier_pieces[i].id) !=-1){
+      if(!set2.length && set1.indexOf(tier_pieces[i].id) ==-1){
         set2 = tier_pieces[i].tooltipParams.set;
       }
     }
@@ -258,17 +258,25 @@ function wow(region,toonName,realmName) {
 		tier = set1.length;
 	}
   
-	var allItems={}
-	var enchantableItems=["mainHand","offHand","neck","back","finger1","finger2","trinket1","trinket2"]
+	var allItems={
+		equippedItems:0,
+		totalIlvl:0,
+		upgrade: {
+			total:0,
+			current:0
+		}
+	}
+	var enchantableItems=["mainHand","offHand","neck","back","finger1","finger2"]
 	var getItemInfo = function (item, slot){
-		allItems[slot].ilvl = "\u2063"
+		allItems[slot]={
+			ilvl:"\u2063",
+			upgrade:"-"
+		}
 		if (item){
 			if (item.tooltipParams.upgrade){
-				allItems[slot].upgrade=item.tooltipParams.upgrade.current + "/" + item.tooltipParams.upgrade.total
+				allItems[slot].upgrade= item.tooltipParams.upgrade.current + "/" + item.tooltipParams.upgrade.total
 				allItems.upgrade.total+=item.tooltipParams.upgrade.total
 				allItems.upgrade.current+=item.tooltipParams.upgrade.current
-			} else {
-				allItems[slot].upgrade = "-"
 			}
 			allItems.equippedItems++
 			allItems[slot].ilvl = item.itemLevel
@@ -288,8 +296,9 @@ function wow(region,toonName,realmName) {
 						totalAudit++
 					}
 				}
-				if (slot.indexOf(enchantableItems)!=-1){
-					if (slot!="offHand"||slot!="mainHand"){
+				if (enchantableItems.indexOf(slot)!=-1){
+					allItems[slot].enchant= "None"
+					if (slot!="offHand"&&slot!="mainHand"){
 						if (item.tooltipParams.enchant){
 							var enchantResults = audit_lookup[item.tooltipParams.enchant]
 							if (enchantResults == 1){
@@ -299,15 +308,11 @@ function wow(region,toonName,realmName) {
 							} else {
 								allItems[slot].enchant = "Unknown"
 							}							
-						} else {
-							allItems[slot].enchant = "None"
 						}
 					} else if (item.weaponInfo) {
-						if (item.tooltipParams.enchant&&audit_lookup[item.tooltipParams.enchant]){
+						if (item.tooltipParams.enchant){
 							allItems[slot].enchant = audit_lookup[item.tooltipParams.enchant]
-						} else {
-							allItems[slot].enchant = "None"
-						} 
+						}
 					}
 				}
 			}
@@ -857,19 +862,17 @@ function wow(region,toonName,realmName) {
     
     heroicsProg, LFRprogress, normalProgress, heroicRaidProgress, mythicProgress,
     
-    profession1, profession2, missingGlyphs, auditInfo, thumbnail, armory,
+    profession1, profession2, missingGlyphs, auditInfo, thumbnail, armory
   )
   	var possision = 7
 	for (var i = 0; i<sortOrder.length;i++){
 		toonInfo.splice(possision,0,allItems[sortOrder[i]].ilvl)
+		toonInfo.splice(possision+28+i,0,allItems[sortOrder[i]].upgrade)
 		possision++
 	}
 	for (var i = 0; i < enchantableItems.length;i++){
 		toonInfo.splice(possision,0,allItems[enchantableItems[i]].enchant)
 		possision++
-	}
-	for (var i = 0;i>sortOrder.lenght;i+){
-		toonInfo.splice(-1,0,allItems[sortOrder[i]].upgrade)
 	}
   return toonInfo;
 }
