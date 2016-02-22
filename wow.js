@@ -1,4 +1,4 @@
-
+﻿
 /* ***********************************
  ***     Copyright (c) 2015 bruk
  *** This script is free software; you can redistribute it and/or modify
@@ -80,7 +80,7 @@ function wow(region,toonName,realmName) {
   
   
   
-  //  Utilities.sleep(Math.floor((Math.random() * 10000) + 1000)); // This is a random sleepy time so that we dont spam the api and get bonked with an error
+  Utilities.sleep(Math.floor((Math.random() * 10000) + 1000)); // This is a random sleepy time so that we dont spam the api and get bonked with an error
   
   //Getting rid of any sort of pesky no width white spaces we may run into
   toonName = toonName.replace(/[\u200B-\u200D\uFEFF]/g, '');
@@ -89,11 +89,8 @@ function wow(region,toonName,realmName) {
   
   region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
   
-  var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&jsonp=callback&apikey="+apikey+"");
-  
-  toonJSON = toonJSON.toString().substring(9);
-  toonJSON = toonJSON.substring(0, toonJSON.length - 2);
-  
+  var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"");
+
   var toon = JSON.parse(toonJSON);
   
   
