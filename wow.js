@@ -26,9 +26,6 @@ var apikey = "";
 
 
 
-
-
-
 // Change this to the threshold you want to start checking for epic gems (ie: if it's 709 anything 710 or above will be checked for epic gems)
 var CONST_EPICGEM_ILVL = 709;
 
@@ -40,9 +37,6 @@ var offset = 0;
 
 // Everything below this, you shouldn't have to edit
 //***************************************************************
-
-
-
 
 /* for reference, here's each items id number
 
@@ -90,18 +84,12 @@ function wow(region,toonName,realmName) {
   region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
   
   var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"");
-
-  var toon = JSON.parse(toonJSON);
-  
+  var toon = JSON.parse(toonJSON.toString());
+ 
   
   
   var mainspec = "none";
   var offspec = "none";
-  
-  
-  
-  
-  
   if(toon.talents[0].spec) //Has no main spec
   {
     if(toon.talents[0].selected ==  true) //our first spec is selected, so we'll assume that's the mainspec since  you're using it
@@ -145,17 +133,6 @@ function wow(region,toonName,realmName) {
   else  {class == "Broken"}
     
   
-  
-  
-  
-  
-  
-  
-  //  Gear checking code
-  var equippedItems = 0; // we're going to need this later to calculate the average item level
-  
-  
-  
   // Time to do some gear audits
   var totalAudit = 0;
   var auditInfo =" ";
@@ -166,25 +143,9 @@ function wow(region,toonName,realmName) {
   var boolNonEpicGems = 0;
   var cheapGems = "Cheap Gems:"
   var nonEpicGems = "Non-Epic Gems:"
-  
-  
-  
-  
-  
+
   // I love me some look up tables! These are to check if you have a crappy enchant or gem
   var audit_lookup = {};
-  
-  
-  //variables for enchants
-  var neckEnchant = " ";
-  var backEnchant = " ";
-  var ring1Enchant = " ";
-  var ring2Enchant = " ";
-  var mainEnchant = " ";
-  var offEnchant = " ";
-  
-  
-  
   
   //cheap enchants and gems
   audit_lookup['4443'] =  //"!!Elemental force";
@@ -272,54 +233,6 @@ function wow(region,toonName,realmName) {
   audit_lookup['3595'] =  "(DK)Spellbreaking";
   audit_lookup['3370'] =  "(DK)Razorice";
   
-  
-  
-  var eIlvl = 0;
-  
-  
-  var headUpgrade = "-";
-  var neckUpgrade = "-";
-  var shoulderUpgrade = "-";
-  var backUpgrade = "-";
-  var chestUpgrade = "-";
-  var wristUpgrade = "-";
-  var handsUpgrade = "-";
-  var waistUpgrade = "-";
-  var legsUpgrade = "-";
-  var feetUpgrade = "-";
-  var finger1Upgrade = "-";
-  var finger2Upgrade = "-";
-  var trinket1Upgrade = "-";
-  var trinket2Upgrade = "-";
-  var mainHandUpgrade = "-";
-  var offHandUpgrade = "-";
-  
-  
-  var upgradeTotal = 0;
-  var upgradeDone = 0;
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
   var thumbnail = "http://"+region+".battle.net/static-render/"+region+"/"+  toon.thumbnail;
   var armory = "http://"+region+".battle.net/wow/en/character/"+realmName+"/"+toonName+"/advanced";
   
@@ -333,778 +246,117 @@ function wow(region,toonName,realmName) {
     if(tier_pieces[i] && tier_pieces[i].tooltipParams.set){
       if(!set1.length)
         set1 = tier_pieces[i].tooltipParams.set;
-      if(!set2.length && set1.indexOf(tier_pieces[i].id) < 0){
+      if(!set2.length && set1.indexOf(tier_pieces[i].id) ==-1){
         set2 = tier_pieces[i].tooltipParams.set;
       }
     }
   }
   
-  if(set2.length)
-    tier = set1.length + '/' + set2.length;
-  else
-    tier = set1.length;
+	if(set2.length){
+		tier = set1.length + '/' + set2.length;
+	} else {
+		tier = set1.length;
+	}
   
-  
-  var mainHandId = "\u2063";
-  //check if there's even anything in the slot first
-  if( toon.items.mainHand){
-    
-    if(toon.items.mainHand.tooltipParams.upgrade)
-      
-    {
-      
-      mainHandUpgrade = toon.items.mainHand.tooltipParams.upgrade.current + "/" + toon.items.mainHand.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.mainHand.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.mainHand.tooltipParams.upgrade.current;
-    }
-    
-    
-    equippedItems++;
-    
-    
-    mainHandId = toon.items.mainHand.itemLevel;
-    eIlvl = eIlvl +  mainHandId;
-    
-    
-    if(toon.items.mainHand.itemLevel > CONST_AUDIT_ILVL)
-    {
-      
-      if(toon.items.mainHand.tooltipParams.gem0)
-      {
-        if(toon.items.mainHand.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.mainHand.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " weapon";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.mainHand.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " weapon";
-          totalAudit++;
-        }
-      }
-      
-      if (toon.items.mainHand.tooltipParams.enchant)
-      {
-        if(audit_lookup[toon.items.mainHand.tooltipParams.enchant]==0)
-        {
-          mainEnchant = "None";
-        }
-        else
-        {
-          mainEnchant = audit_lookup[toon.items.mainHand.tooltipParams.enchant];
-        }
-      }
-      else
-      {
-        mainEnchant = "None";
-      }
-      
-    }
-  }
-  
-  
-  
-  var offHandId = "\u2063";
-  if( toon.items.offHand){
-    
-    if(toon.items.offHand.tooltipParams.upgrade)
-      
-    {
-      
-      offHandUpgrade = toon.items.offHand.tooltipParams.upgrade.current + "/" + toon.items.offHand.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.offHand.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.offHand.tooltipParams.upgrade.current;
-    }
-    
-    
-    
-    
-    equippedItems++;
-    offHandId =  toon.items.offHand.itemLevel;   // now that we know there's gear there, set the id to the ilvl
-    eIlvl = eIlvl + offHandId;
-    // the off hand is very fricken "special" so it's gonna be clunky statements here.. what if it's a shield, what if it doesn't exist? who knows!
-    
-    
-    if(toon.items.offHand.itemLevel > CONST_AUDIT_ILVL)
-    {
-      if(toon.items.offHand.tooltipParams.gem0)
-      {
-        if(toon.items.offHand.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.offHand.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " offhand";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.offHand.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " offhand";
-          totalAudit++;
-        }
-      }
-      
-      if(toon.items.offHand.weaponInfo) //it MUST be a weapon!
-      {
-        if (toon.items.offHand.tooltipParams.enchant)
-        {
-          if(audit_lookup[toon.items.offHand.tooltipParams.enchant]==0)
-          {
-            offEnchant = "None";
-          }
-          else
-          {
-            offEnchant =  audit_lookup[toon.items.offHand.tooltipParams.enchant];
-          }
-        }
-        else
-        {
-          offEnchant = "None";
-        }
-      }
-      
-    }
-  }
-  
-  var headId = "\u2063";
-  if( toon.items.head){
-    
-    if(toon.items.head.tooltipParams.upgrade)
-    {
-      
-      headUpgrade = toon.items.head.tooltipParams.upgrade.current + "/" + toon.items.head.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.head.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.head.tooltipParams.upgrade.current;
-    }
-    
-    
-    equippedItems++;
-    headId = toon.items.head.itemLevel;
-    eIlvl = eIlvl + headId;
-    
-    
-    
-    if(toon.items.head.itemLevel > CONST_AUDIT_ILVL)
-    {
-      if(toon.items.head.tooltipParams.gem0)
-      {
-        if(toon.items.head.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.head.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " head";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.head.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " head";
-          totalAudit++;
-        }
-      }
-    }
-  }
-  
-  var neckId = "\u2063";
-  if( toon.items.neck){
-    
-    if(toon.items.neck.tooltipParams.upgrade)
-      
-    {
-      
-      neckUpgrade = toon.items.neck.tooltipParams.upgrade.current + "/" + toon.items.neck.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.neck.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.neck.tooltipParams.upgrade.current;
-    }
-    equippedItems++;
-    neckId = toon.items.neck.itemLevel;
-    eIlvl = eIlvl + neckId;
-    
-    
-    if(toon.items.neck.itemLevel > CONST_AUDIT_ILVL)
-    {
-      if(toon.items.neck.tooltipParams.gem0)
-      {
-        if(toon.items.neck.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.neck.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " neck";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.neck.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " neck";
-          totalAudit++;
-        }
-      }
-      
-      
-      if (toon.items.neck.tooltipParams.enchant)
-      {
-        if(audit_lookup[toon.items.neck.tooltipParams.enchant]==1)
-        {
-          neckEnchant = "Gift";
-        }
-        else if(audit_lookup[toon.items.neck.tooltipParams.enchant]==0)
-        {
-          neckEnchant = "Breath";
-        }
-        else
-          neckEnchant = "Unknown";
-      }
-      else
-      {
-        neckEnchant = "None";
-      }
-      
-    }
-  }
-  
-  
-  var shoulderId = "\u2063";
-  if( toon.items.shoulder){
-    if(toon.items.shoulder.tooltipParams.upgrade)
-      
-    {
-      
-      shoulderUpgrade = toon.items.shoulder.tooltipParams.upgrade.current + "/" + toon.items.shoulder.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.shoulder.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.shoulder.tooltipParams.upgrade.current;
-    }
-    equippedItems++;
-    shoulderId = toon.items.shoulder.itemLevel;
-    eIlvl = eIlvl + shoulderId;
-    if(toon.items.shoulder.itemLevel > CONST_AUDIT_ILVL)
-    {
-      if(toon.items.shoulder.tooltipParams.gem0)
-      {
-        if(toon.items.shoulder.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.shoulder.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " shoulder";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.shoulder.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " shoulder";
-          totalAudit++;
-        }
-      }
-    }
-  }
-  
-  
-  var backId = "\u2063";
-  if( toon.items.back){
-    if(toon.items.back.tooltipParams.upgrade)
-      
-    {
-      
-      backUpgrade = toon.items.back.tooltipParams.upgrade.current + "/" + toon.items.back.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.back.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.back.tooltipParams.upgrade.current;
-    }
-    equippedItems++;
-    backId = toon.items.back.itemLevel;
-    eIlvl = eIlvl + backId;
-    
-    if(toon.items.back.itemLevel > CONST_AUDIT_ILVL)
-    {
-      if(toon.items.back.tooltipParams.gem0)
-      {
-        if(toon.items.back.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.back.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " back";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.back.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " back";
-          totalAudit++;
-        }
-      }
-      
-      if (toon.items.back.tooltipParams.enchant)
-      {
-        if(audit_lookup[toon.items.back.tooltipParams.enchant]==1)
-        {
-          backEnchant = "Gift";
-        }
-        else if(audit_lookup[toon.items.back.tooltipParams.enchant]==0)
-        {
-          backEnchant = "Breath";
-        }
-        else
-          backEnchant = "!!Old";
-      }
-      else
-      {
-        backEnchant = "None";
-      }
-      
-      
-    }
-    
-  }
-  
-  
-  var chestId = "\u2063";
-  if( toon.items.chest){
-    
-    if(toon.items.chest.tooltipParams.upgrade)
-      
-    {
-      
-      chestUpgrade = toon.items.chest.tooltipParams.upgrade.current + "/" + toon.items.chest.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.chest.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.chest.tooltipParams.upgrade.current;
-    }
-    equippedItems++;
-    chestId = toon.items.chest.itemLevel;
-    eIlvl = eIlvl + chestId;
-    if(toon.items.chest.itemLevel > CONST_AUDIT_ILVL)
-    {
-      if(toon.items.chest.tooltipParams.gem0)
-      {
-        if(toon.items.chest.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.chest.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " chest";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.chest.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " chest";
-          totalAudit++;
-        }
-      }
-    }
-  }
-  
-  var wristId = "\u2063";
-  if( toon.items.wrist){
-    
-    if(toon.items.wrist.tooltipParams.upgrade)
-      
-    {
-      
-      wristUpgrade = toon.items.wrist.tooltipParams.upgrade.current + "/" + toon.items.wrist.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.wrist.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.wrist.tooltipParams.upgrade.current;
-    }
-    equippedItems++;
-    wristId = toon.items.wrist.itemLevel;
-    eIlvl = eIlvl + wristId;
-    if(toon.items.wrist.itemLevel > CONST_AUDIT_ILVL)
-    {
-      if(toon.items.wrist.tooltipParams.gem0)
-      {
-        if(toon.items.wrist.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.wrist.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " wrist";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.wrist.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " wrist";
-          totalAudit++;
-        }
-      }
-    }
-  }
-  
-  var handsId = "\u2063";
-  if( toon.items.hands){
-    
-    if(toon.items.hands.tooltipParams.upgrade)
-      
-    {
-      
-      handsUpgrade = toon.items.hands.tooltipParams.upgrade.current + "/" + toon.items.hands.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.hands.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.hands.tooltipParams.upgrade.current;
-    }
-    equippedItems++;
-    handsId = toon.items.hands.itemLevel;
-    eIlvl = eIlvl + handsId;
-    if(toon.items.hands.itemLevel > CONST_AUDIT_ILVL)
-    {
-      if(toon.items.hands.tooltipParams.gem0)
-      {
-        if(toon.items.hands.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.hands.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " hands";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.hands.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " hands";
-          totalAudit++;
-        }
-      }
-    }
-  }
-  
-  
-  var waistId = "\u2063";
-  if( toon.items.waist){
-    
-    if(toon.items.waist.tooltipParams.upgrade)
-      
-    {
-      
-      waistUpgrade = toon.items.waist.tooltipParams.upgrade.current + "/" + toon.items.waist.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.waist.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.waist.tooltipParams.upgrade.current;
-    }
-    equippedItems++;
-    waistId = toon.items.waist.itemLevel;
-    eIlvl = eIlvl + waistId;
-    if(toon.items.waist.itemLevel > CONST_AUDIT_ILVL)
-    {
-      if(toon.items.waist.tooltipParams.gem0)
-      {
-        if(toon.items.waist.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.waist.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " waist";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.waist.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " waist";
-          totalAudit++;
-        }
-      }
-    }
-  }
-  
-  var legsId = "\u2063";
-  if( toon.items.legs){
-    
-    if(toon.items.legs.tooltipParams.upgrade)
-      
-    {
-      
-      legsUpgrade = toon.items.legs.tooltipParams.upgrade.current + "/" + toon.items.legs.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.legs.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.legs.tooltipParams.upgrade.current;
-    }
-    
-    equippedItems++;
-    legsId = toon.items.legs.itemLevel;
-    eIlvl = eIlvl + legsId;
-    if(toon.items.legs.itemLevel > CONST_AUDIT_ILVL)
-    {
-      if(toon.items.legs.tooltipParams.gem0)
-      {
-        if(toon.items.legs.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.legs.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " legs";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.legs.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " legs";
-          totalAudit++;
-        }
-      }
-    }
-  }
-  
-  var feetId = "\u2063";
-  if( toon.items.feet){
-    if(toon.items.feet.tooltipParams.upgrade)
-      
-    {
-      
-      feetUpgrade = toon.items.feet.tooltipParams.upgrade.current + "/" + toon.items.feet.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.feet.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.feet.tooltipParams.upgrade.current;
-    }
-    equippedItems++;
-    feetId = toon.items.feet.itemLevel;
-    eIlvl = eIlvl + feetId;
-    if(toon.items.feet.itemLevel > CONST_AUDIT_ILVL)
-    {
-      if(toon.items.feet.tooltipParams.gem0)
-      {
-        if(toon.items.feet.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.feet.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " feet";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.feet.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " feet";
-          totalAudit++;
-        }
-      }
-    }
-  }
-  
-  
-  var finger1Id = "\u2063";
-  if( toon.items.finger1){
-    
-    
-    if(toon.items.finger1.tooltipParams.upgrade)
-    {
-      
-      finger1Upgrade = toon.items.finger1.tooltipParams.upgrade.current + "/" + toon.items.finger1.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.finger1.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.finger1.tooltipParams.upgrade.current;
-    }
-    
-    
-    
-    equippedItems++;
-    finger1Id = toon.items.finger1.itemLevel;
-    eIlvl = eIlvl + finger1Id;
-    
-    
-    
-    if(toon.items.finger1.itemLevel > CONST_AUDIT_ILVL)
-    {
-      if(toon.items.finger1.tooltipParams.gem0)
-      {
-        if(toon.items.finger1.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.finger1.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " ring1";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.finger1.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " ring1";
-          totalAudit++;
-        }
-      }
-      
-      
-      if (toon.items.finger1.tooltipParams.enchant)
-      {
-        if(audit_lookup[toon.items.finger1.tooltipParams.enchant]==1)
-        {
-          ring1Enchant = "Gift";
-        }
-        else if(audit_lookup[toon.items.finger1.tooltipParams.enchant]==0)
-          ring1Enchant = "Breath";
-        else
-          ring1Enchant = "Unknown";
-      }
-      else
-      {
-        ring1Enchant = "None";
-      }
-      
-    }
-  }
-  
-  
-  var finger2Id = "\u2063";
-  if( toon.items.finger2){
-    if(toon.items.finger2.tooltipParams.upgrade)
-      
-    {
-      
-      finger2Upgrade = toon.items.finger2.tooltipParams.upgrade.current + "/" + toon.items.finger2.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.finger2.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.finger2.tooltipParams.upgrade.current;
-    }
-    equippedItems++;
-    finger2Id = toon.items.finger2.itemLevel;
-    eIlvl = eIlvl + finger2Id;
-    
-    if(toon.items.finger2.itemLevel > CONST_AUDIT_ILVL)
-    {
-      
-      if(toon.items.finger2.tooltipParams.gem0)
-      {
-        if(toon.items.finger2.itemLevel > CONST_EPICGEM_ILVL)
-        {
-          if (audit_lookup[toon.items.finger2.tooltipParams.gem0]!=2)
-          {
-            boolNonEpicGems = 1;
-            nonEpicGems = nonEpicGems + " ring2";
-            totalAudit++;
-          }
-        }
-        else if (audit_lookup[toon.items.finger2.tooltipParams.gem0]<1)
-        {
-          boolCheapGems = 1;
-          cheapGems = cheapGems + " ring2";
-          totalAudit++;
-        }
-      }
-      
-      if (toon.items.finger2.tooltipParams.enchant)
-      {
-        if(audit_lookup[toon.items.finger2.tooltipParams.enchant]==1)
-        {
-          ring2Enchant = "Gift";
-        }
-        
-        else if(audit_lookup[toon.items.finger2.tooltipParams.enchant]==0)
-          ring2Enchant = "Breath";
-        else
-          ring2Enchant = "Unknown";
-      }
-      else
-      {
-        ring2Enchant = "None";
-      }
-    }
-    
-  }
-  
-  // I have OCD, I want the higher Ilvl ring to ALWAYS be in the first column
-  var tempSwitch;
-  if(finger2Id>finger1Id)
-  {
-    tempSwitch = finger1Id;
-    finger1Id = finger2Id;
-    finger2Id = tempSwitch;
-  }
-  
-  
-  
-  
-  var trinket1Id = "\u2063";
-  if( toon.items.trinket1){
-    if(toon.items.trinket1.tooltipParams.upgrade)
-      
-    {
-      
-      trinket1Upgrade = toon.items.trinket1.tooltipParams.upgrade.current + "/" + toon.items.trinket1.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.trinket1.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.trinket1.tooltipParams.upgrade.current;
-    }
-    equippedItems++;
-    var trinket1Id =  toon.items.trinket1.itemLevel;
-    eIlvl = eIlvl + trinket1Id;
-    if(toon.items.trinket1.tooltipParams.gem0)
-    {
-      if(toon.items.trinket1.itemLevel > CONST_EPICGEM_ILVL)
-      {
-        if (audit_lookup[toon.items.trinket1.tooltipParams.gem0]!=2)
-        {
-          boolNonEpicGems = 1;
-          nonEpicGems = nonEpicGems + " trinket1";
-          totalAudit++;
-        }
-      }
-      else if (audit_lookup[toon.items.trinket1.tooltipParams.gem0]<1)
-      {
-        boolCheapGems = 1;
-        cheapGems = cheapGems + " trinket1";
-        totalAudit++;
-      }
-    }
-    
-  }
-  
-  var trinket2Id = "\u2063";
-  if( toon.items.trinket2){
-    if(toon.items.trinket2.tooltipParams.upgrade)
-      
-    {
-      
-      trinket2Upgrade = toon.items.trinket2.tooltipParams.upgrade.current + "/" + toon.items.trinket2.tooltipParams.upgrade.total;
-      upgradeTotal = upgradeTotal + toon.items.trinket2.tooltipParams.upgrade.total;
-      upgradeDone = upgradeDone + toon.items.trinket2.tooltipParams.upgrade.current;
-    }
-    
-    
-    equippedItems++;
-    var trinket2Id =  toon.items.trinket2.itemLevel;
-    eIlvl = eIlvl + trinket2Id;
-    if(toon.items.trinket2.tooltipParams.gem0)
-    {
-      if(toon.items.trinket2.itemLevel > CONST_EPICGEM_ILVL)
-      {
-        if (audit_lookup[toon.items.trinket2.tooltipParams.gem0]!=2)
-        {
-          boolNonEpicGems = 1;
-          nonEpicGems = nonEpicGems + " trinket2";
-          totalAudit++;
-        }
-      }
-      else if (audit_lookup[toon.items.trinket2.tooltipParams.gem0]<1)
-      {
-        boolCheapGems = 1;
-        cheapGems = cheapGems + " trinket2";
-        totalAudit++;
-      }
-    }
-  }
-  
-  
-  // I have OCD, I want the higher level trinket in the first slot even if you didn't put it there
-  if(trinket2Id>trinket1Id)
-  {
-    tempSwitch = trinket1Id;
-    trinket1Id = trinket2Id;
-    trinket2Id = tempSwitch;
-  }
-  
-  eIlvl = (eIlvl / equippedItems);
-  
-  
+	var allItems={
+		equippedItems:0,
+		totalIlvl:0,
+		upgrade: {
+			total:0,
+			current:0
+		}
+	}
+	var enchantableItems=["mainHand","offHand","neck","back","finger1","finger2"]
+	var getItemInfo = function (item, slot){
+		allItems[slot]={
+			ilvl:"\u2063",
+			upgrade:"-"
+		}
+		if (item){
+			if (item.tooltipParams.upgrade){
+				allItems[slot].upgrade= item.tooltipParams.upgrade.current + "/" + item.tooltipParams.upgrade.total
+				allItems.upgrade.total+=item.tooltipParams.upgrade.total
+				allItems.upgrade.current+=item.tooltipParams.upgrade.current
+			}
+			allItems.equippedItems++
+			allItems[slot].ilvl = item.itemLevel
+			allItems.totalIlvl += item.itemLevel
+			if (item.itemLevel > CONST_AUDIT_ILVL){
+				if (item.tooltipParams.gem0){
+					if (item.itemLevel>CONST_EPICGEM_ILVL){
+						if (audit_lookup[item.tooltipParams.gem0]!=2){
+							boolNonEpicGems = 1
+							nonEpicGems += " "+ slot
+							totalAudit++
+						}
+					}
+					else if (audit_lookup[item.tooltipParams.gem0]==0){
+						boolCheapGems = 1
+						cheapGems += " " + slot
+						totalAudit++
+					}
+				}
+				if (enchantableItems.indexOf(slot)!=-1){
+					allItems[slot].enchant= "None"
+					if (slot!="offHand"&&slot!="mainHand"){
+						if (item.tooltipParams.enchant){
+							var enchantResults = audit_lookup[item.tooltipParams.enchant]
+							if (enchantResults == 1){
+								allItems[slot].enchant = "Gift"
+							} else if (enchantResults == 0){
+								allItems[slot].enchant = "Breath"
+							} else {
+								allItems[slot].enchant = "Unknown"
+							}							
+						}
+					} else if (item.weaponInfo) {
+						if (item.tooltipParams.enchant){
+							allItems[slot].enchant = audit_lookup[item.tooltipParams.enchant]
+						}
+					}
+				}
+			}
+		}
+	}
+	var sortOrder = [
+		"head",
+		"neck",
+		"shoulder",
+		"back",
+		"chest",
+		"wrist",
+		"hands",
+		"waist",
+		"legs",
+		"feet",
+		"finger1",
+		"finger2",
+		"trinket1",
+		"trinket2",
+		"mainHand",
+		"offHand"//fix7.0? depends on how Artifact works
+	]
+	for (var i = 0; i<sortOrder.length;i++){
+		getItemInfo(toon.items[sortOrder[i]],sortOrder[i])
+	}
+	var bruksOCDswap = function (item1,item2){
+		if (allItems[item1].ilvl<allItems[item2].ilvl){
+			var swapValue = allItems[item1].ilvl
+			allItems[item1].ilvl = allItems[item2].ilvl
+			allItems[item2].ilvl = swapValue
+		}
+	}
+	bruksOCDswap("finger1","finger2")
+	bruksOCDswap("trinket1","trinket2")
+	allItems.averageIlvl = allItems.totalIlvl / allItems.equippedItems
+	/*
+	Values that have to be changed:
+	eIlvl -> allItems.totalIlvl fixed
+	[slot]Id -> allItems[slot].ilvl fixed
+	equippedItems -> allItems.equippedItems fixed
+	[slot]Enchants -> allItems[slot].enchant fixed
+ 	*/
+
   /* if(boolMissingEnchants == 1)
   auditInfo = auditInfo + missingEnchants;
   if(boolCheapEnchants == 1)
@@ -1113,7 +365,7 @@ function wow(region,toonName,realmName) {
   
   if(toon.audit.emptySockets != 0)
   {
-    totalAudit = totalAudit+toon.audit.emptySockets;
+    totalAudit += toon.audit.emptySockets;
     auditInfo = auditInfo + "Empty Gem Sockets: " + toon.audit.emptySockets;
   }
   
@@ -1132,7 +384,6 @@ function wow(region,toonName,realmName) {
   var missingGlyphs = "\u2063";
   if(toon.audit.emptyGlyphSlots > 1)
   {
-    
     totalAudit = totalAudit+toon.audit.emptyGlyphSlots;
     missingGlyphs = toon.audit.emptyGlyphSlots;
   }
@@ -1260,15 +511,9 @@ function wow(region,toonName,realmName) {
   var  heroicRaidProgress = ""+HMHeroicprogress+"/7 "+BFHeroicprogress+"/10";
   var mythicProgress = ""+HMMythicprogress+"/7 "+BFMythicprogress+"/10";
   
-  
-  
   var heroicsProg = 0; // unfortunately this is account wide
-  
-  
-  
   var stuff =toon.achievements.achievementsCompleted.length;
-  var things = 0;
-  
+ 
   for(i=0; i<stuff; i++)
   {
     if(toon.achievements.achievementsCompleted[i] ==	'9046'	) { heroicsProg++; }
@@ -1292,12 +537,8 @@ function wow(region,toonName,realmName) {
   
   // now we have to figure out how long it's been since tuesday
   var sinceTuesday = 0;
-  var reset = 2;  // 2 for tuesday, 3 for wednesday
-  
-  if(region=="eu")
-  {
-    reset = 3;
-  }
+  var reset = region == "eu" ? 3 : 2;  // 2 for tuesday, 3 for wednesday
+
   
   var midnight = new Date();
   midnight.setHours(0,0,0,0);
@@ -1310,25 +551,15 @@ function wow(region,toonName,realmName) {
   
   else if(today < reset) // sunday + monday
     sinceTuesday = (today+(8-reset))*86400000; // this was 6, but to account for EU it was changed to 8-reset to be either 6 or 5 to account for Wednesday resets
-  
-  
-  
-  
+
   // now we have to figure out how long it's been since yesterday's reset
   
   
   var sinceYesterday  = 0;
-  
-  
   var now = todayStamp.getHours();
-  
   var resetTime = new Date();
-  
   var hrm = resetTime.getDate();
-  
-  
-  
-  
+
   resetTime.setHours(9+offset,0,0,0);
   sinceYesterday = resetTime;
   
@@ -1338,9 +569,7 @@ function wow(region,toonName,realmName) {
     sinceYesterday.setDate(hrm-1)
   }
   
-  
-  
-  someDate = sinceYesterday.getTime();  //not sure if this is needed to convert to epoch
+	someDate = sinceYesterday.getTime();  //not sure if this is needed to convert to epoch
   
   
   
@@ -1403,7 +632,6 @@ function wow(region,toonName,realmName) {
   
   
   var stuff =toon.quests.length;
-  var things = 0;
   var cores = 0;
   
   for(i=0; i<stuff; i++)
@@ -1525,21 +753,19 @@ function wow(region,toonName,realmName) {
       {
         if (toon.feed[i].achievement.id)
         {
-          
-          
           cheevoID = toon.feed[i].achievement.id;
           type = lockout_lookup[cheevoID];
           if(type =="heroic")
           {
             if(toon.feed[i].timestamp  > sinceYesterday)
             {
-              
               lockout_counters[type]++;
             }
             
           }
-          else
+          else{
             lockout_counters[type]++;
+		  }
         }
       }
     }
@@ -1604,36 +830,17 @@ function wow(region,toonName,realmName) {
   }
   
   
-  var upgradePercent = Math.round(upgradeDone/upgradeTotal*100) + "%";
+  var upgradePercent = Math.round(allItems.upgrade.current/allItems.upgrade.total*100) + "%";
   
   var toonInfo = new Array(
     
-    class, toon.level, mainspec, offspec, eIlvl, upgradePercent, tier,
-    headId,
-    neckId,
-    shoulderId,
-    backId,
-    chestId,
-    wristId,
-    handsId,
-    waistId,
-    legsId,
-    feetId,
-    finger1Id,
-    finger2Id,
-    trinket1Id,
-    trinket2Id,
-    mainHandId,
-    offHandId,
-    
-    mainEnchant,
-    offEnchant,
-    neckEnchant,
-    backEnchant,
-    ring1Enchant,
-    ring2Enchant,
-    
-    
+    class, 
+	toon.level, 
+	mainspec, 
+	offspec, 
+	allItems.averageIlvl, 
+	upgradePercent, 
+	tier,
     totalAudit,
     lockout_counters['HFCLFR']+"/13",
     lockout_counters['HFCNorm']+"/13",
@@ -1655,19 +862,17 @@ function wow(region,toonName,realmName) {
     
     heroicsProg, LFRprogress, normalProgress, heroicRaidProgress, mythicProgress,
     
-    profession1, profession2, missingGlyphs, auditInfo, thumbnail, armory,       headUpgrade,       neckUpgrade,       shoulderUpgrade,       backUpgrade,       chestUpgrade,       wristUpgrade,       handsUpgrade,
-    waistUpgrade,
-    legsUpgrade,
-    feetUpgrade,
-    finger1Upgrade,
-    finger2Upgrade,
-    trinket1Upgrade,
-    trinket2Upgrade,
-    mainHandUpgrade,
-    offHandUpgrade
-    
-    
+    profession1, profession2, missingGlyphs, auditInfo, thumbnail, armory
   )
-  
+  	var possision = 7
+	for (var i = 0; i<sortOrder.length;i++){
+		toonInfo.splice(possision,0,allItems[sortOrder[i]].ilvl)
+		toonInfo.splice(possision+28+i,0,allItems[sortOrder[i]].upgrade)
+		possision++
+	}
+	for (var i = 0; i < enchantableItems.length;i++){
+		toonInfo.splice(possision,0,allItems[enchantableItems[i]].enchant)
+		possision++
+	}
   return toonInfo;
 }
