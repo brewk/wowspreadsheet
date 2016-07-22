@@ -1,6 +1,6 @@
 ﻿
 /* ***********************************
- ***     Copyright (c) 2015 bruk
+ ***     Copyright (c) 2016 bruk
  *** This script is free software; you can redistribute it and/or modify
  *** it under the terms of the GNU General Public License as published by
  *** the Free Software Foundation; either version 3 of the License, or
@@ -10,6 +10,7 @@
  ***  then hop on over to http://twitter.com/bruk
 
  ** SHOUT OUTS / THANKS TO CONTRIBUTORS:
+ ** github.com/meltinglava massive overhauls, including to item system 
  ** /u/InABohx for massive overhauls to the gem system, help with the final part of the legendary quest, tons of other stuff
  ** /u/jethryn for the awesome job getting the new legendary quest milestone IDs
  ** /u/Kiingzy for enchant id numbers which helped greatly with the audit

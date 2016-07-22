@@ -1,7 +1,10 @@
 # wowspreadsheet
 World of Warcraft character tracking spreadsheet for Google Docs
 
-Keeps track of:
+ ![spreadsheet](http://bruk.org/wow/images/v1.gif "Spreadsheet")
+  ### [Home Page](http://bruk.org/wow/)
+ 
+**Keeps track of:**
 <ul>
  <li>class, level, specs, average equipped item level, slot item level</li>
  <li>audit with number of issues, as well as detailed info about the issues</li>
@@ -11,6 +14,12 @@ Keeps track of:
  <li>primary profession levels</li>
  </ul>
  
+ Main code is within wow.js, you can copy this into a googlespreadsheets script, or copy a template from here:
+ ### [Template](http://docs.google.com/spreadsheets/d/1bSLd9wcOqDxbdxK7JDmzi3hAedbNk2VjuQ0CdAAW13E/edit#gid=1114934197)
+ 
 
-Templates for easy use can be found:
-http://bruk.org/wow/
+
+Other sheets
+----
+The other files contain code for the other sheets. 
+### [Check the Wiki](https://github.com/brewk/wowspreadsheet/wiki/Other-Spreadsheets) for details!
