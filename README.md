@@ -2,6 +2,7 @@
 World of Warcraft character tracking spreadsheet for Google Docs
 
  ![spreadsheet](http://bruk.org/wow/images/v1.gif "Spreadsheet")
+ 
   ### [Home Page](http://bruk.org/wow/)
  
 **Keeps track of:**
