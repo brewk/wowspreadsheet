@@ -579,11 +579,11 @@ for (var i = 0, len = dungeons.length; i < len; i++)
             ActiveWeeks[difficulty] = stats.quantity;
         }
 
-        if(difficulty == 'Heroic' && stats.lastupdated > sinceYesterday)
+        if(difficulty == 'Heroic' && stats.lastUpdated > sinceYesterday)
         {
           Lockout['Heroic']++;
         }
-        else if(difficulty != 'Heroic' && stats.lastupdated > sinceTuesday)
+        else if(difficulty != 'Heroic' && stats.lastUpdated > sinceTuesday)
         {
 
           Lockout[difficulty]++;
