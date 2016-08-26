@@ -42,6 +42,8 @@ var CONST_AUDIT_ILVL = 599;
 // Everything below this, you shouldn't have to edit
 //***************************************************************
 
+var current_version = 3.001
+
 
 
 
@@ -82,47 +84,47 @@ function wow(region,toonName,realmName) {
   }
   
   // figuring out what the class is
-  var class = 0;
+  var toon_class = 0;
   switch(toon.class)
   {
     case 1:
-      class = "Warrior";
-    break;
+      toon_class = "Warrior";
+      break;
     case 2:
-      class = "Paladin";
-    break;
+      toon_class = "Paladin";
+      break;
     case 3:
-      class = "Hunter";
-    break;
+      toon_class = "Hunter";
+      break;
     case 4:
-      class = "Rogue";
-    break;
+      toon_class = "Rogue";
+      break;
     case 5:
       class = "Priest";
-    break;
+      break;
     case 6:
-      class = "DeathKnight";
-    break;
+      toon_class = "DeathKnight";
+      break;
     case 7:
-      class = "Shaman";
-    break;
+      toon_class = "Shaman";
+      break;
     case 8:
-      class = "Mage";
-    break;
+      toon_class = "Mage";
+      break;
     case 9:
-      class = "Warlock";
-    break;
+      toon_class = "Warlock";
+      break;
     case 10:
-      class = "Monk";
-    break;
+      toon_class = "Monk";
+      break;
     case 11:
-      class = "Druid";
-    break;
+      toon_class = "Druid";
+      break;
     case 12:
-      class = "Demon Hunter";
-    break;
+      toon_class = "Demon Hunter";
+      break;
     default:
-      class = "?";
+      toon_class = "?";
   }
   
   
@@ -616,7 +618,7 @@ for (var i = 0, len = dungeons.length; i < len; i++)
   
   var toonInfo = new Array(
     
-    class,
+    toon_class,
     toon.level,
     mainspec,
     allItems.averageIlvl,
@@ -668,4 +670,9 @@ for (var i = 0, len = dungeons.length; i < len; i++)
     possision++
   }
   return toonInfo;
+}
+
+function vercheck()
+{
+ return current_version; 
 }
