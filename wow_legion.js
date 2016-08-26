@@ -42,7 +42,7 @@ var CONST_AUDIT_ILVL = 599;
 // Everything below this, you shouldn't have to edit
 //***************************************************************
 
-var current_version = 3.001
+var current_version = 3.0011
 
 
 
@@ -100,7 +100,7 @@ function wow(region,toonName,realmName) {
       toon_class = "Rogue";
       break;
     case 5:
-      class = "Priest";
+      toon_class = "Priest";
       break;
     case 6:
       toon_class = "DeathKnight";
