@@ -332,7 +332,6 @@ function wow(region,toonName,realmName) {
   var sinceYesterday  = 0;
   var now = todayStamp.getHours();
   var resetTime = new Date();
-  var hrm = resetTime.getDate();
   
   var offset = new Date().getTimezoneOffset();
   offset=offset/60;
@@ -355,12 +354,12 @@ function wow(region,toonName,realmName) {
   //attempt to fix post-midnight pre-reset
   if(now < 15-offset && now > -1 && region == "us") //if it's after midnight but before 11am 
   {
-    sinceYesterday.setDate(hrm-1)
+    sinceYesterday-=86400000
   }
 
    if(now < 7-offset && now > -1 && region == "eu") //if it's after midnight but before 7am 
   {
-    sinceYesterday.setDate(hrm-1)
+    sinceYesterday-=86400000
   }
 
   
