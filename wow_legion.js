@@ -326,7 +326,7 @@ function wow(region,toonName,realmName) {
   
   
   
-  // lock out "Weekly checker"
+   // lock out "Weekly checker"
   var todayStamp =new Date();
   var today = todayStamp.getDay();
   var sinceYesterday  = 0;
@@ -347,7 +347,7 @@ function wow(region,toonName,realmName) {
   
  
 
-    sinceYesterday = resetTime;  //not sure why i had to do this, but it broke otherwise *shrug* 
+    sinceYesterday = resetTime.getTime();
   
   
   
@@ -377,14 +377,22 @@ function wow(region,toonName,realmName) {
   var midnight = new Date();
   midnight.setHours(0,0,0,0);
   
- // if(today == reset)  //it IS tuesday!
-    sinceTuesday = resetTime;
+  sinceTuesday = resetTime*1
   
-  if(today > reset) // wednesday - saturday
+  if(today == reset)  //it IS tuesday!
+  {
+    //attempt to fix post-midnight pre-reset
+    if((now < 7-offset && now > -1 && region == "eu") || (now < 15-offset && now > -1 && region == "us")) //if it's after midnight but before 7am 
+    {
+      sinceTuesday-=(86400000*7)
+    }
+  }
+  
+  if(today > reset) // wednesday (thurs eu) - saturday
     sinceTuesday = sinceTuesday-(today-reset)*86400000
   
-  else if(today < reset) // sunday + monday
-    sinceTuesday = sinceTuesday-((today+7-reset))*86400000; // this was 6, but to account for EU it was changed to 8-reset to be either 6 or 5 to account for Wednesday resets
+  else if(today < reset) // sunday + monday (tues eu)
+    sinceTuesday = sinceTuesday-((7+today-reset))*86400000; // this was 6, but to account for EU it was changed to 7-reset to be either 6 or 5 to account for Wednesday resets
   
   
   
