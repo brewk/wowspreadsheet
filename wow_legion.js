@@ -42,7 +42,7 @@ var CONST_AUDIT_ILVL = 599;
 // Everything below this, you shouldn't have to edit
 //***************************************************************
 
-var current_version = 3.0011
+var current_version = 3.0012
 
 
 
@@ -71,15 +71,11 @@ function wow(region,toonName,realmName) {
   
   
   var mainspec = "none";
-  if(toon.talents[0].spec) //Has no main spec
+ for(i=0;i<4;i++)
   {
-    if(toon.talents[0].selected ==  true) //our first spec is selected, so we'll assume that's the mainspec since  you're using it
+    if(toon.talents[i].selected == true)
     {
-      mainspec = toon.talents[0].spec.name;
-    }
-    else //it isn't  selected, so it's our secondary spec
-    {
-      offspec = toon.talents[0].spec.name;
+      mainspec=toon.talents[i].spec.name;
     }
   }
   
