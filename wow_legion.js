@@ -26,7 +26,7 @@ Artifact Weapon relic info
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IMPORTANT!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//    You need to put your api key here, inside the quotes of line 25
+//    You need to put your api key here, inside the quotes
 //    Request one here: https://dev.battle.net/apps/register
 //    Step by step instructions: http://bruk.org/api
 var apikey = "";
@@ -42,7 +42,7 @@ var CONST_AUDIT_ILVL = 599;
 // Everything below this, you shouldn't have to edit
 //***************************************************************
 
-var current_version = 3.0012
+var current_version = 3.0013
 
 
 
@@ -435,6 +435,12 @@ var STATS_RAIDS_LEGION = 6
   var ActiveWeeks = {}
   var Progress = {}
   var Lockout = {}
+  var totalDone = { }
+
+
+// Counters for ...
+totalDone['Heroic'] = 0
+totalDone['Mythic'] = 0
 
 // Counters for ...
 ActiveWeeks['ENlfr'] = 0
@@ -593,6 +599,12 @@ for (var i = 0, len = dungeons.length; i < len; i++)
 
           Lockout[difficulty]++;
         }
+
+      //Find total quantity done for Heroics and mythics
+      if(difficulty == 'Heroic' || difficulty == 'Mythic')
+      {
+       totalDone[difficulty] =  totalDone[difficulty]+stats.quantity
+      }
     }
 }
 
@@ -645,10 +657,10 @@ for (var i = 0, len = dungeons.length; i < len; i++)
     Progress['NHmythic']+"/10 ["+ActiveWeeks['NHmythic']+"]",
  
     Lockout['Heroic']+"/8",
-    Progress['Heroic']+"/8",
+    Progress['Heroic']+"/8 (" + totalDone['Heroic'] + ")" ,
     
     Lockout['Mythic']+"/10",
-    Progress['Mythic'] +"/10 [" + ActiveWeeks['Mythic'] + "]",
+    Progress['Mythic'] +"/10 [" + ActiveWeeks['Mythic'] + "] (" + totalDone['Mythic'] + ")",
     
     
     profession1, profession2, thumbnail, armory
