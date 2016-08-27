@@ -71,7 +71,7 @@ function wow(region,toonName,realmName)
     var mainspec = "none";
     for (var i = 0; i < 4; i++)
     {
-        if (toon.talents[i].selected == true)
+        if (toon.talents[i].selected === true)
         {
             mainspec=toon.talents[i].spec.name;
         }
@@ -264,7 +264,7 @@ function wow(region,toonName,realmName)
                             nonEpicGems += " "+ slot;
                         }
                     }
-                    else if (audit_lookup[item.tooltipParams.gem0] == 0)
+                    else if (audit_lookup[item.tooltipParams.gem0] === 0)
                     {
                         boolCheapGems = 1;
                         cheapGems += " " + slot;
@@ -283,7 +283,7 @@ function wow(region,toonName,realmName)
                             {
                                 allItems[slot].enchant = "Binding";
                             }
-                            else if (enchantResults == 0)
+                            else if (enchantResults === 0)
                             {
                                 allItems[slot].enchant = "Word";
                             }
@@ -350,7 +350,7 @@ function wow(region,toonName,realmName)
     bruksOCDswap("trinket1","trinket2");
     allItems.averageIlvl = allItems.totalIlvl / allItems.equippedItems;
 
-    if (toon.audit.emptySockets != 0)
+    if (toon.audit.emptySockets !== 0)
     {
         auditInfo = auditInfo + "Empty Gem Sockets: " + toon.audit.emptySockets;
     }
@@ -452,151 +452,145 @@ function wow(region,toonName,realmName)
     // Raid stat sub-categories
     var STATS_RAIDS_LEGION = 6;
 
-    var ActiveWeeks = {};
-    var Progress = {};
-    var Lockout = {};
-    var totalDone = { };
+    // Counters
+    var totalDone = {
+        "Heroic": 0,
+        "Mythic": 0,
+    };
 
+    var ActiveWeeks = {
+        "ENlfr":    0,
+        "ENnormal": 0,
+        "ENheroic": 0,
+        "ENmythic": 0,
+        "NHlfr":    0,
+        "NHnormal": 0,
+        "NHheroic": 0,
+        "NHmythic": 0,
+        "Mythic":   0,
+    };
 
-    // Counters for ...
-    totalDone["Heroic"] = 0;
-    totalDone["Mythic"] = 0;
+    var Progress = {
+        "ENlfr":    0,
+        "ENnormal": 0,
+        "ENheroic": 0,
+        "ENmythic": 0,
+        "NHlfr":    0,
+        "NHnormal": 0,
+        "NHheroic": 0,
+        "NHmythic": 0,
+        "Heroic":   0,
+        "Mythic":   0,
+    };
 
-    // Counters for ...
-    ActiveWeeks["ENlfr"] = 0;
-    ActiveWeeks["ENnormal"] = 0;
-    ActiveWeeks["ENheroic"] = 0;
-    ActiveWeeks["ENmythic"] = 0;
-    ActiveWeeks["NHlfr"] = 0;
-    ActiveWeeks["NHnormal"] = 0;
-    ActiveWeeks["NHheroic"] = 0;
-    ActiveWeeks["NHmythic"] = 0;
-    ActiveWeeks["Mythic"] = 0;
+    var Lockout = {
+        "ENlfr":    0,
+        "ENnormal": 0,
+        "ENheroic": 0,
+        "ENmythic": 0,
+        "NHlfr":    0,
+        "NHnormal": 0,
+        "NHheroic": 0,
+        "NHmythic": 0,
+        "Heroic":   0,
+        "Mythic":   0,
+    };
 
-    // Counters for ...
-    Progress["ENlfr"] = 0;
-    Progress["ENnormal"] = 0;
-    Progress["ENheroic"] = 0;
-    Progress["ENmythic"] = 0;
-    Progress["NHlfr"] = 0;
-    Progress["NHnormal"] = 0;
-    Progress["NHheroic"] = 0;
-    Progress["NHmythic"] = 0;
-    Progress["Heroic"] = 0;
-    Progress["Mythic"] = 0;
-
-    //Counters for ...
-    Lockout["ENlfr"] = 0;
-    Lockout["ENnormal"] = 0;
-    Lockout["ENheroic"] = 0;
-    Lockout["ENmythic"] = 0;
-    Lockout["NHlfr"] = 0;
-    Lockout["NHnormal"] = 0;
-    Lockout["NHheroic"] = 0;
-    Lockout["NHmythic"] = 0;
-    Lockout["Heroic"] = 0;
-    Lockout["Mythic"] = 0;
-
-
-    // Warlords of Dreanor Dungeons
     var dungeons = [
-
-    { id: 1, difficulty: "Heroic" },
-    { id: 2, difficulty: "Mythic" },
-    { id: 4, difficulty: "Heroic" },
-    { id: 5, difficulty: "Mythic" },
-    { id: 7, difficulty: "Heroic" },
-    { id: 8, difficulty: "Mythic" },
-    { id: 10, difficulty: "Heroic" },
-    { id: 11, difficulty: "Mythic" },
-    { id: 14, difficulty: "Heroic" },
-    { id: 15, difficulty: "Heroic" },
-    { id: 16, difficulty: "Mythic" },
-    { id: 17, difficulty: "Mythic" },
-    { id: 19, difficulty: "Heroic" },
-    { id: 20, difficulty: "Mythic" },
-    { id: 22, difficulty: "Heroic" },
-    { id: 23, difficulty: "Mythic" },
-    { id: 25, difficulty: "Heroic" },
-    { id: 26, difficulty: "Mythic" },
-    { id: 27, difficulty: "Mythic" },
-    { id: 28, difficulty: "Mythic" },
-    { id: 29, difficulty: "ENlfr" },
-    { id: 30, difficulty: "ENnormal" },
-    { id: 31, difficulty: "ENheroic" },
-    { id: 32, difficulty: "ENmythic" },
-    { id: 33, difficulty: "ENlfr" },
-    { id: 34, difficulty: "ENnormal" },
-    { id: 35, difficulty: "ENheroic" },
-    { id: 36, difficulty: "ENmythic" },
-    { id: 37, difficulty: "ENlfr" },
-    { id: 38, difficulty: "ENnormal" },
-    { id: 39, difficulty: "ENheroic" },
-    { id: 40, difficulty: "ENmythic" },
-    { id: 41, difficulty: "ENlfr" },
-    { id: 42, difficulty: "ENnormal" },
-    { id: 43, difficulty: "ENheroic" },
-    { id: 44, difficulty: "ENmythic" },
-    { id: 45, difficulty: "ENlfr" },
-    { id: 46, difficulty: "ENnormal" },
-    { id: 47, difficulty: "ENheroic" },
-    { id: 48, difficulty: "ENmythic" },
-    { id: 49, difficulty: "ENlfr" },
-    { id: 50, difficulty: "ENnormal" },
-    { id: 51, difficulty: "ENheroic" },
-    { id: 52, difficulty: "ENmythic" },
-    { id: 53, difficulty: "ENlfr" },
-    { id: 54, difficulty: "ENnormal" },
-    { id: 55, difficulty: "ENheroic" },
-    { id: 56, difficulty: "ENmythic" },
-    { id: 57, difficulty: "NHlfr" },
-    { id: 58, difficulty: "NHnormal" },
-    { id: 59, difficulty: "NHheroic" },
-    { id: 60, difficulty: "NHmythic" },
-    { id: 61, difficulty: "NHlfr" },
-    { id: 62, difficulty: "NHnormal" },
-    { id: 63, difficulty: "NHheroic" },
-    { id: 64, difficulty: "NHmythic" },
-    { id: 65, difficulty: "NHlfr" },
-    { id: 66, difficulty: "NHnormal" },
-    { id: 67, difficulty: "NHheroic" },
-    { id: 68, difficulty: "NHmythic" },
-    { id: 69, difficulty: "NHlfr" },
-    { id: 70, difficulty: "NHnormal" },
-    { id: 71, difficulty: "NHheroic" },
-    { id: 72, difficulty: "NHmythic" },
-    { id: 73, difficulty: "NHlfr" },
-    { id: 74, difficulty: "NHnormal" },
-    { id: 75, difficulty: "NHheroic" },
-    { id: 76, difficulty: "NHmythic" },
-    { id: 77, difficulty: "NHlfr" },
-    { id: 78, difficulty: "NHnormal" },
-    { id: 79, difficulty: "NHheroic" },
-    { id: 80, difficulty: "NHmythic" },
-    { id: 81, difficulty: "NHlfr" },
-    { id: 82, difficulty: "NHnormal" },
-    { id: 83, difficulty: "NHheroic" },
-    { id: 84, difficulty: "NHmythic" },
-    { id: 85, difficulty: "NHlfr" },
-    { id: 86, difficulty: "NHnormal" },
-    { id: 87, difficulty: "NHheroic" },
-    { id: 88, difficulty: "NHmythic" },
-    { id: 89, difficulty: "NHlfr" },
-    { id: 90, difficulty: "NHnormal" },
-    { id: 91, difficulty: "NHheroic" },
-    { id: 92, difficulty: "NHmythic" },
-    { id: 93, difficulty: "NHlfr" },
-    { id: 94, difficulty: "NHnormal" },
-    { id: 95, difficulty: "NHheroic" },
-    { id: 96, difficulty: "NHmythic" },
-
-
+        { id: 1, difficulty: "Heroic" },
+        { id: 2, difficulty: "Mythic" },
+        { id: 4, difficulty: "Heroic" },
+        { id: 5, difficulty: "Mythic" },
+        { id: 7, difficulty: "Heroic" },
+        { id: 8, difficulty: "Mythic" },
+        { id: 10, difficulty: "Heroic" },
+        { id: 11, difficulty: "Mythic" },
+        { id: 14, difficulty: "Heroic" },
+        { id: 15, difficulty: "Heroic" },
+        { id: 16, difficulty: "Mythic" },
+        { id: 17, difficulty: "Mythic" },
+        { id: 19, difficulty: "Heroic" },
+        { id: 20, difficulty: "Mythic" },
+        { id: 22, difficulty: "Heroic" },
+        { id: 23, difficulty: "Mythic" },
+        { id: 25, difficulty: "Heroic" },
+        { id: 26, difficulty: "Mythic" },
+        { id: 27, difficulty: "Mythic" },
+        { id: 28, difficulty: "Mythic" },
+        { id: 29, difficulty: "ENlfr" },
+        { id: 30, difficulty: "ENnormal" },
+        { id: 31, difficulty: "ENheroic" },
+        { id: 32, difficulty: "ENmythic" },
+        { id: 33, difficulty: "ENlfr" },
+        { id: 34, difficulty: "ENnormal" },
+        { id: 35, difficulty: "ENheroic" },
+        { id: 36, difficulty: "ENmythic" },
+        { id: 37, difficulty: "ENlfr" },
+        { id: 38, difficulty: "ENnormal" },
+        { id: 39, difficulty: "ENheroic" },
+        { id: 40, difficulty: "ENmythic" },
+        { id: 41, difficulty: "ENlfr" },
+        { id: 42, difficulty: "ENnormal" },
+        { id: 43, difficulty: "ENheroic" },
+        { id: 44, difficulty: "ENmythic" },
+        { id: 45, difficulty: "ENlfr" },
+        { id: 46, difficulty: "ENnormal" },
+        { id: 47, difficulty: "ENheroic" },
+        { id: 48, difficulty: "ENmythic" },
+        { id: 49, difficulty: "ENlfr" },
+        { id: 50, difficulty: "ENnormal" },
+        { id: 51, difficulty: "ENheroic" },
+        { id: 52, difficulty: "ENmythic" },
+        { id: 53, difficulty: "ENlfr" },
+        { id: 54, difficulty: "ENnormal" },
+        { id: 55, difficulty: "ENheroic" },
+        { id: 56, difficulty: "ENmythic" },
+        { id: 57, difficulty: "NHlfr" },
+        { id: 58, difficulty: "NHnormal" },
+        { id: 59, difficulty: "NHheroic" },
+        { id: 60, difficulty: "NHmythic" },
+        { id: 61, difficulty: "NHlfr" },
+        { id: 62, difficulty: "NHnormal" },
+        { id: 63, difficulty: "NHheroic" },
+        { id: 64, difficulty: "NHmythic" },
+        { id: 65, difficulty: "NHlfr" },
+        { id: 66, difficulty: "NHnormal" },
+        { id: 67, difficulty: "NHheroic" },
+        { id: 68, difficulty: "NHmythic" },
+        { id: 69, difficulty: "NHlfr" },
+        { id: 70, difficulty: "NHnormal" },
+        { id: 71, difficulty: "NHheroic" },
+        { id: 72, difficulty: "NHmythic" },
+        { id: 73, difficulty: "NHlfr" },
+        { id: 74, difficulty: "NHnormal" },
+        { id: 75, difficulty: "NHheroic" },
+        { id: 76, difficulty: "NHmythic" },
+        { id: 77, difficulty: "NHlfr" },
+        { id: 78, difficulty: "NHnormal" },
+        { id: 79, difficulty: "NHheroic" },
+        { id: 80, difficulty: "NHmythic" },
+        { id: 81, difficulty: "NHlfr" },
+        { id: 82, difficulty: "NHnormal" },
+        { id: 83, difficulty: "NHheroic" },
+        { id: 84, difficulty: "NHmythic" },
+        { id: 85, difficulty: "NHlfr" },
+        { id: 86, difficulty: "NHnormal" },
+        { id: 87, difficulty: "NHheroic" },
+        { id: 88, difficulty: "NHmythic" },
+        { id: 89, difficulty: "NHlfr" },
+        { id: 90, difficulty: "NHnormal" },
+        { id: 91, difficulty: "NHheroic" },
+        { id: 92, difficulty: "NHmythic" },
+        { id: 93, difficulty: "NHlfr" },
+        { id: 94, difficulty: "NHnormal" },
+        { id: 95, difficulty: "NHheroic" },
+        { id: 96, difficulty: "NHmythic" },
     ];
 
     for (var i = 0, len = dungeons.length; i < len; i++)
     {
-        var dungeon_id = dungeons[i]["id"];
-        var difficulty = dungeons[i]["difficulty"];
+        var dungeon_id = dungeons[i].id;
+        var difficulty = dungeons[i].difficulty;
 
         var stats = toon.statistics.subCategories[STATS_RAIDS].subCategories[STATS_RAIDS_LEGION].statistics[dungeon_id];
 
@@ -611,7 +605,7 @@ function wow(region,toonName,realmName)
 
             if (difficulty == "Heroic" && stats.lastUpdated > sinceYesterday)
             {
-                Lockout["Heroic"]++;
+                Lockout.Heroic++;
             }
             else if (difficulty != "Heroic" && stats.lastUpdated > sinceTuesday)
             {
@@ -658,31 +652,31 @@ function wow(region,toonName,realmName)
 
         auditInfo,
 
-        Lockout["ENlfr"]+"/7",
-        Lockout["ENnormal"]+"/7",
-        Lockout["ENheroic"]+"/7",
-        Lockout["ENmythic"] +"/7",
+        Lockout.ENlfr    + "/7",
+        Lockout.ENnormal + "/7",
+        Lockout.ENheroic + "/7",
+        Lockout.ENmythic + "/7",
 
-        Progress["ENlfr"] +"/7 ["+ActiveWeeks["ENlfr"]+"]",
-        Progress["ENnormal"] +"/7 ["+ActiveWeeks["ENnormal"]+"]",
-        Progress["ENheroic"] +"/7  ["+ActiveWeeks["ENheroic"]+"]",
-        Progress["ENmythic"] +"/7  ["+ActiveWeeks["ENmythic"]+"]",
+        Progress.ENlfr    + "/7 [" + ActiveWeeks.ENlfr    + "]",
+        Progress.ENnormal + "/7 [" + ActiveWeeks.ENnormal + "]",
+        Progress.ENheroic + "/7 [" + ActiveWeeks.ENheroic + "]",
+        Progress.ENmythic + "/7 [" + ActiveWeeks.ENmythic + "]",
 
-        Lockout["NHlfr"]+"/10",
-        Lockout["NHnormal"]+"/10",
-        Lockout["NHheroic"]+"/10",
-        Lockout["NHmythic"]+"/10",
+        Lockout.NHlfr    + "/10",
+        Lockout.NHnormal + "/10",
+        Lockout.NHheroic + "/10",
+        Lockout.NHmythic + "/10",
 
-        Progress["NHlfr"] +"/10 ["+ActiveWeeks["NHlfr"]+"]",
-        Progress["NHnormal"]+"/10 ["+ActiveWeeks["NHnormal"]+"]",
-        Progress["NHheroic"]+"/10 ["+ActiveWeeks["NHheroic"]+"]",
-        Progress["NHmythic"]+"/10 ["+ActiveWeeks["NHmythic"]+"]",
+        Progress.NHlfr    + "/10 [" +ActiveWeeks.NHlfr    +"]",
+        Progress.NHnormal + "/10 [" +ActiveWeeks.NHnormal +"]",
+        Progress.NHheroic + "/10 [" +ActiveWeeks.NHheroic +"]",
+        Progress.NHmythic + "/10 [" +ActiveWeeks.NHmythic +"]",
 
-        Lockout["Heroic"]+"/8",
-        Progress["Heroic"]+"/8 (" + totalDone["Heroic"] + ")" ,
+        Lockout.Heroic  + "/8",
+        Progress.Heroic + "/8 (" + totalDone.Heroic + ")",
 
-        Lockout["Mythic"]+"/10",
-        Progress["Mythic"] +"/10 [" + ActiveWeeks["Mythic"] + "] (" + totalDone["Mythic"] + ")",
+        Lockout.Mythic  + "/10",
+        Progress.Mythic + "/10 [" + ActiveWeeks.Mythic + "] (" + totalDone.Mythic + ")",
 
         profession1, profession2, thumbnail, armory
     ];

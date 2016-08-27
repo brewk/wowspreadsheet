@@ -85,7 +85,7 @@ function pets(region,toonName,realmName)
 
         //first we'll sort out some favorite stuff, may not be handy for some people, but favorites are one of my favorite things
         //for keeping my pets sorted
-        if (toon.pets.collected[i].isFavorite == true)
+        if (toon.pets.collected[i].isFavorite === true)
         {
             if (toon.pets.collected[i].qualityId != 3)
             {
@@ -104,7 +104,7 @@ function pets(region,toonName,realmName)
         //if it doesn't exist, then it must be the best version we've found so far, so initilize quality and levels
         if (!petBattleArray[toon.pets.collected[i].creatureId])
         {
-            petBattleArray[toon.pets.collected[i].creatureId] = new Object();
+            petBattleArray[toon.pets.collected[i].creatureId] = {};
             petBattleArray[toon.pets.collected[i].creatureId].quality = toon.pets.collected[i].qualityId;
             petBattleArray[toon.pets.collected[i].creatureId].name = toon.pets.collected[i].creatureName;
             petBattleArray[toon.pets.collected[i].creatureId].level = toon.pets.collected[i].stats.level;
@@ -190,7 +190,7 @@ function pets(region,toonName,realmName)
             smallArrayAll[ticktock5] = i;
             ticktock5++;
 
-            if (petBattleArray[i].quality == 0)
+            if (petBattleArray[i].quality === 0)
             {
                 quality = "(p) ";
             }
