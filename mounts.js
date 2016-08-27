@@ -58,7 +58,8 @@ function mounts(region,toonName,realmName)
 
 
     var collected = toon.mounts.numCollected;
-    var notcollected = toon.mounts.numNotCollected;
+    // XXX: Unused variable?
+    //var notcollected = toon.mounts.numNotCollected;
 
 
     var mountArray = [ ];
@@ -251,7 +252,8 @@ function farm(region, realmName, toonName, list)
     }
 
 
-    var someDate = sinceYesterday.getTime(); //not sure if this is needed to convert to epoch
+    // XXX: Unused variable?
+    //var someDate = sinceYesterday.getTime(); //not sure if this is needed to convert to epoch
 
     /*
 
@@ -263,7 +265,7 @@ function farm(region, realmName, toonName, list)
        var cheevoID = 0;*/
 
 
-    for (var i = 0; i < 50; i++)
+    for (i = 0; i < 50; i++)
     {
         if (todayStamp - toon.feed[i].timestamp > sinceTuesday)
         {

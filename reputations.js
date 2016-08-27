@@ -89,7 +89,8 @@ function reputation(region,toonName,realmName,factions)
     var factionArray = factions.toString().split(",");
 
     var reputationLength = toon.reputation.length;
-    var totalFactions = factionArray.length;
+    // XXX: Unused variable?
+    //var totalFactions = factionArray.length;
 
 
     for (var i=0; i<reputationLength; i++)

@@ -48,7 +48,8 @@ function guild(region,realmName,guildName,opt_sort)
     }
 
     //Getting rid of any sort of pesky no width white spaces we may run into
-    var toonName = guildName.replace(/[\u200B-\u200D\uFEFF]/g, "");
+    // XXX: Unused variable?
+    //var toonName = guildName.replace(/[\u200B-\u200D\uFEFF]/g, "");
 
     region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
     realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
@@ -56,13 +57,15 @@ function guild(region,realmName,guildName,opt_sort)
 
     var guildJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&apikey="+apikey+"");
     var guild = JSON.parse(guildJSON);
-    var memberTotal = guild.members.length;
+    // XXX: Unused variable?
+    //var memberTotal = guild.members.length;
     var membermatrix = [ ];
+    var i = 0;
 
     // sort by number of cheevo points
     if (opt_sort)
     {
-        for (var i=0; i<guild.members.length; i++)
+        for (i=0; i<guild.members.length; i++)
         {
             membermatrix[i] = [guild.members[i].character.achievementPoints, guild.members[i].character.name, guild.members[i].rank];
         }
@@ -75,12 +78,12 @@ function guild(region,realmName,guildName,opt_sort)
     {
         var rank;
 
-        for (var i=0; i<10; i++)
+        for (i=0; i<10; i++)
         {
             membermatrix[i] = [];
         }
 
-        for (var i=0; i<guild.members.length; i++)
+        for (i=0; i<guild.members.length; i++)
         {
             rank=guild.members[i].rank;
             membermatrix[rank].push(guild.members[i].character.name);

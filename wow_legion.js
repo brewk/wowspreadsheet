@@ -126,7 +126,8 @@ function wow(region,toonName,realmName)
     // Time to do some gear audits
     var auditInfo =" ";
     //var missingEnchants = " | Missing Enchants:"
-    var boolMissingEnchants = 0;
+    // XXX: Unused variable?
+    //var boolMissingEnchants = 0;
     // var cheapEnchants = " | Cheap Enchants:"
     var boolCheapGems = 0;
     var boolNonEpicGems = 0;
@@ -198,7 +199,7 @@ function wow(region,toonName,realmName)
     var set1 = [];
     var set2 = [];
 
-    for (var i = 0; i < tier_pieces.length; i++)
+    for (i = 0; i < tier_pieces.length; i++)
     {
         if (tier_pieces[i] && tier_pieces[i].tooltipParams.set)
         {
@@ -331,7 +332,7 @@ function wow(region,toonName,realmName)
         "offHand"
     ];
 
-    for (var i = 0; i < sortOrder.length; i++)
+    for (i = 0; i < sortOrder.length; i++)
     {
         getItemInfo(toon.items[sortOrder[i]],sortOrder[i]);
     }
@@ -425,13 +426,12 @@ function wow(region,toonName,realmName)
         sinceTuesday = sinceTuesday-((7+today-reset))*86400000; // this was 6, but to account for EU it was changed to 7-reset to be either 6 or 5 to account for Wednesday resets
 
 
-    var lockout_lookup = {};
-
-
     //WORLD BOSSES
 
     //not sure if these will have achievement kill ids like previous world bosses, may not be trackable!
-    /* lockout_lookup[''] = "Ana-Mouz";
+    /*
+    var lockout_lookup = {};
+       lockout_lookup[''] = "Ana-Mouz";
        lockout_lookup[''] = "Calamir";
        lockout_lookup[''] = "Drugon";
        lockout_lookup[''] = "Flotsam";
@@ -587,7 +587,9 @@ function wow(region,toonName,realmName)
         { id: 96, difficulty: "NHmythic" },
     ];
 
-    for (var i = 0, len = dungeons.length; i < len; i++)
+    var num_dungeons = dungeons.length;
+
+    for (i = 0; i < num_dungeons; i++)
     {
         var dungeon_id = dungeons[i].id;
         var difficulty = dungeons[i].difficulty;
@@ -682,14 +684,14 @@ function wow(region,toonName,realmName)
     ];
 
     var possision = 6;
-    for (var i = 0; i<sortOrder.length;i++)
+    for (i = 0; i<sortOrder.length;i++)
     {
         toonInfo.splice(possision,0,allItems[sortOrder[i]].ilvl);
         toonInfo.splice(possision+28+i,0,allItems[sortOrder[i]].upgrade);
         possision++;
     }
     possision+=3;
-    for (var i = 0; i < enchantableItems.length;i++)
+    for (i = 0; i < enchantableItems.length;i++)
     {
         toonInfo.splice(possision,0,allItems[enchantableItems[i]].enchant);
         possision++;
