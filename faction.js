@@ -15,12 +15,14 @@
 //
 //
 // Make sure you add a new column into your spreadsheet for this, by selecting one of the columns next to where you want it, and selecting either column left, or right, accordingly.
+/* globals toon */
+/* exported faction */
 
-  var faction_lookup = {};
+var faction_lookup = {};
 
-faction_lookup['1'] = faction_lookup['3'] =  faction_lookup['4'] =  faction_lookup['7'] =  faction_lookup['11'] = faction_lookup['22'] = faction_lookup['25'] = "A";
-faction_lookup['2'] = faction_lookup['5'] =  faction_lookup['6'] =  faction_lookup['8'] =  faction_lookup['9'] =  faction_lookup['10'] =  faction_lookup['26'] = "H";
- faction_lookup['24'] = "N";
+faction_lookup["1"] = faction_lookup["3"] =  faction_lookup["4"] =  faction_lookup["7"] =  faction_lookup["11"] = faction_lookup["22"] = faction_lookup["25"] = "A";
+faction_lookup["2"] = faction_lookup["5"] =  faction_lookup["6"] =  faction_lookup["8"] =  faction_lookup["9"] =  faction_lookup["10"] =  faction_lookup["26"] = "H";
+faction_lookup["24"] = "N";
 
 
- var faction = faction_lookup[toon.race];
+var faction = faction_lookup[toon.race];

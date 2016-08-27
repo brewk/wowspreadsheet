@@ -12,16 +12,22 @@
 //
 // These two functions were taken from:
 // http://stackoverflow.com/questions/9022984/google-apps-script-to-summarise-data-not-updating/9023954#9023954
-function onOpen() {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet();
-  var entries = [{
-    name : "Clicky clicky!",
-    functionName : "refreshLastUpdate"
-  }];
-  sheet.addMenu("? Refresh all Characters", entries);
-};
+/* globals SpreadsheetApp */
+/* exported onOpen, refreshLastUpdate */
+function onOpen()
+{
+    var sheet = SpreadsheetApp.getActiveSpreadsheet();
+    var entries = [
+        {
+            name : "Clicky clicky!",
+            functionName : "refreshLastUpdate"
+        }
+    ];
+    sheet.addMenu("? Refresh all Characters", entries);
+}
 
-function refreshLastUpdate() {
-  SpreadsheetApp.getActiveSpreadsheet().getRange('A1').setValue(new Date().toTimeString());
+function refreshLastUpdate()
+{
+    SpreadsheetApp.getActiveSpreadsheet().getRange("A1").setValue(new Date().toTimeString());
 }
 
