@@ -1,4 +1,5 @@
 # wowspreadsheet
+[![Build Status](https://travis-ci.org/Slashbunny/wowspreadsheet.svg?branch=master)](https://travis-ci.org/Slashbunny/wowspreadsheet)
 World of Warcraft character tracking spreadsheet for Google Docs
 
  ![spreadsheet](http://bruk.org/wow/images/v1.gif "Spreadsheet")
@@ -22,5 +23,5 @@ World of Warcraft character tracking spreadsheet for Google Docs
 
 Other sheets
 ----
-The other files contain code for the other sheets. 
+The other files contain code for the other sheets.
 ### [Check the Wiki](https://github.com/brewk/wowspreadsheet/wiki/Other-Spreadsheets) for details!
