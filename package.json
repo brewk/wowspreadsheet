@@ -1,0 +1,23 @@
+{
+  "name": "wowspreadsheet",
+  "description": "World of Warcraft character tracking spreadsheet for Google Docs",
+  "dependencies": {
+    "jshint": "^2.9.3"
+  },
+  "devDependencies": {
+    "eslint": "^3.4.0"
+  },
+  "scripts": {
+    "test": "./node_modules/.bin/jshint . && ./node_modules/.bin/eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brewk/wowspreadsheet.git"
+  },
+  "author": "bruk",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/brewk/wowspreadsheet/issues"
+  },
+  "homepage": "https://github.com/brewk/wowspreadsheet#readme"
+}
