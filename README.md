@@ -1,5 +1,5 @@
-# wowspreadsheet
 [![Build Status](https://travis-ci.org/Slashbunny/wowspreadsheet.svg?branch=master)](https://travis-ci.org/Slashbunny/wowspreadsheet)
+# wowspreadsheet
 World of Warcraft character tracking spreadsheet for Google Docs
 
  ![spreadsheet](http://bruk.org/wow/images/v1.gif "Spreadsheet")
