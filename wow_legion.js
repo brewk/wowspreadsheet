@@ -43,7 +43,7 @@ var CONST_AUDIT_ILVL = 599;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.0013;
+var current_version = 3.0014;
 
 
 function wow(region,toonName,realmName)
