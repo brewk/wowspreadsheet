@@ -255,7 +255,7 @@ function wow(region,toonName,realmName)
 
             if (item.itemLevel > CONST_AUDIT_ILVL)
             {
-                if (item.tooltipParams.gem0)
+                if (item.tooltipParams.gem0&&slot!="mainHand"&&slot!="offHand")
                 {
                     if (item.itemLevel>CONST_EPICGEM_ILVL)
                     {
