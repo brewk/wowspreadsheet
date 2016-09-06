@@ -219,14 +219,23 @@ function farm(region, realmName, toonName, list)
     var midnight = new Date();
     midnight.setHours(0, 0, 0, 0);
 
-    if (today == 2) //it IS tuesday!
+    if (today == 2)
+    {
+        //it IS tuesday!
         sinceTuesday = todayStamp - midnight + 32400;
+    }
 
-    else if (today > 2) // wednesday - saturday
+    else if (today > 2)
+    {
+        // wednesday - saturday
         sinceTuesday = (today - 1) * 86400000;
+    }
 
-    else if (today < 2) // sunday + monday
+    else if (today < 2)
+    {
+        // sunday + monday
         sinceTuesday = (today + 6) * 86400000;
+    }
 
 
     // now we have to figure out how long it's been since yesterday's reset
