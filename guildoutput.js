@@ -56,18 +56,18 @@ function guild(region,realmName,guildName,opt_sort)
 
 
     var guildJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&apikey="+apikey+"");
-    var guild = JSON.parse(guildJSON);
+    var guildData = JSON.parse(guildJSON);
     // XXX: Unused variable?
-    //var memberTotal = guild.members.length;
+    //var memberTotal = guildData.members.length;
     var membermatrix = [ ];
     var i = 0;
 
     // sort by number of cheevo points
     if (opt_sort)
     {
-        for (i=0; i<guild.members.length; i++)
+        for (i=0; i<guildData.members.length; i++)
         {
-            membermatrix[i] = [guild.members[i].character.achievementPoints, guild.members[i].character.name, guild.members[i].rank];
+            membermatrix[i] = [guildData.members[i].character.achievementPoints, guildData.members[i].character.name, guildData.members[i].rank];
         }
 
         membermatrix.sort(sortFunction);  //  membermatrix[].sort(function(a, b){return b-a});
@@ -83,10 +83,10 @@ function guild(region,realmName,guildName,opt_sort)
             membermatrix[i] = [];
         }
 
-        for (i=0; i<guild.members.length; i++)
+        for (i=0; i<guildData.members.length; i++)
         {
-            rank=guild.members[i].rank;
-            membermatrix[rank].push(guild.members[i].character.name);
+            rank=guildData.members[i].rank;
+            membermatrix[rank].push(guildData.members[i].character.name);
         }
     }
 
