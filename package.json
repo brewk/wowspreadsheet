@@ -1,14 +1,11 @@
 {
   "name": "wowspreadsheet",
   "description": "World of Warcraft character tracking spreadsheet for Google Docs",
-  "dependencies": {
-    "jshint": "^2.9.3"
-  },
   "devDependencies": {
     "eslint": "^3.4.0"
   },
   "scripts": {
-    "test": "./node_modules/.bin/jshint . && ./node_modules/.bin/eslint ."
+    "test": "./node_modules/.bin/eslint ."
   },
   "repository": {
     "type": "git",
