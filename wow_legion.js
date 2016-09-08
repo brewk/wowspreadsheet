@@ -43,7 +43,66 @@ var CONST_AUDIT_ILVL = 599;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.0014;
+var current_version = 3.0015;
+
+
+function relic(id)
+{
+  
+    Utilities.sleep(Math.floor((Math.random() * 10) + 1000));
+    var relicJSON = UrlFetchApp.fetch("https://us.api.battle.net/wow/item/"+id+"?locale=en_US&apikey="+apikey+"");
+    var relic = JSON.parse(relicJSON.toString());
+  
+    var elementType = relic.gemInfo.type.type;
+  
+  
+    var ilvl = relic.itemLevel
+    
+    // this is info based on data from this table http://www.wowhead.com/guides/legion/artifact-weapons#relic3
+    // which may prove to be not so accurate
+    
+    if(ilvl === 895)
+    {
+      return elementType+" +56 ilvls"
+    }
+    if(ilvl > 879)
+    {
+      return elementType+" +52 ilvls"
+    }
+    if(ilvl > 864)
+    {
+      return elementType+" +48 ilvls"
+    }
+    if(ilvl > 859)
+    {
+      return elementType+" +46 ilvls"
+    }
+    if(ilvl > 849)
+    {
+      return elementType+" +43 ilvls"
+    }
+    if(ilvl > 839)
+    {
+      return elementType+" +40 ilvls"
+    }
+    if(ilvl > 834)
+    {
+      return elementType+" +39 ilvls"
+    }
+    if(ilvl > 824)
+    {
+      return elementType+" +36 ilvls"
+    }
+    if(ilvl > 819)
+    {
+      return elementType+" +35 ilvls"
+    }
+      
+    else 
+    {
+      return elementType+" +2-34ilvls"
+    }
+}
 
 
 function wow(region,toonName,realmName)
@@ -653,6 +712,36 @@ function wow(region,toonName,realmName)
         upgradePercent = Math.round(allItems.upgrade.current/allItems.upgrade.total*100) + "%";
     }
 
+
+
+    var artifactRank = 'x'
+    var artifactRelics = ['x', 'x', 'x']
+    var thirdUnlocked = false
+    
+    if(toon.items.mainHand.quality === 6)
+    {
+      artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId)
+      artifactRelics[1] = relic(toon.items.mainHand.relics[1].itemId)
+      
+      if(toon.items.mainHand.relics[2])
+      {
+        artifactRelics[2] = relic(toon.items.mainHand.relics[2].itemId)
+        thirdUnlocked = true
+        
+      }
+      
+      artifactRank = 0; 
+      for(i=0; i<toon.items.mainHand.artifactTraits.length; i++)
+      {
+        artifactRank = artifactRank+toon.items.mainHand.artifactTraits[i].rank;
+        
+        if(artifactRank+toon.items.mainHand.artifactTraits[i] === 4)
+        {
+          artifactRank--; 
+        }        
+      }
+  }
+
     var toonInfo = [
         toon_class,
         toon.level,
@@ -660,7 +749,9 @@ function wow(region,toonName,realmName)
         allItems.averageIlvl,
         upgradePercent,
         tier,
-        "x","x","x",
+
+        artifactRank,
+        artifactRelics[0], artifactRelics[1], artifactRelics[2],
 
         auditInfo,
 
@@ -700,7 +791,7 @@ function wow(region,toonName,realmName)
         toonInfo.splice(possision+28+i,0,allItems[sortOrder[i]].upgrade);
         possision++;
     }
-    possision+=3;
+    possision+=4;
     for (i = 0; i < enchantableItems.length;i++)
     {
         toonInfo.splice(possision,0,allItems[enchantableItems[i]].enchant);
