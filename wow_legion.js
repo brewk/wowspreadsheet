@@ -358,10 +358,14 @@ function wow(region,toonName,realmName)
 
 
     if (boolCheapGems == 1)
+    {
         auditInfo = auditInfo + cheapGems;
+    }
 
     if (boolNonEpicGems == 1)
+    {
         auditInfo = auditInfo + nonEpicGems;
+    }
 
 
     // lock out "Weekly checker"
@@ -419,11 +423,17 @@ function wow(region,toonName,realmName)
         }
     }
 
-    if (today > reset) // wednesday (thurs eu) - saturday
+    if (today > reset)
+    {
+        // wednesday (thurs eu) - saturday
         sinceTuesday = sinceTuesday-(today-reset)*86400000;
+    }
 
-    else if (today < reset) // sunday + monday (tues eu)
+    else if (today < reset)
+    {
+        // sunday + monday (tues eu)
         sinceTuesday = sinceTuesday-((7+today-reset))*86400000; // this was 6, but to account for EU it was changed to 7-reset to be either 6 or 5 to account for Wednesday resets
+    }
 
 
     //WORLD BOSSES
