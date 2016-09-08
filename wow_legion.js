@@ -51,56 +51,56 @@ function relic(id)
   
     Utilities.sleep(Math.floor((Math.random() * 10) + 1000));
     var relicJSON = UrlFetchApp.fetch("https://us.api.battle.net/wow/item/"+id+"?locale=en_US&apikey="+apikey+"");
-    var relic = JSON.parse(relicJSON.toString());
+    var relicDat = JSON.parse(relicJSON.toString());
   
-    var elementType = relic.gemInfo.type.type;
+    var elementType = relicDat.gemInfo.type.type;
   
   
-    var ilvl = relic.itemLevel
+    var ilvl = relicDat.itemLevel;
     
     // this is info based on data from this table http://www.wowhead.com/guides/legion/artifact-weapons#relic3
     // which may prove to be not so accurate
     
-    if(ilvl === 895)
+    if (ilvl === 895)
     {
-      return elementType+" +56 ilvls"
+        return elementType+" +56 ilvls";
     }
-    if(ilvl > 879)
+    if (ilvl > 879)
     {
-      return elementType+" +52 ilvls"
+        return elementType+" +52 ilvls";
     }
-    if(ilvl > 864)
+    if (ilvl > 864)
     {
-      return elementType+" +48 ilvls"
+        return elementType+" +48 ilvls";
     }
-    if(ilvl > 859)
+    if (ilvl > 859)
     {
-      return elementType+" +46 ilvls"
+        return elementType+" +46 ilvls";
     }
-    if(ilvl > 849)
+    if (ilvl > 849)
     {
-      return elementType+" +43 ilvls"
+        return elementType+" +43 ilvls";
     }
-    if(ilvl > 839)
+    if (ilvl > 839)
     {
-      return elementType+" +40 ilvls"
+        return elementType+" +40 ilvls";
     }
-    if(ilvl > 834)
+    if (ilvl > 834)
     {
-      return elementType+" +39 ilvls"
+        return elementType+" +39 ilvls";
     }
-    if(ilvl > 824)
+    if (ilvl > 824)
     {
-      return elementType+" +36 ilvls"
+        return elementType+" +36 ilvls";
     }
-    if(ilvl > 819)
+    if (ilvl > 819)
     {
-      return elementType+" +35 ilvls"
+        return elementType+" +35 ilvls";
     }
       
     else 
     {
-      return elementType+" +2-34ilvls"
+      return elementType+" +2-34ilvls";
     }
 }
 
@@ -712,62 +712,58 @@ function wow(region,toonName,realmName)
         upgradePercent = Math.round(allItems.upgrade.current/allItems.upgrade.total*100) + "%";
     }
 
+    var artifactRank = "x";
+    var artifactRelics = ["x", "x", "x"];
 
-
-    var artifactRank = 'x'
-    var artifactRelics = ['x', 'x', 'x']
-    var thirdUnlocked = false
     
-    if(toon.items.mainHand.quality === 6)
+    if (toon.items.mainHand.quality === 6)
     {
-      if(toon.items.mainHand.relics[0])
-      {
-        artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId)
-      }
-      if(toon.items.mainHand.relics[1])
-      {
-        artifactRelics[1] = relic(toon.items.mainHand.relics[1].itemId)
-      }
-      if(toon.items.mainHand.relics[2])
-      {
-        artifactRelics[2] = relic(toon.items.mainHand.relics[2].itemId)
-        thirdUnlocked = true
-        
-      }
-      
-      artifactRank = 0; 
-      for(i=0; i<toon.items.mainHand.artifactTraits.length; i++)
-      {
-        artifactRank = artifactRank+toon.items.mainHand.artifactTraits[i].rank;
-        
-        if(artifactRank+toon.items.mainHand.artifactTraits[i] === 4)
+        if (toon.items.mainHand.relics[0])
         {
-          artifactRank--; 
-        }        
-      }
+            artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId)
+        }
+        if (toon.items.mainHand.relics[1])
+        {
+            artifactRelics[1] = relic(toon.items.mainHand.relics[1].itemId)
+        }
+        if (toon.items.mainHand.relics[2])
+        {
+            artifactRelics[2] = relic(toon.items.mainHand.relics[2].itemId)
+        }
+
+        artifactRank = 0;
+
+        for (i=0; i<toon.items.mainHand.artifactTraits.length; i++)
+        {
+            artifactRank = artifactRank+toon.items.mainHand.artifactTraits[i].rank;
+            if(artifactRank+toon.items.mainHand.artifactTraits[i] === 4)
+            {
+                artifactRank--;
+            }
+        }
     }
 
-    if(toon.items.offHand)
+    if (toon.items.offHand)
     {
-      if(toon.items.offHand.quality === 6)
+      if (toon.items.offHand.quality === 6)
       {
-        if(toon.items.offHand.relics[0])
+        if (toon.items.offHand.relics[0])
         {
-          artifactRelics[0] = relic(toon.items.offHand.relics[0].itemId)
+          artifactRelics[0] = relic(toon.items.offHand.relics[0].itemId);
         }
-        if(toon.items.offHand.relics[1])
+        if (toon.items.offHand.relics[1])
         {
-          artifactRelics[1] = relic(toon.items.offHand.relics[1].itemId)
+          artifactRelics[1] = relic(toon.items.offHand.relics[1].itemId);
         }
-        if(toon.items.offHand.relics[2])
+        if (toon.items.offHand.relics[2])
         {
-          artifactRelics[2] = relic(toon.items.offHand.relics[2].itemId)
+          artifactRelics[2] = relic(toon.items.offHand.relics[2].itemId);
           thirdUnlocked = true
         }
-        for(i=0; i<toon.items.offHand.artifactTraits.length; i++)
+        for (i=0; i<toon.items.offHand.artifactTraits.length; i++)
         {
           artifactRank = artifactRank+toon.items.offHand.artifactTraits[i].rank;
-          if(artifactRank+toon.items.offHand.artifactTraits[i] === 4)
+          if (artifactRank+toon.items.offHand.artifactTraits[i] === 4)
           {
             artifactRank--;
           }
