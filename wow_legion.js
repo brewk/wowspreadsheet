@@ -752,23 +752,23 @@ function wow(region,toonName,realmName)
                 artifactRelics[0] = relic(toon.items.offHand.relics[0].itemId);
             }
             if (toon.items.offHand.relics[1])
+            {
+                artifactRelics[1] = relic(toon.items.offHand.relics[1].itemId);
+            }
+            if (toon.items.offHand.relics[2])
+            {
+                artifactRelics[2] = relic(toon.items.offHand.relics[2].itemId);
+            }
+            for (i=0; i<toon.items.offHand.artifactTraits.length; i++)
+            {
+                artifactRank = artifactRank+toon.items.offHand.artifactTraits[i].rank;
+                if (artifactRank+toon.items.offHand.artifactTraits[i] === 4)
                 {
-                    artifactRelics[1] = relic(toon.items.offHand.relics[1].itemId);
-                }
-                if (toon.items.offHand.relics[2])
-                {
-                    artifactRelics[2] = relic(toon.items.offHand.relics[2].itemId);
-                }
-                for (i=0; i<toon.items.offHand.artifactTraits.length; i++)
-                {
-                    artifactRank = artifactRank+toon.items.offHand.artifactTraits[i].rank;
-                    if (artifactRank+toon.items.offHand.artifactTraits[i] === 4)
-                    {
-                        artifactRank--;
-                    }
+                     artifactRank--;
                 }
             }
         }
+    }
 
     var toonInfo = [
         toon_class,
