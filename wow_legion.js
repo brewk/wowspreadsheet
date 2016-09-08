@@ -100,7 +100,7 @@ function relic(id)
       
     else 
     {
-      return elementType+" +2-34ilvls";
+        return elementType+" +2-34ilvls";
     }
 }
 
@@ -720,15 +720,15 @@ function wow(region,toonName,realmName)
     {
         if (toon.items.mainHand.relics[0])
         {
-            artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId)
+            artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId);
         }
         if (toon.items.mainHand.relics[1])
         {
-            artifactRelics[1] = relic(toon.items.mainHand.relics[1].itemId)
+            artifactRelics[1] = relic(toon.items.mainHand.relics[1].itemId);
         }
         if (toon.items.mainHand.relics[2])
         {
-            artifactRelics[2] = relic(toon.items.mainHand.relics[2].itemId)
+            artifactRelics[2] = relic(toon.items.mainHand.relics[2].itemId);
         }
 
         artifactRank = 0;
@@ -736,7 +736,7 @@ function wow(region,toonName,realmName)
         for (i=0; i<toon.items.mainHand.artifactTraits.length; i++)
         {
             artifactRank = artifactRank+toon.items.mainHand.artifactTraits[i].rank;
-            if(artifactRank+toon.items.mainHand.artifactTraits[i] === 4)
+            if (artifactRank+toon.items.mainHand.artifactTraits[i] === 4)
             {
                 artifactRank--;
             }
@@ -745,31 +745,30 @@ function wow(region,toonName,realmName)
 
     if (toon.items.offHand)
     {
-      if (toon.items.offHand.quality === 6)
-      {
-        if (toon.items.offHand.relics[0])
+        if (toon.items.offHand.quality === 6)
         {
-          artifactRelics[0] = relic(toon.items.offHand.relics[0].itemId);
+            if (toon.items.offHand.relics[0])
+            {
+                artifactRelics[0] = relic(toon.items.offHand.relics[0].itemId);
+            }
+            if (toon.items.offHand.relics[1])
+                {
+                    artifactRelics[1] = relic(toon.items.offHand.relics[1].itemId);
+                }
+                if (toon.items.offHand.relics[2])
+                {
+                    artifactRelics[2] = relic(toon.items.offHand.relics[2].itemId);
+                }
+                for (i=0; i<toon.items.offHand.artifactTraits.length; i++)
+                {
+                    artifactRank = artifactRank+toon.items.offHand.artifactTraits[i].rank;
+                    if (artifactRank+toon.items.offHand.artifactTraits[i] === 4)
+                    {
+                        artifactRank--;
+                    }
+                }
+            }
         }
-        if (toon.items.offHand.relics[1])
-        {
-          artifactRelics[1] = relic(toon.items.offHand.relics[1].itemId);
-        }
-        if (toon.items.offHand.relics[2])
-        {
-          artifactRelics[2] = relic(toon.items.offHand.relics[2].itemId);
-          thirdUnlocked = true
-        }
-        for (i=0; i<toon.items.offHand.artifactTraits.length; i++)
-        {
-          artifactRank = artifactRank+toon.items.offHand.artifactTraits[i].rank;
-          if (artifactRank+toon.items.offHand.artifactTraits[i] === 4)
-          {
-            artifactRank--;
-          }
-        }
-      }
-    }
 
     var toonInfo = [
         toon_class,
