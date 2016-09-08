@@ -43,7 +43,7 @@ var CONST_AUDIT_ILVL = 599;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.0016;
+var current_version = 3.0017;
 
 
 function relic(id)
@@ -745,7 +745,35 @@ function wow(region,toonName,realmName)
           artifactRank--; 
         }        
       }
-  }
+    }
+
+    if(toon.items.offHand)
+    {
+      if(toon.items.offHand.quality === 6)
+      {
+        if(toon.items.offHand.relics[0])
+        {
+          artifactRelics[0] = relic(toon.items.offHand.relics[0].itemId)
+        }
+        if(toon.items.offHand.relics[1])
+        {
+          artifactRelics[1] = relic(toon.items.offHand.relics[1].itemId)
+        }
+        if(toon.items.offHand.relics[2])
+        {
+          artifactRelics[2] = relic(toon.items.offHand.relics[2].itemId)
+          thirdUnlocked = true
+        }
+        for(i=0; i<toon.items.offHand.artifactTraits.length; i++)
+        {
+          artifactRank = artifactRank+toon.items.offHand.artifactTraits[i].rank;
+          if(artifactRank+toon.items.offHand.artifactTraits[i] === 4)
+          {
+            artifactRank--;
+          }
+        }
+      }
+    }
 
     var toonInfo = [
         toon_class,
