@@ -764,7 +764,7 @@ function wow(region,toonName,realmName)
                 artifactRank = artifactRank+toon.items.offHand.artifactTraits[i].rank;
                 if (artifactRank+toon.items.offHand.artifactTraits[i] === 4)
                 {
-                     artifactRank--;
+                    artifactRank--;
                 }
             }
         }
