@@ -43,7 +43,7 @@ var CONST_AUDIT_ILVL = 599;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.0018;
+var current_version = 3.00181;
 
 
 function relic(id)
@@ -715,24 +715,24 @@ function wow(region,toonName,realmName)
     var artifactRank = "x";
     var artifactRelics = ["x", "x", "x"];
 
-    
-    if (toon.items.mainHand.quality === 6)
+    if (toon.items.mainHand)
     {
-        artifactRank = 0;
-        if (toon.items.mainHand.relics[0])
+        if (toon.items.mainHand.quality === 6)
         {
-            artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId);
+            artifactRank = 0;
+            if (toon.items.mainHand.relics[0])
+            {
+                artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId);
+            }
+            if (toon.items.mainHand.relics[1])
+            {
+                artifactRelics[1] = relic(toon.items.mainHand.relics[1].itemId);
+            }
+            if (toon.items.mainHand.relics[2])
+            {
+                artifactRelics[2] = relic(toon.items.mainHand.relics[2].itemId);
+            }
         }
-        if (toon.items.mainHand.relics[1])
-        {
-            artifactRelics[1] = relic(toon.items.mainHand.relics[1].itemId);
-        }
-        if (toon.items.mainHand.relics[2])
-        {
-            artifactRelics[2] = relic(toon.items.mainHand.relics[2].itemId);
-        }
-
-
     }
 
     if (toon.items.offHand)
