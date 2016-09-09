@@ -43,7 +43,7 @@ var CONST_AUDIT_ILVL = 599;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.0017;
+var current_version = 3.0018;
 
 
 function relic(id)
@@ -718,6 +718,7 @@ function wow(region,toonName,realmName)
     
     if (toon.items.mainHand.quality === 6)
     {
+        artifactRank = 0;
         if (toon.items.mainHand.relics[0])
         {
             artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId);
@@ -731,16 +732,7 @@ function wow(region,toonName,realmName)
             artifactRelics[2] = relic(toon.items.mainHand.relics[2].itemId);
         }
 
-        artifactRank = 0;
 
-        for (i=0; i<toon.items.mainHand.artifactTraits.length; i++)
-        {
-            artifactRank = artifactRank+toon.items.mainHand.artifactTraits[i].rank;
-            if (artifactRank+toon.items.mainHand.artifactTraits[i] === 4)
-            {
-                artifactRank--;
-            }
-        }
     }
 
     if (toon.items.offHand)
@@ -759,14 +751,14 @@ function wow(region,toonName,realmName)
             {
                 artifactRelics[2] = relic(toon.items.offHand.relics[2].itemId);
             }
-            for (i=0; i<toon.items.offHand.artifactTraits.length; i++)
-            {
-                artifactRank = artifactRank+toon.items.offHand.artifactTraits[i].rank;
-                if (artifactRank+toon.items.offHand.artifactTraits[i] === 4)
-                {
-                    artifactRank--;
-                }
-            }
+        }
+    }
+
+    for (i=0; i<toon.achievements.criteria.length; i++)
+    {
+        if (toon.achievements.criteria[i] == "29395")
+        {
+            artifactRank = toon.achievements.criteriaQuantity[i];
         }
     }
 
