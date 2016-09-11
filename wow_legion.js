@@ -524,7 +524,7 @@ function wow(region,toonName,realmName)
     // Counters
     var totalDone = {
         "Heroic": 0,
-        "Mythic": 0,
+        "Mythic": 0
     };
 
     var ActiveWeeks = {
@@ -536,7 +536,7 @@ function wow(region,toonName,realmName)
         "NHnormal": 0,
         "NHheroic": 0,
         "NHmythic": 0,
-        "Mythic":   0,
+        "Mythic":   0
     };
 
     var Progress = {
@@ -549,7 +549,7 @@ function wow(region,toonName,realmName)
         "NHheroic": 0,
         "NHmythic": 0,
         "Heroic":   0,
-        "Mythic":   0,
+        "Mythic":   0
     };
 
     var Lockout = {
@@ -562,7 +562,7 @@ function wow(region,toonName,realmName)
         "NHheroic": 0,
         "NHmythic": 0,
         "Heroic":   0,
-        "Mythic":   0,
+        "Mythic":   0
     };
 
     var dungeons = [
@@ -653,7 +653,7 @@ function wow(region,toonName,realmName)
         { id: 93, difficulty: "NHlfr" },
         { id: 94, difficulty: "NHnormal" },
         { id: 95, difficulty: "NHheroic" },
-        { id: 96, difficulty: "NHmythic" },
+        { id: 96, difficulty: "NHmythic" }
     ];
 
     var num_dungeons = dungeons.length;
