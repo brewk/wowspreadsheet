@@ -43,7 +43,7 @@ var CONST_AUDIT_ILVL = 599;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.00181;
+var current_version = 3.00182;
 
 
 function relic(id)
@@ -55,7 +55,11 @@ function relic(id)
   
     var elementType = relicDat.gemInfo.type.type;
   
-  
+    if (elementType === "WIND") //Fixing a bug on Blizzard's end for the storm relic
+    {
+        elementType = "STORM";
+    }
+
     var ilvl = relicDat.itemLevel;
     
     // this is info based on data from this table http://www.wowhead.com/guides/legion/artifact-weapons#relic3
