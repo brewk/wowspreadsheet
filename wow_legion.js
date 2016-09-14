@@ -43,7 +43,7 @@ var CONST_AUDIT_ILVL = 599;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.00182;
+var current_version = 3.00183;
 
 
 function relic(id)
@@ -694,6 +694,16 @@ function wow(region,toonName,realmName)
                 totalDone[difficulty] =  totalDone[difficulty]+stats.quantity;
             }
         }
+    }
+
+    //There are two possible end bosses for Violet Hold, factor this in when calculating the progress tally
+    if (toon.statistics.subCategories[5].subCategories[6].statistics[14].quantity > 0 && toon.statistics.subCategories[5].subCategories[6].statistics[15].quantity > 0)
+    {
+        Progress.Heroic--;
+    }
+    if (toon.statistics.subCategories[5].subCategories[6].statistics[16].quantity > 0 && toon.statistics.subCategories[5].subCategories[6].statistics[17].quantity > 0)
+    {
+        Progress.Mythic--;
     }
 
 
