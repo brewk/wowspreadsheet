@@ -715,11 +715,11 @@ function wow(region,toonName,realmName)
             artifactRank = 0;
             if (toon.items.mainHand.relics[0])
             {
-                artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId, toon.items.mainHand.relics[2].bonusLists[1]);
+                artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId, toon.items.mainHand.relics[0].bonusLists[1]);
             }
             if (toon.items.mainHand.relics[1])
             {
-                artifactRelics[1] = relic(toon.items.mainHand.relics[1].itemId, toon.items.mainHand.relics[2].bonusLists[1]);
+                artifactRelics[1] = relic(toon.items.mainHand.relics[1].itemId, toon.items.mainHand.relics[1].bonusLists[1]);
             }
             if (toon.items.mainHand.relics[2])
             {
