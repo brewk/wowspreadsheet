@@ -109,6 +109,41 @@ function relic(id)
 }
 
 
+function rep(standing)
+{
+
+    switch (standing)
+    {
+        case 0:
+            return "Hated";
+
+        case 1:
+            return "Hostile";
+
+        case 2:
+            return "Unfriendly";
+
+        case 3:
+            return "Neutral";
+
+        case 4:
+            return "Friendly";
+
+        case 5:
+            return "Honored";
+
+        case 6:
+            return "Revered";
+
+        case 7:
+            return "Exalted";
+
+        default:
+            return "ERROR";
+    }
+}
+
+
 function wow(region,toonName,realmName)
 {
 
@@ -127,7 +162,7 @@ function wow(region,toonName,realmName)
 
     region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
 
-    var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"");
+    var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"");
     var toon = JSON.parse(toonJSON.toString());
 
 
@@ -775,6 +810,8 @@ function wow(region,toonName,realmName)
             artifactRank = toon.achievements.criteriaQuantity[i];
         }
     }
+  
+    var nightfallen = rep(toon.reputation[28].standing);
 
     var toonInfo = [
         toon_class,
@@ -815,7 +852,8 @@ function wow(region,toonName,realmName)
         Lockout.Mythic  + "/10",
         Progress.Mythic + "/10 [" + ActiveWeeks.Mythic + "] (" + totalDone.Mythic + ")",
 
-        profession1, profession2, thumbnail, armory
+        profession1, profession2, thumbnail, armory, 
+        "Nightfallen - " + nightfallen + " " + toon.reputation[28].value + "/" + toon.reputation[28].max
     ];
 
     var possision = 6;
