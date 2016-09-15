@@ -46,11 +46,15 @@ var CONST_AUDIT_ILVL = 599;
 var current_version = 3.00183;
 
 
-function relic(id)
+function relic(equippedRelic)
 {
-  
-    Utilities.sleep(Math.floor((Math.random() * 10) + 1000));
-    var relicJSON = UrlFetchApp.fetch("https://us.api.battle.net/wow/item/"+id+"?locale=en_US&apikey="+apikey+"");
+    var id = equippedRelic.itemId
+    var bonusLists = ""
+    equippedRelic.bonusLists.forEach(function(bonusListNumber) {
+        bonusLists = bonusLists +  bonusListNumber + "," 
+    });
+    Utilities.sleep(500);//this is 500 since you are already haveing the root function spreading the calls out. It would be the same to spread and spread or spread and same. they are spread either way 
+    var relicJSON = UrlFetchApp.fetch("https://us.api.battle.net/wow/item/"+id+"?bl="+bonusLists+"&locale=en_US&apikey="+apikey+"");
     var relicDat = JSON.parse(relicJSON.toString());
   
     var elementType = relicDat.gemInfo.type.type;
@@ -101,7 +105,6 @@ function relic(id)
     {
         return elementType+" +35 ilvls";
     }
-      
     else 
     {
         return elementType+" +2-34ilvls";
@@ -762,46 +765,25 @@ function wow(region,toonName,realmName)
     }
 
     var artifactRank = "x";
-    var artifactRelics = ["x", "x", "x"];
+    var artifactRelics = [];
+    var relicItems = ["mainHand","offHand"];
 
-    if (toon.items.mainHand)
+    for (var i = 0; i < relicItems.length; i++)
     {
-        if (toon.items.mainHand.quality === 6)
+        var k = relicItems[i]
+      if (toon.items[relicItems[i]])
         {
-            artifactRank = 0;
-            if (toon.items.mainHand.relics[0])
+            var relicItem = toon.items[relicItems[i]]
+            if (relicItem.quality === 6)
             {
-                artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId);
-            }
-            if (toon.items.mainHand.relics[1])
-            {
-                artifactRelics[1] = relic(toon.items.mainHand.relics[1].itemId);
-            }
-            if (toon.items.mainHand.relics[2])
-            {
-                artifactRelics[2] = relic(toon.items.mainHand.relics[2].itemId);
+                artifactRank = 0;
+                relicItem.relics.forEach(function(relicGem) {
+                   artifactRelics.push(relic(relicGem))
+                })
             }
         }
     }
 
-    if (toon.items.offHand)
-    {
-        if (toon.items.offHand.quality === 6)
-        {
-            if (toon.items.offHand.relics[0])
-            {
-                artifactRelics[0] = relic(toon.items.offHand.relics[0].itemId);
-            }
-            if (toon.items.offHand.relics[1])
-            {
-                artifactRelics[1] = relic(toon.items.offHand.relics[1].itemId);
-            }
-            if (toon.items.offHand.relics[2])
-            {
-                artifactRelics[2] = relic(toon.items.offHand.relics[2].itemId);
-            }
-        }
-    }
 
     for (i=0; i<toon.achievements.criteria.length; i++)
     {
@@ -809,6 +791,10 @@ function wow(region,toonName,realmName)
         {
             artifactRank = toon.achievements.criteriaQuantity[i];
         }
+    }
+    for (var i = artifactRelics.length; i < 3; i++)
+    {
+        artifactRelics.push("x")
     }
   
     var nightfallen = rep(toon.reputation[28].standing);
