@@ -858,7 +858,7 @@ function wow(region,toonName,realmName)
     return toonInfo;
 }
 
-function test()
+function vercheck()
 {
-    wow("eu","Meltinglava","Outland")
+    return current_version;
 }
