@@ -46,13 +46,13 @@ var CONST_AUDIT_ILVL = 599;
 var current_version = 3.00183;
 
 
-function relic(id)
+function relic(id, rawBonus)
 {
   
     Utilities.sleep(Math.floor((Math.random() * 10) + 1000));
     var relicJSON = UrlFetchApp.fetch("https://us.api.battle.net/wow/item/"+id+"?locale=en_US&apikey="+apikey+"");
     var relicDat = JSON.parse(relicJSON.toString());
-  
+    var bonus = rawBonus-1472;
     var elementType = relicDat.gemInfo.type.type;
   
     if (elementType === "WIND") //Fixing a bug on Blizzard's end for the storm relic
@@ -60,51 +60,30 @@ function relic(id)
         elementType = "STORM";
     }
 
-    var ilvl = relicDat.itemLevel;
+    var ilvl = relicDat.itemLevel + bonus;
     
     // this is info based on data from this table http://www.wowhead.com/guides/legion/artifact-weapons#relic3
     // which may prove to be not so accurate
     
-    if (ilvl === 895)
+    switch(ilvl)
     {
-        return elementType+" +56 ilvls";
-    }
-    if (ilvl > 879)
-    {
-        return elementType+" +52 ilvls";
-    }
-    if (ilvl > 864)
-    {
-        return elementType+" +48 ilvls";
-    }
-    if (ilvl > 859)
-    {
-        return elementType+" +46 ilvls";
-    }
-    if (ilvl > 849)
-    {
-        return elementType+" +43 ilvls";
-    }
-    if (ilvl > 839)
-    {
-        return elementType+" +40 ilvls";
-    }
-    if (ilvl > 834)
-    {
-        return elementType+" +39 ilvls";
-    }
-    if (ilvl > 824)
-    {
-        return elementType+" +36 ilvls";
-    }
-    if (ilvl > 819)
-    {
-        return elementType+" +35 ilvls";
-    }
-      
-    else 
-    {
-        return elementType+" +2-34ilvls";
+      case(820): return elementType+" +35 ilvls";
+      case(825): return elementType+" +36 ilvls";
+      case(830): return elementType+" +38 ilvls";
+      case(835): return elementType+" +39 ilvls";
+      case(840): return elementType+" +40 ilvls";
+      case(845): return elementType+" +42 ilvls";
+      case(850): return elementType+" +43 ilvls";
+      case(855): return elementType+" +45 ilvls";
+      case(860): return elementType+" +46 ilvls";
+      case(865): return elementType+" +48 ilvls";
+      case(870): return elementType+" +50 ilvls";
+      case(875): return elementType+" +51 ilvls";
+      case(880): return elementType+" +52 ilvls";
+      case(885): return elementType+" +54 ilvls";
+      case(890): return elementType+" +55 ilvls";
+      case(895): return elementType+" +56 ilvls";
+      default: return elementType+" +2-34ilvls";
     }
 }
 
@@ -771,15 +750,15 @@ function wow(region,toonName,realmName)
             artifactRank = 0;
             if (toon.items.mainHand.relics[0])
             {
-                artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId);
+                artifactRelics[0] = relic(toon.items.mainHand.relics[0].itemId, toon.items.mainHand.relics[0].bonusLists[1]);
             }
             if (toon.items.mainHand.relics[1])
             {
-                artifactRelics[1] = relic(toon.items.mainHand.relics[1].itemId);
+                artifactRelics[1] = relic(toon.items.mainHand.relics[1].itemId, toon.items.mainHand.relics[1].bonusLists[1]);
             }
             if (toon.items.mainHand.relics[2])
             {
-                artifactRelics[2] = relic(toon.items.mainHand.relics[2].itemId);
+                artifactRelics[2] = relic(toon.items.mainHand.relics[2].itemId, toon.items.mainHand.relics[2].bonusLists[1]);
             }
         }
     }
@@ -790,15 +769,15 @@ function wow(region,toonName,realmName)
         {
             if (toon.items.offHand.relics[0])
             {
-                artifactRelics[0] = relic(toon.items.offHand.relics[0].itemId);
+                artifactRelics[0] = relic(toon.items.offHand.relics[0].itemId, toon.items.offHand.relics[0].bonusLists[1]);
             }
             if (toon.items.offHand.relics[1])
             {
-                artifactRelics[1] = relic(toon.items.offHand.relics[1].itemId);
+                artifactRelics[1] = relic(toon.items.offHand.relics[1].itemId, toon.items.offHand.relics[1].bonusLists[1]);
             }
             if (toon.items.offHand.relics[2])
             {
-                artifactRelics[2] = relic(toon.items.offHand.relics[2].itemId);
+                artifactRelics[2] = relic(toon.items.offHand.relics[2].itemId, toon.items.offHand.relics[2].bonusLists[1]);
             }
         }
     }
