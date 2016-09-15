@@ -51,7 +51,7 @@ function relic(equippedRelic)
     var id = equippedRelic.itemId
     var bonusLists = ""
     equippedRelic.bonusLists.forEach(function(bonusListNumber) {
-        bonusLists = bonusLists +  toString(bonusListNumber) + "," 
+        bonusLists = bonusLists +  bonusListNumber + "," 
     });
     Utilities.sleep(500);//this is 500 since you are already haveing the root function spreading the calls out. It would be the same to spread and spread or spread and same. they are spread either way 
     var relicJSON = UrlFetchApp.fetch("https://us.api.battle.net/wow/item/"+id+"?bl="+bonusLists+"&locale=en_US&apikey="+apikey+"");
@@ -770,15 +770,16 @@ function wow(region,toonName,realmName)
 
     for (var i = 0; i < relicItems.length; i++)
     {
-        if (toon[relicItems[i]])
+        var k = relicItems[i]
+      if (toon.items[relicItems[i]])
         {
-            var relicItem = toon[relicItems[i]]
+            var relicItem = toon.items[relicItems[i]]
             if (relicItem.quality === 6)
             {
                 artifactRank = 0;
                 relicItem.relics.forEach(function(relicGem) {
                    artifactRelics.push(relic(relicGem))
-                });
+                })
             }
         }
     }
@@ -857,7 +858,7 @@ function wow(region,toonName,realmName)
     return toonInfo;
 }
 
-function vercheck()
+function test()
 {
-    return current_version;
+    wow("eu","Meltinglava","Outland")
 }
