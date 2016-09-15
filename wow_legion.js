@@ -43,17 +43,18 @@ var CONST_AUDIT_ILVL = 599;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.00183;
+var current_version = 3.00185;
 
 
 function relic(equippedRelic)
 {
-    var id = equippedRelic.itemId
-    var bonusLists = ""
-    equippedRelic.bonusLists.forEach(function(bonusListNumber) {
-        bonusLists = bonusLists +  bonusListNumber + "," 
+    var id = equippedRelic.itemId;
+    var bonusLists = "";
+    equippedRelic.bonusLists.forEach(function(bonusListNumber) 
+    {
+        bonusLists = bonusLists +  bonusListNumber + ",";
     });
-    Utilities.sleep(500);//this is 500 since you are already haveing the root function spreading the calls out. It would be the same to spread and spread or spread and same. they are spread either way 
+    Utilities.sleep(500);
     var relicJSON = UrlFetchApp.fetch("https://us.api.battle.net/wow/item/"+id+"?bl="+bonusLists+"&locale=en_US&apikey="+apikey+"");
     var relicDat = JSON.parse(relicJSON.toString());
   
@@ -105,12 +106,47 @@ function relic(equippedRelic)
     {
         return elementType+" +35 ilvls";
     }
+    if (ilvl > 804)
+    {
+        return elementType+" +31  ilvls";
+    }
+    if (ilvl > 779)
+    {
+        return elementType+" +24  ilvls";
+    }
+    if (ilvl > 767)
+    {
+        return elementType+" +21  ilvls";
+    }
+    if (ilvl > 755)
+    {
+        return elementType+" +18  ilvls";
+    }
+    if (ilvl > 742)
+    {
+        return elementType+" +15  ilvls";
+    }
+    if (ilvl > 730)
+    {
+        return elementType+" +12  ilvls";
+    }
+    if (ilvl > 718)
+    {
+        return elementType+" +9  ilvls";
+    }
+    if (ilvl > 706)
+    {
+        return elementType+" +6 ilvls";
+    }
+    if (ilvl > 693)
+    {
+        return elementType+" +3  ilvls";
+    } 
     else 
     {
-        return elementType+" +2-34ilvls";
+        return elementType+" +2 ilvls";
     }
 }
-
 
 function rep(standing)
 {
@@ -768,18 +804,19 @@ function wow(region,toonName,realmName)
     var artifactRelics = [];
     var relicItems = ["mainHand","offHand"];
 
-    for (var i = 0; i < relicItems.length; i++)
+    for (i = 0; i < relicItems.length; i++)
     {
-        var k = relicItems[i]
-      if (toon.items[relicItems[i]])
+       // var k = relicItems[i] unused?
+        if (toon.items[relicItems[i]])
         {
-            var relicItem = toon.items[relicItems[i]]
+            var relicItem = toon.items[relicItems[i]];
             if (relicItem.quality === 6)
             {
                 artifactRank = 0;
-                relicItem.relics.forEach(function(relicGem) {
-                   artifactRelics.push(relic(relicGem))
-                })
+                relicItem.relics.forEach(function(relicGem) 
+                {
+                    artifactRelics.push(relic(relicGem));
+                });
             }
         }
     }
@@ -792,12 +829,18 @@ function wow(region,toonName,realmName)
             artifactRank = toon.achievements.criteriaQuantity[i];
         }
     }
-    for (var i = artifactRelics.length; i < 3; i++)
+    for (i = artifactRelics.length; i < 3; i++)
     {
-        artifactRelics.push("x")
+        artifactRelics.push("x");
     }
   
     var nightfallen = rep(toon.reputation[28].standing);
+    nightfallen = "Nightfallen - " + nightfallen + " " + toon.reputation[28].value + "/" + toon.reputation[28].max;
+    
+    if (toon.reputation[28].id != 1859) // horde
+    {
+        nightfallen = "Sorry Horde, Blizz needs to fix this";
+    }
 
     var toonInfo = [
         toon_class,
@@ -839,7 +882,7 @@ function wow(region,toonName,realmName)
         Progress.Mythic + "/10 [" + ActiveWeeks.Mythic + "] (" + totalDone.Mythic + ")",
 
         profession1, profession2, thumbnail, armory, 
-        "Nightfallen - " + nightfallen + " " + toon.reputation[28].value + "/" + toon.reputation[28].max
+        nightfallen
     ];
 
     var possision = 6;
