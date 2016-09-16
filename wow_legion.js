@@ -67,85 +67,75 @@ function relic(equippedRelic)
 
     var ilvl = relicDat.itemLevel;
     
-    // this is info based on data from this table http://www.wowhead.com/guides/legion/artifact-weapons#relic3
-    // which may prove to be not so accurate
-    
-    if (ilvl === 895)
-    {
-        return elementType+" +56 ilvls";
-    }
-    if (ilvl > 879)
-    {
-        return elementType+" +52 ilvls";
-    }
-    if (ilvl > 864)
-    {
-        return elementType+" +48 ilvls";
-    }
-    if (ilvl > 859)
-    {
-        return elementType+" +46 ilvls";
-    }
-    if (ilvl > 849)
-    {
-        return elementType+" +43 ilvls";
-    }
-    if (ilvl > 839)
-    {
-        return elementType+" +40 ilvls";
-    }
-    if (ilvl > 834)
-    {
-        return elementType+" +39 ilvls";
-    }
-    if (ilvl > 824)
-    {
-        return elementType+" +36 ilvls";
-    }
-    if (ilvl > 819)
-    {
-        return elementType+" +35 ilvls";
-    }
-    if (ilvl > 804)
-    {
-        return elementType+" +31  ilvls";
-    }
-    if (ilvl > 779)
-    {
-        return elementType+" +24  ilvls";
-    }
-    if (ilvl > 767)
-    {
-        return elementType+" +21  ilvls";
-    }
-    if (ilvl > 755)
-    {
-        return elementType+" +18  ilvls";
-    }
-    if (ilvl > 742)
-    {
-        return elementType+" +15  ilvls";
-    }
-    if (ilvl > 730)
-    {
-        return elementType+" +12  ilvls";
-    }
-    if (ilvl > 718)
-    {
-        return elementType+" +9  ilvls";
-    }
-    if (ilvl > 706)
-    {
-        return elementType+" +6 ilvls";
-    }
-    if (ilvl > 693)
-    {
-        return elementType+" +3  ilvls";
-    } 
-    else 
-    {
-        return elementType+" +2 ilvls";
-    }
+   //ilvl is wonky for lower level where they aren't necessarily on increments of 5. 3 rounds down, 8 rounds up
+   //the data is collected via item links in game to get the right +ilvl bonus for each ilvl of relic. The data may be incomplete
+   //for certain increments that aren't 5, even with the rounding, as there are gaps in between the 5 increments where the +ilvl
+   //bonus jumps by more than 1, leaving room for say, a xx8 to be in the middle.
+   //At some point for posterity I'll probably come back and fix those cases, but it's a lot of manual work to hand-check all the values
+   if(ilvl%5!=0)
+   {
+   	var spare = ilvl%10;
+   	if(spare<=3)
+   		ilvl-=spare;
+   	else
+   		ilvl+=(5-spare);
+   }
+   var relicIlvl = 0;
+   if(ilvl<=690)
+   	relicIlvl = 2; //anything less than this adds 2
+   else
+   	switch(ilvl)
+   	{
+   		case(695): relicIlvl="3"; break;
+   		case(700): relicIlvl="4"; break;
+   		case(705): relicIlvl="5"; break;
+   		case(710): relicIlvl="7"; break;
+   		case(715): relicIlvl="8"; break;
+   		case(720): relicIlvl="9"; break;
+   		case(725): relicIlvl="10"; break;
+   		case(730): relicIlvl="12"; break;
+   		case(735): relicIlvl="13"; break;
+   		case(740): relicIlvl="14"; break;
+   		case(745): relicIlvl="15"; break;
+   		case(750): relicIlvl="17"; break;
+   		case(755): relicIlvl="18"; break;
+   		case(760): relicIlvl="19"; break;
+   		case(765): relicIlvl="21"; break;
+   		case(770): relicIlvl="22"; break;
+   		case(775): relicIlvl="23"; break;
+   		case(780): relicIlvl="24"; break;
+   		case(785): relicIlvl="26"; break;
+   		case(790): relicIlvl="27"; break;
+   		case(795): relicIlvl="28"; break;
+   		case(800): relicIlvl="29"; break;
+   		case(805): relicIlvl="31"; break;
+   		case(810): relicIlvl="32"; break;
+   		case(815): relicIlvl="33"; break;
+   		case(820): relicIlvl="35"; break;
+   		case(825): relicIlvl="36"; break;
+   		case(830): relicIlvl="37"; break;
+   		case(835): relicIlvl="39"; break;
+   		case(840): relicIlvl="40"; break;
+   		case(845): relicIlvl="42"; break;
+   		case(850): relicIlvl="43"; break;
+   		case(855): relicIlvl="45"; break;
+   		case(860): relicIlvl="46"; break;
+   		case(865): relicIlvl="48"; break;
+   		case(870): relicIlvl="49"; break;
+   		case(875): relicIlvl="51"; break;
+   		case(880): relicIlvl="52"; break;
+   		case(885): relicIlvl="53"; break;
+   		case(890): relicIlvl="55"; break;
+   		case(895): relicIlvl="56"; break;
+   		case(900): relicIlvl="58"; break;
+   		case(905): relicIlvl="59"; break;
+   		case(910): relicIlvl="61"; break;
+   		case(915): relicIlvl="62"; break;
+   		case(920): relicIlvl="64"; break;
+   		case(925): relicIlvl="65"; break;
+   		default: relicIlvl="65+"
+   	}
+   return elementType+" +"+relicIlvl+" ilvls";
 }
 
 function rep(standing)
