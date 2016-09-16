@@ -43,7 +43,7 @@ var CONST_AUDIT_ILVL = 599;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.00186;
+var current_version = 3.00187;
 
 
 function relic(equippedRelic)
@@ -385,7 +385,52 @@ function wow(region,toonName,realmName)
                 allItems.upgrade.total+=item.tooltipParams.upgrade.total;
                 allItems.upgrade.current+=item.tooltipParams.upgrade.current;
             }
+          
+            //crafted gear upgrade stuff
+            var obliterum = 7; //current cap for obliterum upgrades
+            var craftedUpgrade = -1;
+                          
+            for (var j = 0; j < item.bonusLists.length; j++)
+            {
+                switch (item.bonusLists[j])
+                {
+                    case 596:
+                        craftedUpgrade = 0;
+                        break;
+                    case 597:
+                        craftedUpgrade = 1;
+                        break;
+                    case 598:
+                        craftedUpgrade = 2;
+                        break;
+                    case 599:
+                        craftedUpgrade = 3;
+                        break;
+                    case 666:
+                        craftedUpgrade = 4;
+                        break;
+                    case 667:
+                        craftedUpgrade = 5;
+                        break;
+                    case 668:
+                        craftedUpgrade = 6;
+                        break;
+                    case 669:
+                        craftedUpgrade = 7;
+                        break;
+                    default:
+                        craftedUpgrade = "-";
 
+                }
+            }
+            
+            if (craftedUpgrade > -1)
+            {
+                allItems[slot].upgrade= craftedUpgrade + "/" + obliterum;
+                allItems.upgrade.total+=obliterum;
+                allItems.upgrade.current+=craftedUpgrade;
+            }
+               
             allItems.equippedItems++;
             allItems[slot].ilvl = item.itemLevel;
             allItems.totalIlvl += item.itemLevel;
@@ -473,7 +518,9 @@ function wow(region,toonName,realmName)
     {
         getItemInfo(toon.items[sortOrder[i]],sortOrder[i]);
     }
+  
 
+   //always put the higher level trinket/ring on the leftier column
     var bruksOCDswap = function (item1,item2)
     {
         if (allItems[item1].ilvl<allItems[item2].ilvl)
@@ -486,6 +533,14 @@ function wow(region,toonName,realmName)
 
     bruksOCDswap("finger1","finger2");
     bruksOCDswap("trinket1","trinket2");
+  
+    // /u/orange_gauss supplied this for fixing the double weight of 2handers
+    if (allItems.offHand.ilvl == "\u2063" ) 
+   { 
+        allItems.totalIlvl += allItems.mainHand.ilvl; 
+        allItems.equippedItems += 1; 
+    }
+
     allItems.averageIlvl = allItems.totalIlvl / allItems.equippedItems;
 
     if (toon.audit.emptySockets !== 0)
