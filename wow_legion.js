@@ -43,7 +43,7 @@ var CONST_AUDIT_ILVL = 599;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.00187;
+var current_version = 3.00188;
 
 
 function relic(equippedRelic)
@@ -326,6 +326,21 @@ function wow(region,toonName,realmName)
     audit_lookup["5889"] = "Hide";
     audit_lookup["5890"] = "Soldier";
     audit_lookup["5891"] = "Ancient";
+  
+  //shoulder
+    audit_lookup["5440"] = "Scavenger (cloth)";
+    audit_lookup["5441"] = "Gemfinder";
+    audit_lookup["5442"] = "Harvester (herbs/fish)";
+    audit_lookup["5443"] = "Butcher (leather/meat)";
+    audit_lookup["5882"] = "Manaseeker (enchant)";
+    audit_lookup["5881"] = "Salvager (ore/armor)";
+    audit_lookup["5883"] = "Bloodhunter (Blood)";
+  
+  //gloves
+    audit_lookup["5444"] = "Herb";
+    audit_lookup["5445"] = "Mine";
+    audit_lookup["5446"] = "Skin";
+    audit_lookup["5447"] = "Survey";
 
     var thumbnail = "http://"+region+".battle.net/static-render/"+region+"/"+  toon.thumbnail;
     var armory = "http://"+region+".battle.net/wow/en/character/"+realmName+"/"+toonName+"/advanced";
@@ -369,7 +384,7 @@ function wow(region,toonName,realmName)
             current:0
         }
     };
-    var enchantableItems=["neck","back","finger1","finger2"];
+    var enchantableItems=["neck","back","finger1","finger2","hands","shoulder"];
     var getItemInfo = function (item, slot)
     {
         allItems[slot] = {
@@ -456,7 +471,7 @@ function wow(region,toonName,realmName)
                 if (enchantableItems.indexOf(slot)!=-1)
                 {
                     allItems[slot].enchant= "None";
-                    if (slot!="neck")
+                    if (slot!="neck" && slot!="hands" && slot!="shoulder")
                     {
                         if (item.tooltipParams.enchant)
                         {
@@ -898,6 +913,7 @@ function wow(region,toonName,realmName)
     }
 
     var toonInfo = [
+      
         toon_class,
         toon.level,
         mainspec,
@@ -907,7 +923,6 @@ function wow(region,toonName,realmName)
 
         artifactRank,
         artifactRelics[0], artifactRelics[1], artifactRelics[2],
-
         auditInfo,
 
         Lockout.ENlfr    + "/7",
@@ -937,7 +952,8 @@ function wow(region,toonName,realmName)
         Progress.Mythic + "/10 [" + ActiveWeeks.Mythic + "] (" + totalDone.Mythic + ")",
 
         profession1, profession2, thumbnail, armory, 
-        nightfallen
+        allItems[enchantableItems[4]].enchant, allItems[enchantableItems[5]].enchant,
+        nightfallen, 
     ];
 
     var possision = 6;
@@ -948,7 +964,7 @@ function wow(region,toonName,realmName)
         possision++;
     }
     possision+=4;
-    for (i = 0; i < enchantableItems.length;i++)
+    for (i = 0; i < enchantableItems.length-2;i++)
     {
         toonInfo.splice(possision,0,allItems[enchantableItems[i]].enchant);
         possision++;
