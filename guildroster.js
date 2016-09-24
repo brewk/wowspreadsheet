@@ -13,11 +13,10 @@
 
 // enter your api key here:
 // if you have this as part of a combined spreadsheet you can comment this line out
-// By default this line is commented out because it's assumed that this will be used with wow_legion script
 // var apikey = "";
 
 
-/* globals UrlFetchApp */
+/* globals UrlFetchApp apikey*/
 /* exported guildOut */
 
 function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel) 
@@ -44,17 +43,34 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
     var membermatrix = [ ]; 
 
     var arrayPosition = 0;
+    var roleSort = 0;
+  
     for (var i=0; i<guild.members.length; i++)
     { 
         if (guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel)
        {
             if (guild.members[i].character.spec)
             {
-                membermatrix[arrayPosition] = [realmName, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, guild.members[i].character.spec.role];
+                switch (guild.members[i].character.spec.role)
+                {
+                    case "TANK":
+                        roleSort = 5;
+                        break;
+                    case "HEALING":
+                        roleSort = 4;
+                        break;
+                    case "DPS":
+                        roleSort = 3;
+                        break;
+                    default:
+                        roleSort = 1;
+                }
+                    
+                membermatrix[arrayPosition] = [realmName, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, guild.members[i].character.spec.role];
             }
             else
             {
-                membermatrix[arrayPosition] = [realmName, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, "API Error"];    
+                membermatrix[arrayPosition] = [realmName, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, 0, "API Error"];    
             } 
             arrayPosition++;
         }
@@ -93,7 +109,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         case "Role":
             membermatrix.sort(function(a,b) 
            {
-                return (a[5] >= b[5]) ? -1 : 1;
+                return b[5]-a[5];
             });
             break;
         default: 
@@ -104,7 +120,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
   
     for (i = 0 ; i < membermatrix.length ; i++)
     {
-        membermatrix[i].splice(2,3);
+        membermatrix[i].splice(2,4);
     }
 
     return membermatrix;
