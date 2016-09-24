@@ -14,6 +14,10 @@
 
 // enter your api key here:
 // if you have this as part of a combined spreadsheet you can comment this line out
+
+/* globals UrlFetchApp */
+/* exported guildOut */
+
 var apikey = "";
 
 
@@ -23,7 +27,8 @@ function sortFunction(a, b)
     {
         return 0;
     }
-    else {
+    else 
+    {
         return (a[0] > b[0]) ? -1 : 1;
     }
 }
