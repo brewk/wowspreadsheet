@@ -1,5 +1,5 @@
 /* ***********************************
- ***     Copyright (c) 2015 bruk
+ ***     Copyright (c) 2016 bruk
  *** This script is free software; you can redistribute it and/or modify
  *** it under the terms of the GNU General Public License as published by
  *** the Free Software Foundation; either version 3 of the License, or
@@ -19,9 +19,6 @@ var apikey = "";
 
 /* globals UrlFetchApp */
 /* exported guildOut */
-
-
-
 
 function sortFunction(a, b) 
 {
