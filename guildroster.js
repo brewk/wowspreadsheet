@@ -35,10 +35,16 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
     {
         return "Please enter a valid Max Rank. Be careful not to load too many characters at once, you may get locked out of the api";
     }
-  
-    var guildJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&apikey="+apikey+"");
+
+    var options={ muteHttpExceptions:true };
+    var guildJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&apikey="+apikey+"", options);
 
     var guild = JSON.parse(guildJSON);
+
+    if (!guild.members)
+    {
+        return "Error: verify your apikey is entered and values are entered correctly";
+    }
 
     var membermatrix = [ ]; 
 
