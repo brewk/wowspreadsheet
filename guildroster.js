@@ -17,7 +17,9 @@
 
 
 /* globals UrlFetchApp apikey*/
-/* exported guildOut */
+/* exported guildOut vercheckGuild*/
+
+var current_versionGuild = 1.01;
 
 function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel) 
 {
@@ -170,4 +172,9 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
 
     return membermatrix;
   
+}
+
+function vercheckGuild()
+{
+    return current_versionGuild;
 }
