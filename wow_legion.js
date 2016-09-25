@@ -197,16 +197,15 @@ function wow(region,toonName,realmName)
     var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"", options);
     var toon = JSON.parse(toonJSON.toString());
   
-    if (!toon.name)
-    {
-        return "Error loading API: try refreshing and verify values are typed correctly. Ensure your API key is entered into the script correctly. Errors can also come from loading 100+ characters at a time";
-    }
-
     if (!apikey)
     {
         return "Error: No API key entered. Please visit http://dev.battle.net/ to obtain one. Instructions availible at http://bruk.org/wow";
     }
 
+    if (!toon.name)
+    {
+        return "Error loading API: try refreshing and verify values are typed correctly. Ensure your API key is entered into the script correctly. Errors can also come from loading 100+ characters at a time";
+    }
 
     var mainspec = "none";
     for (var i = 0; i < 4; i++)
