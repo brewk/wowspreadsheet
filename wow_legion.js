@@ -1,12 +1,4 @@
-﻿/* ToDo:
-   Verify that the lockout times are actually working for really real
-
-   Stuck for now, til API data:
-   --------------------------------
-   Artifact Weapon relic info
-   World bosses  */
-
-/* ***********************************
+﻿/* ***********************************
  ***     Copyright (c) 2016 bruk
  *** This script is free software; you can redistribute it and/or modify
  *** it under the terms of the GNU General Public License as published by
@@ -43,7 +35,7 @@ var CONST_AUDIT_ILVL = 599;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.00188;
+var current_version = 3.002;
 
 
 function relic(equippedRelic)
@@ -201,8 +193,14 @@ function wow(region,toonName,realmName)
 
     region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
 
-    var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"");
+    var options={ muteHttpExceptions:true };
+    var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"", options);
     var toon = JSON.parse(toonJSON.toString());
+  
+    if (!toon.name)
+    {
+        return "Error loading API: try refreshing and verify values are typed correctly. Errors can also come from loading 100+ characters at a time";
+    }
 
 
     var mainspec = "none";
@@ -557,6 +555,12 @@ function wow(region,toonName,realmName)
     }
 
     allItems.averageIlvl = allItems.totalIlvl / allItems.equippedItems;
+
+    //fall back to max unequipped ilvl if they're currently partially nude
+    if (isNaN(allItems.averageIlvl))
+    {
+        allItems.averageIlvl = toon.items.averageItemLevel; 
+    }
 
     if (toon.audit.emptySockets !== 0)
     {

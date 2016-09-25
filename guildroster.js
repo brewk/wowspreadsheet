@@ -47,7 +47,8 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
   
     for (var i=0; i<guild.members.length; i++)
     { 
-        if (guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel)
+      //Unfortunately it seems like the character.spec.role is sometimes missing or inaccurate. Leaving this in for later if it gets fixed
+       /* if (guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel)
        {
             if (guild.members[i].character.spec)
             {
@@ -72,8 +73,41 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
             {
                 membermatrix[arrayPosition] = [realmName, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, 0, "API Error"];    
             } 
-            arrayPosition++;
-        }
+            arrayPosition++;            */
+
+
+        //The "manual" and accurate code for role
+        // It's still a touch buggy (seemingly for "stale" characters) but is currently much more accurate than the api
+        //You can adjust these numbers to have one role appear first in the list; highest numbers are first
+        //You can also change the word for the output, by default I have it set to what it *should* be from the API
+        var playerRole = "Error";
+        roleSort = 0;
+        if (guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel)
+        {
+            if (guild.members[i].character.spec)
+            {
+                if (["Blood", "Vengeance", "Guardian", "Brewmaster", "Protection"].indexOf(guild.members[i].character.spec.name) > -1)
+                {
+                    roleSort = 5;
+                    playerRole = "TANK";
+                }
+                else if (["Restoration", "Mistweaver", "Discipline", "Holy"].indexOf(guild.members[i].character.spec.name) > -1)
+               {
+                    roleSort = 4;
+                    playerRole = "HEALING";
+                }
+                else
+                {
+                    roleSort = 3;
+                    playerRole = "DPS";
+                }
+
+                membermatrix[arrayPosition] = [realmName, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, playerRole];
+                arrayPosition++;
+            }
+
+
+        }   // ...end of manual code for role
     }
   
     switch (sortMethod)
