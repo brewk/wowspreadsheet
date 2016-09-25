@@ -78,11 +78,11 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
                         roleSort = 1;
                 }
                     
-                membermatrix[arrayPosition] = [realmName, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, guild.members[i].character.spec.role];
+                membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, guild.members[i].character.spec.role];
             }
             else
             {
-                membermatrix[arrayPosition] = [realmName, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, 0, "API Error"];    
+                membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, 0, "API Error"];    
             } 
             arrayPosition++;            */
 
@@ -113,7 +113,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
                     playerRole = "DPS";
                 }
 
-                membermatrix[arrayPosition] = [realmName, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, playerRole];
+                membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, playerRole];
                 arrayPosition++;
             }
 
