@@ -199,7 +199,12 @@ function wow(region,toonName,realmName)
   
     if (!toon.name)
     {
-        return "Error loading API: try refreshing and verify values are typed correctly. Ensure your API key is entered into the script. Errors can also come from loading 100+ characters at a time";
+        return "Error loading API: try refreshing and verify values are typed correctly. Ensure your API key is entered into the script correctly. Errors can also come from loading 100+ characters at a time";
+    }
+
+    if (!apikey)
+    {
+        return "Error: No API key entered. Please visit http://dev.battle.net/ to obtain one. Instructions availible at http://bruk.org/wow";
     }
 
 

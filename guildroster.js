@@ -27,13 +27,18 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         return "\u2063";  // If there's nothing don't even bother calling the API
     }
 
+    if (!apikey)
+    {
+        return "Error: No API key entered. Please visit http://dev.battle.net/ to obtain one. Instructions availible at http://bruk.org/wow";
+    }
+
 //Getting rid of any sort of pesky no width white spaces we may run into
     region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
     realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
   
     if (maxRank<0 || maxRank>10)
     {
-        return "Please enter a valid Max Rank. Be careful not to load too many characters at once, you may get locked out of the api";
+        return "Error loading API: try refreshing and verify values are typed correctly. Ensure your API key is entered into the script correctly. Errors can also come from loading 100+ characters at a time";
     }
 
     var options={ muteHttpExceptions:true };
