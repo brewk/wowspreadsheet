@@ -25,7 +25,7 @@ module.exports = {
             "error",
             {
                 "multiline": true,
-                "minProperties": 3
+                "minProperties": 4
             }
         ],
         // Objects should have spaces around curly braces for readability

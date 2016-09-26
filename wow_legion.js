@@ -723,25 +723,25 @@ function wow(region,toonName,realmName)
 
     var dungeons = [
         { id: 1, difficulty: "Heroic" },
-        { id: 2, difficulty: "Mythic" },
+        { id: 2, difficulty: "Mythic", name: "EoA" },  //Eye of Azshara
         { id: 4, difficulty: "Heroic" },
-        { id: 5, difficulty: "Mythic" },
+        { id: 5, difficulty: "Mythic", name: "DT" },  //Darkheart Thicket
         { id: 7, difficulty: "Heroic" },
-        { id: 8, difficulty: "Mythic" },
+        { id: 8, difficulty: "Mythic", name:  "NT" },  //Neltharion's Lair
         { id: 10, difficulty: "Heroic" },
-        { id: 11, difficulty: "Mythic" },
+        { id: 11, difficulty: "Mythic", name:  "HoV" }, //Halls of Valor
         { id: 14, difficulty: "Heroic" },
         { id: 15, difficulty: "Heroic" },
-        { id: 16, difficulty: "Mythic" },
-        { id: 17, difficulty: "Mythic" },
+        { id: 16, difficulty: "Mythic", name:  "VH" }, //Violet Hold
+        { id: 17, difficulty: "Mythic", name:  "VH" }, //Violet Hold
         { id: 19, difficulty: "Heroic" },
-        { id: 20, difficulty: "Mythic" },
+        { id: 20, difficulty: "Mythic", name:  "VotW" }, //Vault of the Wardens
         { id: 22, difficulty: "Heroic" },
-        { id: 23, difficulty: "Mythic" },
+        { id: 23, difficulty: "Mythic", name:  "BRH" }, //Black Rook Hold
         { id: 25, difficulty: "Heroic" },
-        { id: 26, difficulty: "Mythic" },
-        { id: 27, difficulty: "Mythic" },
-        { id: 28, difficulty: "Mythic" },
+        { id: 26, difficulty: "Mythic", name:  "MoS" }, //Maw of Souls
+        { id: 27, difficulty: "Mythic", name: "Arc" }, //Arcway
+        { id: 28, difficulty: "Mythic", name:  "CoS" }, //Court of Stars
         { id: 29, difficulty: "ENlfr" },
         { id: 30, difficulty: "ENnormal" },
         { id: 31, difficulty: "ENheroic" },
@@ -813,6 +813,7 @@ function wow(region,toonName,realmName)
     ];
 
     var num_dungeons = dungeons.length;
+    var mythicDetails = ""; 
 
     for (i = 0; i < num_dungeons; i++)
     {
@@ -836,10 +837,18 @@ function wow(region,toonName,realmName)
             }
             else if (difficulty != "Heroic" && stats.lastUpdated > sinceTuesday)
             {
-
                 Lockout[difficulty]++;
-            }
-
+           
+                if (difficulty === "Mythic")
+                {
+                    if (mythicDetails)
+                    {
+                        mythicDetails = mythicDetails + ", ";
+                    }
+                
+                    mythicDetails = mythicDetails + dungeons[i].name;
+                }
+            }                            
             //Find total quantity done for Heroics and mythics
             if (difficulty == "Heroic" || difficulty == "Mythic")
             {
@@ -956,7 +965,7 @@ function wow(region,toonName,realmName)
         Lockout.Heroic  + "/8",
         Progress.Heroic + "/8 (" + totalDone.Heroic + ")",
 
-        Lockout.Mythic  + "/10",
+        Lockout.Mythic  + "/10 " + mythicDetails,
         Progress.Mythic + "/10 [" + ActiveWeeks.Mythic + "] (" + totalDone.Mythic + ")",
 
         profession1, profession2, thumbnail, armory, 
