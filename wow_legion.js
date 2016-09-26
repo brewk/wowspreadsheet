@@ -984,3 +984,5 @@ function vercheck()
 {
     return current_version;
 }
+
+//When copy pasting, delete 0Looking at the bottom if it shows up, otherwise it'll cause an error

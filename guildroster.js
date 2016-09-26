@@ -16,10 +16,34 @@
 // var apikey = "";
 
 
+// **************** BLACKLIST / WHITELIST ****************
+//   You can put these variables into a seperate .gs script file to facilitate updating your script in the future
+
+// BLACK LIST: Add player names who you don't want to show up
+// Usage: var BLACKLIST = ["Name1", "Name2", "Name3"];
+var BLACKLIST = [];
+
+
+// WHITE LIST: Add player names who you want to ALWAYS show up no matter the filter
+// Usage: var WHITELIST = ["Name1", "Name2", "Name3"];
+
+var WHITELIST = [];
+
+
+// Non-Guild WHITELIST: These are players not in your guild
+// Because they will not be in your guild's API they cannot be sorted properly and will appear at the bottom of the list
+// Usage: var NONGUILD = [["Realm", "Character"], ["Realm", "Character"]];
+
+var NONGUILD = [];
+
+
+// ******************************************************
+
+
 /* globals UrlFetchApp apikey*/
 /* exported guildOut vercheckGuild*/
 
-var current_versionGuild = 1.011;
+var current_versionGuild = 1.021;
 
 function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel) 
 {
@@ -57,45 +81,31 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
 
     var arrayPosition = 0;
     var roleSort = 0;
+
   
     for (var i=0; i<guild.members.length; i++)
     { 
-      //Unfortunately it seems like the character.spec.role is sometimes missing or inaccurate. Leaving this in for later if it gets fixed
-       /* if (guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel)
-       {
-            if (guild.members[i].character.spec)
-            {
-                switch (guild.members[i].character.spec.role)
-                {
-                    case "TANK":
-                        roleSort = 5;
-                        break;
-                    case "HEALING":
-                        roleSort = 4;
-                        break;
-                    case "DPS":
-                        roleSort = 3;
-                        break;
-                    default:
-                        roleSort = 1;
-                }
-                    
-                membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, guild.members[i].character.spec.role];
-            }
-            else
-            {
-                membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, 0, "API Error"];    
-            } 
-            arrayPosition++;            */
 
-
-        //The "manual" and accurate code for role
+          //The "manual" and more accurate code for role
         // It's still a touch buggy (seemingly for "stale" characters) but is currently much more accurate than the api
         //You can adjust these numbers to have one role appear first in the list; highest numbers are first
-        //You can also change the word for the output, by default I have it set to what it *should* be from the API
-        var playerRole = "Error";
+        //You can also change the word for the output
+        var playerRole = "API Error";
+        var whiteListed =0;
         roleSort = 0;
-        if (guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel)
+      
+      
+        if (BLACKLIST.indexOf(guild.members[i].character.name) > -1)
+        {
+            guild.members[i].character.level = minLevel -1;
+        }
+        
+        if (WHITELIST.indexOf(guild.members[i].character.name) > -1)
+        {
+            whiteListed = 1;
+        }
+      
+        if ((guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel) || whiteListed)
         {
             if (guild.members[i].character.spec)
             {
@@ -111,7 +121,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
                 }
               
               //Shout out to @Sublime_39 on twitter for writing this bit! Great to have Melee and Ranged Defined
-                else if (["Arms", "Fury", "Retribution", "Unholy", "Frost", "Enhancement", "Survival", "Outlaw", "Assassination", "Sublety", "Feral", "Havoc", "Windwalker"].indexOf(guild.members[i].character.spec.name) > -1)
+                else if (["Arms", "Fury", "Retribution", "Unholy", "Frost", "Enhancement", "Survival", "Outlaw", "Assassination", "Subtlety", "Feral", "Havoc", "Windwalker"].indexOf(guild.members[i].character.spec.name) > -1)
                {
                     roleSort = 3;
                     playerRole = "Melee";
@@ -132,6 +142,15 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
             arrayPosition++;
 
         }   // ...end of manual code for role
+    }
+  
+    if (NONGUILD[0])
+    {
+        for (i=0; i<NONGUILD.length; i++)
+        {
+            membermatrix[arrayPosition] = [NONGUILD[i][0], NONGUILD[i][1], 11, 0, 0, 0, "NonGuild"];
+            arrayPosition++;
+        }
     }
   
     switch (sortMethod)
@@ -189,3 +208,5 @@ function vercheckGuild()
 {
     return current_versionGuild;
 }
+
+//When copy pasting, delete 0Looking at the bottom if it shows up, otherwise it'll cause an error
