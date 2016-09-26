@@ -111,24 +111,21 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
                 }
               
               //Shout out to @Sublime_39 on twitter for writing this bit! Great to have Melee and Ranged Defined
-                else if (["Arms", "Fury", "Retribution", "Unholy", "Frost", "Enhancement", "Survival", "Outlaw", "Assassination", "Sublety", "Feral", "Havoc"].indexOf(guild.members[i].character.spec.name) > -1)
+                else if (["Arms", "Fury", "Retribution", "Unholy", "Frost", "Enhancement", "Survival", "Outlaw", "Assassination", "Sublety", "Feral", "Havoc", "Windwalker"].indexOf(guild.members[i].character.spec.name) > -1)
                {
                     roleSort = 3;
                     playerRole = "Melee";
                 }
-              
-                else
+                else if (["Marksmanship", "Beast Mastery", "Elemental", "Balance" , "Shadow", "Frost", "Fire", "Arcane", "Demonology", "Destruction", "Affliction"].indexOf(guild.members[i].character.spec.name) > -1)
                 {
                     roleSort = 2;
                     playerRole = "Ranged";
                 }
-            }
-          
-            else
-            {
-                roleSort = 0;
-                playerRole = "API Error";
-
+                else
+                {
+                    roleSort = 0;
+                    playerRole = "API Error";
+                }
             }
           
             membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, playerRole];
