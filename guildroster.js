@@ -19,7 +19,7 @@
 /* globals UrlFetchApp apikey*/
 /* exported guildOut vercheckGuild*/
 
-var current_versionGuild = 1.01;
+var current_versionGuild = 1.011;
 
 function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel) 
 {
