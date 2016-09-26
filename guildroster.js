@@ -21,6 +21,7 @@
 
 // BLACK LIST: Add player names who you don't want to show up
 // Usage: var BLACKLIST = ["Name1", "Name2", "Name3"];
+
 var BLACKLIST = [];
 
 
