@@ -102,23 +102,37 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
                 if (["Blood", "Vengeance", "Guardian", "Brewmaster", "Protection"].indexOf(guild.members[i].character.spec.name) > -1)
                 {
                     roleSort = 5;
-                    playerRole = "TANK";
+                    playerRole = "Tank";
                 }
                 else if (["Restoration", "Mistweaver", "Discipline", "Holy"].indexOf(guild.members[i].character.spec.name) > -1)
                {
                     roleSort = 4;
-                    playerRole = "HEALING";
+                    playerRole = "Healing";
                 }
+              
+              //Shout out to @Sublime_39 on twitter for writing this bit! Great to have Melee and Ranged Defined
+                else if (["Arms", "Fury", "Retribution", "Unholy", "Frost", "Enhancement", "Survival", "Outlaw", "Assassination", "Sublety", "Feral", "Havoc"].indexOf(guild.members[i].character.spec.name) > -1)
+               {
+                    roleSort = 3;
+                    playerRole = "Melee";
+                }
+              
                 else
                 {
-                    roleSort = 3;
-                    playerRole = "DPS";
+                    roleSort = 2;
+                    playerRole = "Ranged";
                 }
-
-                membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, playerRole];
-                arrayPosition++;
             }
+          
+            else
+            {
+                roleSort = 0;
+                playerRole = "API Error";
 
+            }
+          
+            membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, playerRole];
+            arrayPosition++;
 
         }   // ...end of manual code for role
     }
