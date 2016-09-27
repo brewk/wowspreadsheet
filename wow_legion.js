@@ -35,7 +35,7 @@ var CONST_AUDIT_ILVL = 599;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.002;
+var current_version = 3.003;
 
 
 function relic(equippedRelic)
@@ -263,15 +263,26 @@ function wow(region,toonName,realmName)
 
 
     // Time to do some gear audits
-    var auditInfo =" ";
-    //var missingEnchants = " | Missing Enchants:"
-    // XXX: Unused variable?
-    //var boolMissingEnchants = 0;
-    // var cheapEnchants = " | Cheap Enchants:"
-    var boolCheapGems = 0;
-    var boolNonEpicGems = 0;
-    var cheapGems = "Cheap Gems:";
-    var nonEpicGems = "Non-Epic Gems:";
+    var auditInfo ="";
+
+    var totalGems = [0, 0, 0];
+
+    var gemAudit = [
+        { bool: 0, issue: " Old:" },    
+        { bool: 0, issue: " Cheap:" },
+        { bool: 0, issue: " Non-Epic:" },    
+        { bool: 0, issue: " Mixed Gems" }  
+    ];
+
+    var gemStats = [
+        { value: 0, stat: "Crit" },
+        { value: 0, stat: "Haste" },
+        { value: 0, stat: "Vers" },
+        { value: 0, stat: "Mast" },
+        { value: 0, stat: "Str" },
+        { value: 0, stat: "Agi" },
+        { value: 0, stat: "Int" }
+    ];
 
     // I love me some look up tables! These are to check if you have a crappy enchant or gem
     var audit_lookup = {};
@@ -279,16 +290,16 @@ function wow(region,toonName,realmName)
     //cheap enchants and gems
 
     //ring
-    audit_lookup["5423"] =
-        audit_lookup["5424"] =
-        audit_lookup["5425"] =
-        audit_lookup["5426"] =
-        //cloak
-        audit_lookup["5431"] =
-        audit_lookup["5432"] =
-        audit_lookup["5433"] =
-        //gems
-        audit_lookup["130218"] =
+    audit_lookup["5423"] = "Word +150C";
+    audit_lookup["5424"] = "Word +150H";
+    audit_lookup["5425"] = "Word +150M";
+    audit_lookup["5426"] = "Word +150V";
+    //cloak
+    audit_lookup["5431"] = "Word +150S";
+    audit_lookup["5432"] = "Word +150A";
+    audit_lookup["5433"] = "Word +150I";
+    //gems
+    audit_lookup["130218"] =
         audit_lookup["130217"] =
         audit_lookup["130216"] =
         audit_lookup["130215"] = 0;
@@ -296,30 +307,26 @@ function wow(region,toonName,realmName)
     //better enchants and gems
 
     //ring
-    audit_lookup["5427"] =
-        audit_lookup["5428"] =
-        audit_lookup["5429"] =
-        audit_lookup["5430"] =
+    audit_lookup["5427"] = "Binding +200C";
+    audit_lookup["5428"] = "Binding +200H";
+    audit_lookup["5429"] = "Binding +200M";
+    audit_lookup["5430"] = "Binding +200V";
 
         //cloak
-        audit_lookup["5434"] =
-        audit_lookup["5435"] =
-        audit_lookup["5436"] =
+    audit_lookup["5434"] = "Binding +200S";
+    audit_lookup["5435"] = "Binding +200A";
+    audit_lookup["5436"] = "Binding +200I";
 
         //gems
-        audit_lookup["130219"] =
+    audit_lookup["130219"] =
         audit_lookup["130220"] =
         audit_lookup["130221"] =
         audit_lookup["130222"] =1;
 
     //epic gems
-    audit_lookup["127760"] =     //critical
-        audit_lookup["127764"] =     //versatility
-        audit_lookup["127765"] =     //stamina
-        audit_lookup["127763"] =     //multistrike
-        audit_lookup["127762"] =     //mastery
-        audit_lookup["127761"] = 2;  //haste
-
+    audit_lookup["130246"] =         //strengh
+        audit_lookup["130247"] =     //agility
+        audit_lookup["130248"] =  2; //Int
 
     //neck
     audit_lookup["5437"] = "Claw";
@@ -352,6 +359,8 @@ function wow(region,toonName,realmName)
 
     var set1 = [];
     var set2 = [];
+
+    var gemMatch = 0; //check if our rare/uncommon gems match
 
     for (i = 0; i < tier_pieces.length; i++)
     {
@@ -456,55 +465,64 @@ function wow(region,toonName,realmName)
             {
                 if (item.tooltipParams.gem0&&slot!="mainHand"&&slot!="offHand")
                 {
+                    if (item.tooltipParams.gem0 > 130245) //(epic) I think this could be beautified/simplifed, basically it adds to the stat value for each quality
+                   {
+                        gemStats[item.tooltipParams.gem0-130246+4].value = gemStats[item.tooltipParams.gem0-130246+4].value+200;
+                    }
+                    else if (item.tooltipParams.gem0 > 130218) //(rare)
+                   {
+                        gemStats[item.tooltipParams.gem0-130219].value = gemStats[item.tooltipParams.gem0-130219].value+150; 
+                    }
+                    else if (item.tooltipParams.gem0 > 130214) //(uncommon)
+                   {
+                        gemStats[item.tooltipParams.gem0-130215].value = gemStats [item.tooltipParams.gem0-130215].value+100; 
+                    }
+
                     if (item.itemLevel>CONST_EPICGEM_ILVL)
                     {
                         if (audit_lookup[item.tooltipParams.gem0] != 2)
                         {
-                            boolNonEpicGems = 1;
-                            nonEpicGems += " "+ slot;
+                            gemAudit[2].bool = 1;
+                            gemAudit[2].issue += " "+ slot;
                         }
                     }
                     else if (audit_lookup[item.tooltipParams.gem0] === 0)
                     {
-                        boolCheapGems = 1;
-                        cheapGems += " " + slot;
+                        gemAudit[1].bool = 1;
+                        gemAudit[1].issue += " " + slot;
                     }
+                    else if (audit_lookup[item.tooltipParams.gem0] != 1)
+                    {
+                        gemAudit[0].bool = 1;
+                        gemAudit[0].issue += " " + slot;
+                      
+                    }
+                   
+                   //if a gem is not epic, check if it has the same stat type, if so, then copy it into gemMatch to compare it to the next one
+                    if (audit_lookup[item.tooltipParams.gem0] != 2 && (gemMatch == 0 || gemMatch === item.tooltipParams.gem0 || gemMatch === item.tooltipParams.gem0+4 || gemMatch === item.tooltipParams.gem0-4))
+                    {
+                        gemMatch = item.tooltipParams.gem0;      
+                    }
+                    else if (audit_lookup[item.tooltipParams.gem0] > -1)
+                    {
+                        gemAudit[3].bool = 1; // if we fail to pass the above if, the stats don't match on our gems
+                    }
+                  
+                    totalGems[audit_lookup[item.tooltipParams.gem0]]++;
                 }
+
                 if (enchantableItems.indexOf(slot)!=-1)
                 {
                     allItems[slot].enchant= "None";
-                    if (slot!="neck" && slot!="hands" && slot!="shoulder")
+                    if (item.tooltipParams.enchant)
                     {
-                        if (item.tooltipParams.enchant)
+                        if (audit_lookup[item.tooltipParams.enchant])
                         {
-                            var enchantResults = audit_lookup[item.tooltipParams.enchant];
-
-                            if (enchantResults == 1)
-                            {
-                                allItems[slot].enchant = "Binding";
-                            }
-                            else if (enchantResults === 0)
-                            {
-                                allItems[slot].enchant = "Word";
-                            }
-                            else
-                            {
-                                allItems[slot].enchant = "Old";
-                            }
+                            allItems[slot].enchant = audit_lookup[item.tooltipParams.enchant];
                         }
-                    }
-                    else
-                    {
-                        if (item.tooltipParams.enchant)
+                        else
                         {
-                            if (audit_lookup[item.tooltipParams.enchant])
-                            {
-                                allItems[slot].enchant = audit_lookup[item.tooltipParams.enchant];
-                            }
-                            else
-                            {
-                                allItems[slot].enchant = "Old";
-                            }
+                            allItems[slot].enchant = "Old";
                         }
                     }
                 }
@@ -572,14 +590,40 @@ function wow(region,toonName,realmName)
     }
 
 
-    if (boolCheapGems == 1)
+    if (totalGems[0]+totalGems[1]+totalGems[2]>0) //gems exist!
     {
-        auditInfo = auditInfo + cheapGems;
+        auditInfo = auditInfo + "Gems" ;
+     
+        if (totalGems[0] > 0) 
+        {
+            auditInfo = auditInfo + " UnCom:" + totalGems[0];
+        }
+
+        if (totalGems[1] > 0)
+        {
+            auditInfo = auditInfo + " Rare:" + totalGems[1];
+        }
+        if (totalGems[2] > 0)
+        {
+            auditInfo = auditInfo + " Epic:" + totalGems[2];   
+        }
+
+        for (i=0; i<gemStats.length; i++) 
+        {
+            if (gemStats[i].value > 0)
+            {
+                auditInfo = auditInfo + " +" + gemStats[i].value + gemStats[i].stat + " ";
+            }
+        }
+
     }
 
-    if (boolNonEpicGems == 1)
+    for (i=0; i<gemAudit.length; i++) 
     {
-        auditInfo = auditInfo + nonEpicGems;
+        if (gemAudit[i].bool > 0)
+        {
+            auditInfo = auditInfo + gemAudit[i].issue;
+        }
     }
 
 
@@ -623,7 +667,6 @@ function wow(region,toonName,realmName)
 
     var reset = region == "eu" ? 3 : 2;  // 2 for tuesday, 3 for wednesday
 
-
     var midnight = new Date();
     midnight.setHours(0,0,0,0);
 
@@ -649,27 +692,6 @@ function wow(region,toonName,realmName)
         // sunday + monday (tues eu)
         sinceTuesday = sinceTuesday-((7+today-reset))*86400000; // this was 6, but to account for EU it was changed to 7-reset to be either 6 or 5 to account for Wednesday resets
     }
-
-
-    //WORLD BOSSES
-
-    //not sure if these will have achievement kill ids like previous world bosses, may not be trackable!
-    /*
-    var lockout_lookup = {};
-       lockout_lookup[''] = "Ana-Mouz";
-       lockout_lookup[''] = "Calamir";
-       lockout_lookup[''] = "Drugon";
-       lockout_lookup[''] = "Flotsam";
-       lockout_lookup[''] = "Humongris";
-       lockout_lookup[''] = "Levantus";
-       lockout_lookup[''] = "Nazak";
-       lockout_lookup[''] = "Nithogg";,
-       lockout_lookup[''] = "Sharthos";
-       lockout_lookup[''] = "Soultakers";
-       lockout_lookup[''] = "Soultakers";
-       lockout_lookup[''] = "Soultakers";
-       lockout_lookup[''] = "Withered Jim";*/
-
 
     // Stat categories
     var STATS_RAIDS = 5;
