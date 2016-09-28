@@ -498,12 +498,12 @@ function wow(region,toonName,realmName)
                       
                     }
                    
-                   //if a gem is not epic, check if it has the same stat type, if so, then copy it into gemMatch to compare it to the next one
+                   //Mixed Gems - if a gem is not epic, check if it has the same stat type, if so, then copy it into gemMatch to compare it to the next one
                     if (audit_lookup[item.tooltipParams.gem0] != 2 && (gemMatch == 0 || gemMatch === item.tooltipParams.gem0 || gemMatch === item.tooltipParams.gem0+4 || gemMatch === item.tooltipParams.gem0-4))
                     {
                         gemMatch = item.tooltipParams.gem0;      
                     }
-                    else if (audit_lookup[item.tooltipParams.gem0] > -1)
+                    else if (audit_lookup[item.tooltipParams.gem0] != 2 && audit_lookup[item.tooltipParams.gem0] > -1)
                     {
                         gemAudit[3].bool = 1; // if we fail to pass the above if, the stats don't match on our gems
                     }
