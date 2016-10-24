@@ -59,7 +59,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         return "Error: No API key entered. Please visit http://dev.battle.net/ to obtain one. Instructions availible at http://bruk.org/wow";
     }
 
-//Getting rid of any sort of pesky no width white spaces we may run into
+    //Getting rid of any sort of pesky no width white spaces we may run into
     region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
     realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
   
@@ -78,70 +78,67 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         return "Error: verify your apikey is entered and values are entered correctly";
     }
 
-    var membermatrix = [ ]; 
+    var membermatrix = []; 
+    var roleSort = ["Tank","Healer","Ranged","Melee"];//this is the order it is going to get sorted by. Swap thise around if you want it in another order
 
-    var arrayPosition = 0;
-    var roleSort = 0;
-
-  
+    
+    var roles = {
+        Tank: ["Blood","Protection","Guardian","Brewmaster","Vengeance"],
+        Healer: ["Restoration", "Holy", "Discipline", "Mistweaver"],
+        Ranged: ["Elemental","Beast Mastery","Marksmanship","Balance","Affliction","Demonology","Destruction","Arcane","Fire","Frost","Shadow"],
+        Melee: ["Retribution","Frost","Unholy","Arms","Fury","Survival","Enhancement","Feral","Windwalker","Outlaw","Assassination","Subtlety","Havoc"]
+    };//forst dks and frost mages needs its own check
+    var classes = [//this is for detemening what playerclass the variable class refers to. Needed when we want to check if frost refers to DK or Mage.
+        "Error",
+        "Warrior",
+        "Paladin",
+        "Hunter",
+        "Rogue",
+        "Priest",
+        "Death Knight",
+        "Shaman",
+        "Mage",
+        "Warlock",
+        "Monk",
+        "Druid",
+        "Demon Hunter",
+    ];
+    
     for (var i=0; i<guild.members.length; i++)
     { 
 
-          //The "manual" and more accurate code for role
-        // It's still a touch buggy (seemingly for "stale" characters) but is currently much more accurate than the api
-        //You can adjust these numbers to have one role appear first in the list; highest numbers are first
-        //You can also change the word for the output
-        var playerRole = "API Error";
-        var whiteListed =0;
-        roleSort = 0;
-      
-      
+        //The "manual" and more accurate code for role
+        //It's still a touch buggy (seemingly for "stale" characters) but is currently much more accurate than the api
+        var whiteListed = false;
+        var blackListed = false;
+        
         if (BLACKLIST.indexOf(guild.members[i].character.name) > -1)
         {
-            guild.members[i].character.level = minLevel -1;
+            blackListed = true;
+        }
+        else if (WHITELIST.indexOf(guild.members[i].character.name) > -1)
+        {
+            whiteListed = true;
         }
         
-        if (WHITELIST.indexOf(guild.members[i].character.name) > -1)
+        if (((guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel) || whiteListed)&& !blackListed)
         {
-            whiteListed = 1;
-        }
-      
-        if ((guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel) || whiteListed)
-        {
+            var playerRole = "Api Error";
             if (guild.members[i].character.spec)
             {
-                if (["Blood", "Vengeance", "Guardian", "Brewmaster", "Protection"].indexOf(guild.members[i].character.spec.name) > -1)
+                for (var role in roles)
                 {
-                    roleSort = 5;
-                    playerRole = "Tank";
-                }
-                else if (["Restoration", "Mistweaver", "Discipline", "Holy"].indexOf(guild.members[i].character.spec.name) > -1)
-               {
-                    roleSort = 4;
-                    playerRole = "Healing";
-                }
-              
-              //Shout out to @Sublime_39 on twitter for writing this bit! Great to have Melee and Ranged Defined
-                else if (["Arms", "Fury", "Retribution", "Unholy", "Frost", "Enhancement", "Survival", "Outlaw", "Assassination", "Subtlety", "Feral", "Havoc", "Windwalker"].indexOf(guild.members[i].character.spec.name) > -1)
-               {
-                    roleSort = 3;
-                    playerRole = "Melee";
-                }
-                else if (["Marksmanship", "Beast Mastery", "Elemental", "Balance" , "Shadow", "Frost", "Fire", "Arcane", "Demonology", "Destruction", "Affliction"].indexOf(guild.members[i].character.spec.name) > -1)
-                {
-                    roleSort = 2;
-                    playerRole = "Ranged";
-                }
-                else
-                {
-                    roleSort = 0;
-                    playerRole = "API Error";
+                    if (guild.members[i].character.spec.name=="Frost")
+                    {
+                        playerRole = classes[guild.members[i].class]=="Mage"? "Ranged": "Melee";
+                    }
+                    else if (roles[role].indexOf(guild.members[i].character.spec.name) != -1)
+                    {
+                        playerRole = role;
+                    }
                 }
             }
-          
-            membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, playerRole];
-            arrayPosition++;
-
+            membermatrix.push(guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, roleSort.indexOf(playerRole), playerRole);
         }   // ...end of manual code for role
     }
   
@@ -149,8 +146,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
     {
         for (i=0; i<NONGUILD.length; i++)
         {
-            membermatrix[arrayPosition] = [NONGUILD[i][0], NONGUILD[i][1], 11, 0, 0, 0, "NonGuild"];
-            arrayPosition++;
+            membermatrix.push([NONGUILD[i][0], NONGUILD[i][1], 11, 0, 0, roleSort.length+1, "NonGuild"]);
         }
     }
   
@@ -186,8 +182,16 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
 
         case "Role":
             membermatrix.sort(function(a,b) 
-           {
-                return b[5]-a[5];
+            {
+                if (a[5] === -1)
+                {
+                    a = roleSort.length;
+                }
+                if (b[5] === -1)
+                {
+                    b = roleSort.length;
+                }
+                return a[5]-b[5];
             });
             break;
         default: 
