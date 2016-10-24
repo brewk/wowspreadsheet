@@ -89,7 +89,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
 	Melee: ["Retribution","Frost","Unholy","Arms","Fury","Survival","Enhancement","Feral","Windwalker","Outlaw","Assassination","Subtlety","Havoc"]
     };//forst dks and frost mages needs its own check
     var classes = [//this is for detemening what playerclass the variable class refers to. Needed when we want to check if frost refers to DK or Mage.
-	"Error"
+	"Error",
 	"Warrior",
 	"Paladin",
 	"Hunter",
@@ -109,7 +109,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
 
         //The "manual" and more accurate code for role
         //It's still a touch buggy (seemingly for "stale" characters) but is currently much more accurate than the api
-        var whiteListed = false;
+	var whiteListed = false;
 	var blackListed = false;
       
         if (BLACKLIST.indexOf(guild.members[i].character.name) > -1)
