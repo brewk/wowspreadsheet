@@ -59,7 +59,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         return "Error: No API key entered. Please visit http://dev.battle.net/ to obtain one. Instructions availible at http://bruk.org/wow";
     }
 
-//Getting rid of any sort of pesky no width white spaces we may run into
+    //Getting rid of any sort of pesky no width white spaces we may run into
     region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
     realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
   
@@ -83,25 +83,25 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
 
     
     var roles = {
-	Tank: ["Blood","Protection","Guardian","Brewmaster","Vengeance"],
-	Healer: ["Restoration", "Holy", "Discipline", "Mistweaver"],
-	Ranged: ["Elemental","Beast Mastery","Marksmanship","Balance","Affliction","Demonology","Destruction","Arcane","Fire","Frost","Shadow"],
-	Melee: ["Retribution","Frost","Unholy","Arms","Fury","Survival","Enhancement","Feral","Windwalker","Outlaw","Assassination","Subtlety","Havoc"]
+    Tank: ["Blood","Protection","Guardian","Brewmaster","Vengeance"],
+    Healer: ["Restoration", "Holy", "Discipline", "Mistweaver"],
+    Ranged: ["Elemental","Beast Mastery","Marksmanship","Balance","Affliction","Demonology","Destruction","Arcane","Fire","Frost","Shadow"],
+    Melee: ["Retribution","Frost","Unholy","Arms","Fury","Survival","Enhancement","Feral","Windwalker","Outlaw","Assassination","Subtlety","Havoc"]
     };//forst dks and frost mages needs its own check
     var classes = [//this is for detemening what playerclass the variable class refers to. Needed when we want to check if frost refers to DK or Mage.
-	"Error",
-	"Warrior",
-	"Paladin",
-	"Hunter",
-	"Rogue",
-	"Priest",
-	"Death Knight",
-	"Shaman",
-	"Mage",
-	"Warlock",
-	"Monk",
-	"Druid",
-	"Demon Hunter",
+    "Error",
+    "Warrior",
+    "Paladin",
+    "Hunter",
+    "Rogue",
+    "Priest",
+    "Death Knight",
+    "Shaman",
+    "Mage",
+    "Warlock",
+    "Monk",
+    "Druid",
+    "Demon Hunter",
     ];
     
     for (var i=0; i<guild.members.length; i++)
@@ -109,8 +109,8 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
 
         //The "manual" and more accurate code for role
         //It's still a touch buggy (seemingly for "stale" characters) but is currently much more accurate than the api
-	var whiteListed = false;
-	var blackListed = false;
+    var whiteListed = false;
+    var blackListed = false;
       
         if (BLACKLIST.indexOf(guild.members[i].character.name) > -1)
         {
@@ -120,25 +120,25 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         {
             whiteListed = true;
         }
-	
+    
         if (((guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel) || whiteListed)&& !blackListed)
         {
-	    var playerRole = "Api Error";
+        var playerRole = "Api Error";
             if (guild.members[i].character.spec)
             {
-		for (var role in roles)
-		{
-		    if (guild.members[i].character.spec.name=="Frost")
-		    {
-			playerRole = guild.members[i].class=="Mage"? "Ranged": "Melee";
-		    }
-		    else if (roles[role].indexOf(guild.members[i].character.spec.name) != -1)
-		    {
-			playerRole = role;
-		    }
-		}
+        for (var role in roles)
+        {
+            if (guild.members[i].character.spec.name=="Frost")
+            {
+            playerRole = guild.members[i].class=="Mage"? "Ranged": "Melee";
             }
-	    membermatrix.push(guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, roleSort.indexOf(playerRole), playerRole);
+            else if (roles[role].indexOf(guild.members[i].character.spec.name) != -1)
+            {
+            playerRole = role;
+            }
+        }
+            }
+        membermatrix.push(guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, roleSort.indexOf(playerRole), playerRole);
         }   // ...end of manual code for role
     }
   
@@ -184,9 +184,9 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         case "Role":
             membermatrix.sort(function(a,b) 
            {
-	       if (a[5] === -1){a = rolesort.length} 
-	       if (b[5] === -1){b = rolesort.length} 
-	       return a[5]-b[5];
+           if (a[5] === -1){a = rolesort.length} 
+           if (b[5] === -1){b = rolesort.length} 
+           return a[5]-b[5];
             });
             break;
         default: 
