@@ -182,16 +182,16 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
 
         case "Role":
             membermatrix.sort(function(a,b) 
-           {
-               if (a[5] === -1)
-               {
-                   a = roleSort.length;
-               }
-               if (b[5] === -1)
-               {
-                   b = roleSort.length;
-               }
-               return a[5]-b[5];
+            {
+                if (a[5] === -1)
+                {
+                    a = roleSort.length;
+                }
+                if (b[5] === -1)
+                {
+                    b = roleSort.length;
+                }
+                return a[5]-b[5];
             });
             break;
         default: 
