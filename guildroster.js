@@ -83,25 +83,25 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
 
     
     var roles = {
-    Tank: ["Blood","Protection","Guardian","Brewmaster","Vengeance"],
-    Healer: ["Restoration", "Holy", "Discipline", "Mistweaver"],
-    Ranged: ["Elemental","Beast Mastery","Marksmanship","Balance","Affliction","Demonology","Destruction","Arcane","Fire","Frost","Shadow"],
-    Melee: ["Retribution","Frost","Unholy","Arms","Fury","Survival","Enhancement","Feral","Windwalker","Outlaw","Assassination","Subtlety","Havoc"]
+        Tank: ["Blood","Protection","Guardian","Brewmaster","Vengeance"],
+        Healer: ["Restoration", "Holy", "Discipline", "Mistweaver"],
+        Ranged: ["Elemental","Beast Mastery","Marksmanship","Balance","Affliction","Demonology","Destruction","Arcane","Fire","Frost","Shadow"],
+        Melee: ["Retribution","Frost","Unholy","Arms","Fury","Survival","Enhancement","Feral","Windwalker","Outlaw","Assassination","Subtlety","Havoc"]
     };//forst dks and frost mages needs its own check
     var classes = [//this is for detemening what playerclass the variable class refers to. Needed when we want to check if frost refers to DK or Mage.
-    "Error",
-    "Warrior",
-    "Paladin",
-    "Hunter",
-    "Rogue",
-    "Priest",
-    "Death Knight",
-    "Shaman",
-    "Mage",
-    "Warlock",
-    "Monk",
-    "Druid",
-    "Demon Hunter",
+        "Error",
+        "Warrior",
+        "Paladin",
+        "Hunter",
+        "Rogue",
+        "Priest",
+        "Death Knight",
+        "Shaman",
+        "Mage",
+        "Warlock",
+        "Monk",
+        "Druid",
+        "Demon Hunter",
     ];
     
     for (var i=0; i<guild.members.length; i++)
@@ -130,7 +130,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
                 {
                     if (guild.members[i].character.spec.name=="Frost")
                     {
-                        playerRole = guild.members[i].class=="Mage"? "Ranged": "Melee";
+                        playerRole = classes[guild.members[i].class]=="Mage"? "Ranged": "Melee";
                     }
                     else if (roles[role].indexOf(guild.members[i].character.spec.name) != -1)
                     {
@@ -186,11 +186,11 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
                if (a[5] === -1)
                {
                    a = roleSort.length;
-               } 
+               }
                if (b[5] === -1)
                {
                    b = roleSort.length;
-               } 
+               }
                return a[5]-b[5];
             });
             break;
