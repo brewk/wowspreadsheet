@@ -109,9 +109,9 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
 
         //The "manual" and more accurate code for role
         //It's still a touch buggy (seemingly for "stale" characters) but is currently much more accurate than the api
-    var whiteListed = false;
-    var blackListed = false;
-      
+        var whiteListed = false;
+        var blackListed = false;
+        
         if (BLACKLIST.indexOf(guild.members[i].character.name) > -1)
         {
             blackListed = true;
@@ -120,25 +120,25 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         {
             whiteListed = true;
         }
-    
+        
         if (((guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel) || whiteListed)&& !blackListed)
         {
-        var playerRole = "Api Error";
+            var playerRole = "Api Error";
             if (guild.members[i].character.spec)
             {
-        for (var role in roles)
-        {
-            if (guild.members[i].character.spec.name=="Frost")
-            {
-            playerRole = guild.members[i].class=="Mage"? "Ranged": "Melee";
+                for (var role in roles)
+                {
+                    if (guild.members[i].character.spec.name=="Frost")
+                    {
+                        playerRole = guild.members[i].class=="Mage"? "Ranged": "Melee";
+                    }
+                    else if (roles[role].indexOf(guild.members[i].character.spec.name) != -1)
+                    {
+                        playerRole = role;
+                    }
+                }
             }
-            else if (roles[role].indexOf(guild.members[i].character.spec.name) != -1)
-            {
-            playerRole = role;
-            }
-        }
-            }
-        membermatrix.push(guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, roleSort.indexOf(playerRole), playerRole);
+            membermatrix.push(guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, roleSort.indexOf(playerRole), playerRole);
         }   // ...end of manual code for role
     }
   
@@ -146,8 +146,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
     {
         for (i=0; i<NONGUILD.length; i++)
         {
-            membermatrix[arrayPosition] = [NONGUILD[i][0], NONGUILD[i][1], 11, 0, 0, 0, "NonGuild"];
-            arrayPosition++;
+            membermatrix.push([NONGUILD[i][0], NONGUILD[i][1], 11, 0, 0, roleSort.length+1, "NonGuild"]);
         }
     }
   
@@ -184,9 +183,15 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         case "Role":
             membermatrix.sort(function(a,b) 
            {
-           if (a[5] === -1){a = rolesort.length} 
-           if (b[5] === -1){b = rolesort.length} 
-           return a[5]-b[5];
+               if (a[5] === -1)
+               {
+                   a = roleSort.length;
+               } 
+               if (b[5] === -1)
+               {
+                   b = roleSort.length;
+               } 
+               return a[5]-b[5];
             });
             break;
         default: 
