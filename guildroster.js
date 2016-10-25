@@ -78,7 +78,8 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         return "Error: verify your apikey is entered and values are entered correctly";
     }
 
-    var membermatrix = []; 
+    var membermatrix = [];
+    var arrayPosition = 0;
     var roleSort = ["Tank","Healer","Ranged","Melee"];//this is the order it is going to get sorted by. Swap thise around if you want it in another order
 
     
@@ -130,7 +131,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
                 {
                     if (guild.members[i].character.spec.name=="Frost")
                     {
-                        playerRole = classes[guild.members[i].class]=="Mage"? "Ranged": "Melee";
+                        playerRole = classes[guild.members[i].character.class]=="Mage" ? "Ranged": "Melee";
                     }
                     else if (roles[role].indexOf(guild.members[i].character.spec.name) != -1)
                     {
@@ -138,7 +139,8 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
                     }
                 }
             }
-            membermatrix.push(guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level, roleSort.indexOf(playerRole), playerRole);
+            membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, playerRole];
+            arrayPosition++;
         }   // ...end of manual code for role
     }
   
