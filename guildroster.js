@@ -44,7 +44,7 @@ var NONGUILD = [];
 /* globals UrlFetchApp apikey*/
 /* exported guildOut vercheckGuild*/
 
-var current_versionGuild = 1.022;
+var current_versionGuild = 1.021;
 
 function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel) 
 {
@@ -88,7 +88,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         Healer: ["Restoration", "Holy", "Discipline", "Mistweaver"],
         Ranged: ["Elemental","Beast Mastery","Marksmanship","Balance","Affliction","Demonology","Destruction","Arcane","Fire","Frost","Shadow"],
         Melee: ["Retribution","Frost","Unholy","Arms","Fury","Survival","Enhancement","Feral","Windwalker","Outlaw","Assassination","Subtlety","Havoc"]
-    };//forst dks and frost mages needs its own check
+    };//frost dks and frost mages needs its own check
     var classes = [//this is for detemening what playerclass the variable class refers to. Needed when we want to check if frost refers to DK or Mage.
         "Error",
         "Warrior",
@@ -139,7 +139,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
                     }
                 }
             }
-            membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort, playerRole];
+            membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort.indexOf(playerRole), playerRole];
             arrayPosition++;
         }   // ...end of manual code for role
     }
