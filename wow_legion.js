@@ -30,12 +30,15 @@ var CONST_EPICGEM_ILVL = 860;
 // You shouldn't need to change this, but this is threshold item level where gear is checked for enchants and gems
 var CONST_AUDIT_ILVL = 599;
 
+//If you want total AP gathered displayed next to highest weapon rank, change this to true
+var showTotalArtifactPower = false;
+
 // Everything below this, you shouldn't have to edit
 //***************************************************************
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.1;
+var current_version = 3.101;
 
 
 function relic(equippedRelic)
@@ -963,6 +966,18 @@ function wow(region,toonName,realmName)
             artifactRank = toon.achievements.criteriaQuantity[i];
         }
     }
+
+    if (showTotalArtifactPower)
+    {
+        for (i=0; i<toon.achievements.criteria.length; i++)
+        {
+            if (toon.achievements.criteria[i] === 30103)
+            {
+                artifactRank = artifactRank + " [" +  toon.achievements.criteriaQuantity[i] + "]";
+            }
+        }
+    }
+  
     for (i = artifactRelics.length; i < 3; i++)
     {
         artifactRelics.push("x");
@@ -994,10 +1009,10 @@ function wow(region,toonName,realmName)
         Lockout.ENheroic + "/7",
         Lockout.ENmythic + "/7",
 
-        Progress.ENlfr    + "/3 [" + ActiveWeeks.TVlfr    + "]",
-        Progress.ENnormal + "/3 [" + ActiveWeeks.TVnormal + "]",
-        Progress.ENheroic + "/3 [" + ActiveWeeks.TVheroic + "]",
-        Progress.ENmythic + "/7 [" + ActiveWeeks.TVmythic + "]",
+        Progress.ENlfr    + "/7 [" + ActiveWeeks.ENlfr    + "]",
+        Progress.ENnormal + "/7 [" + ActiveWeeks.ENnormal + "]",
+        Progress.ENheroic + "/7 [" + ActiveWeeks.ENheroic + "]",
+        Progress.ENmythic + "/7 [" + ActiveWeeks.ENmythic + "]",
 
         Lockout.TVlfr    + "/3",
         Lockout.TVnormal + "/3",
@@ -1034,7 +1049,7 @@ function wow(region,toonName,realmName)
     for (i = 0; i<sortOrder.length;i++)
     {
         toonInfo.splice(possision,0,allItems[sortOrder[i]].ilvl);
-        toonInfo.splice(possision+28+i,0,allItems[sortOrder[i]].upgrade);
+        toonInfo.splice(possision+36+i,0,allItems[sortOrder[i]].upgrade);
         possision++;
     }
     possision+=4;
