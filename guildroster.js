@@ -44,7 +44,7 @@ var NONGUILD = [];
 /* globals UrlFetchApp apikey*/
 /* exported guildOut vercheckGuild*/
 
-var current_versionGuild = 1.021;
+var current_versionGuild = 1.022;
 
 function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel) 
 {
@@ -148,7 +148,8 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
     {
         for (i=0; i<NONGUILD.length; i++)
         {
-            membermatrix.push([NONGUILD[i][0], NONGUILD[i][1], 11, 0, 0, roleSort.length+1, "NonGuild"]);
+            membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort.indexOf(playerRole), playerRole];
+            arrayPosition++;
         }
     }
   
