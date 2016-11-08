@@ -148,7 +148,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
     {
         for (i=0; i<NONGUILD.length; i++)
         {
-            membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort.indexOf(playerRole), playerRole];
+            membermatrix[arrayPosition] = [NONGUILD[i][0], NONGUILD[i][1], 99, 0, -1,  -1, "NonGuild"];
             arrayPosition++;
         }
     }
