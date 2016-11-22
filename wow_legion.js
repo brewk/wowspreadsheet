@@ -38,7 +38,7 @@ var showTotalArtifactPower = false;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.101;
+var current_version = 3.13;
 
 
 function relic(equippedRelic)
@@ -186,6 +186,11 @@ function wow(region,toonName,realmName)
         return " ";  // If there's nothing in the column, don't even bother calling the API
     }
 
+    if (!apikey)
+    {
+        return "Error: No API key entered. Please visit http://dev.battle.net/ to obtain one. Instructions availible at http://bruk.org/wow";
+    }
+
 
     Utilities.sleep(Math.floor((Math.random() * 10000) + 1000)); // This is a random sleepy time so that we dont spam the api and get bonked with an error
 
@@ -200,11 +205,6 @@ function wow(region,toonName,realmName)
     var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"", options);
     var toon = JSON.parse(toonJSON.toString());
   
-    if (!apikey)
-    {
-        return "Error: No API key entered. Please visit http://dev.battle.net/ to obtain one. Instructions availible at http://bruk.org/wow";
-    }
-
     if (!toon.name)
     {
         return "Error loading API: try refreshing and verify values are typed correctly. Ensure your API key is entered into the script correctly. Errors can also come from loading 100+ characters at a time";
@@ -967,14 +967,38 @@ function wow(region,toonName,realmName)
         }
     }
 
-    if (showTotalArtifactPower)
+
+// IDs for mythic+ were provied by @matdemy on twitter and this post: http://us.battle.net/forums/en/bnet/topic/20752275890
+    var mythicPlus = "";
+    for (i=0; i<toon.achievements.criteria.length; i++)
     {
-        for (i=0; i<toon.achievements.criteria.length; i++)
+        switch (toon.achievements.criteria[i])
         {
-            if (toon.achievements.criteria[i] === 30103)
-            {
-                artifactRank = artifactRank + " [" +  toon.achievements.criteriaQuantity[i] + "]";
-            }
+            case (30103):
+                if (showTotalArtifactPower)
+               {
+                    artifactRank = artifactRank + " [" +  toon.achievements.criteriaQuantity[i] + "]";
+                }
+                break;
+           
+            case (33096):
+                mythicPlus = mythicPlus + "m+2: " + toon.achievements.criteriaQuantity[i];
+                break;
+
+            case (33097):
+                mythicPlus = mythicPlus + " m+5: " + toon.achievements.criteriaQuantity[i];
+                break;
+           
+            case (33098):
+                mythicPlus = mythicPlus + " m+10: " + toon.achievements.criteriaQuantity[i];
+                break;
+           
+            case (32028):
+                mythicPlus = mythicPlus + " m+15: " + toon.achievements.criteriaQuantity[i];
+                break;   
+
+            default: 
+                break;
         }
     }
   
@@ -1038,7 +1062,7 @@ function wow(region,toonName,realmName)
         Progress.Heroic + "/8 (" + totalDone.Heroic + ")",
 
         Lockout.Mythic  + "/11 " + mythicDetails,
-        Progress.Mythic + "/11 [" + ActiveWeeks.Mythic + "] (" + totalDone.Mythic + ")",
+        Progress.Mythic + "/11 [" + ActiveWeeks.Mythic + "] (" + totalDone.Mythic + ") " + mythicPlus,
 
         profession1, profession2, thumbnail, armory, 
         allItems[enchantableItems[4]].enchant, allItems[enchantableItems[5]].enchant,
