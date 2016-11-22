@@ -977,9 +977,17 @@ function wow(region,toonName,realmName)
             case (30103):
                 if (showTotalArtifactPower)
                {
-                    artifactRank = artifactRank + " [" +  toon.achievements.criteriaQuantity[i] + "]";
+                    artifactRank = artifactRank + " | AP: " +  toon.achievements.criteriaQuantity[i];
                 }
                 break;
+
+
+            case (31466):
+                if (showTotalArtifactPower)
+                {
+                    artifactRank = artifactRank + " | AK: " +  toon.achievements.criteriaQuantity[i];
+                }
+                break; 
            
             case (33096):
                 mythicPlus = mythicPlus + "m+2: " + toon.achievements.criteriaQuantity[i];
