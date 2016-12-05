@@ -38,12 +38,18 @@ var showTotalArtifactPower = false;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.13;
+var current_version = 3.14;
 
 
 function relic(equippedRelic)
 {
     var id = equippedRelic.itemId;
+  
+    if (id == 140070)
+    {
+        return "Frost +45 ilvls";
+    }
+  
     var bonusLists = "";
     equippedRelic.bonusLists.forEach(function(bonusListNumber) 
     {
@@ -273,7 +279,7 @@ function wow(region,toonName,realmName)
     var gemAudit = [
         { bool: 0, issue: " Old:" },    
         { bool: 0, issue: " Cheap:" },
-        { bool: 0, issue: " Non-Epic:" },    
+        { bool: 0, issue: " No Epic Gems" },    // this was a list of non-epic gems, when they weren't unique
         { bool: 0, issue: " Mixed Gems" }  
     ];
 
@@ -483,12 +489,14 @@ function wow(region,toonName,realmName)
 
                     if (item.itemLevel>CONST_EPICGEM_ILVL)
                     {
-                        if (audit_lookup[item.tooltipParams.gem0] != 2)
+                        if (audit_lookup[item.tooltipParams.gem0] == 2)  //this was set to != when epic gems weren't unique
                         {
-                            gemAudit[2].bool = 1;
-                            gemAudit[2].issue += " "+ slot;
+                            gemAudit[2].bool = 0;
+                            //gemAudit[2].bool = 1;
+                            //gemAudit[2].issue += " "+ slot;
                         }
                     }
+                  
                     else if (audit_lookup[item.tooltipParams.gem0] === 0)
                     {
                         gemAudit[1].bool = 1;
@@ -589,7 +597,7 @@ function wow(region,toonName,realmName)
 
     if (toon.audit.emptySockets !== 0)
     {
-        auditInfo = auditInfo + "Empty Gem Sockets: " + toon.audit.emptySockets;
+        auditInfo = auditInfo + "Empty Gem Sockets: " + toon.audit.emptySockets + " ";
     }
 
 
@@ -606,6 +614,7 @@ function wow(region,toonName,realmName)
         {
             auditInfo = auditInfo + " Rare:" + totalGems[1];
         }
+      
         if (totalGems[2] > 0)
         {
             auditInfo = auditInfo + " Epic:" + totalGems[2];   
