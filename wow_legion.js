@@ -343,7 +343,14 @@ function wow(region,toonName,realmName)
     audit_lookup["5439"] = "Satyr";
     audit_lookup["5889"] = "Hide";
     audit_lookup["5890"] = "Soldier";
-    audit_lookup["5891"] = "Ancient";
+    audit_lookup["5891"] = "Priestess";
+
+
+    audit_lookup["5895"] = "Master";
+    audit_lookup["5896"] = "Versatile";
+    audit_lookup["5897"] = "Quick";
+    audit_lookup["5898"] = "Deadly";
+
   
   //shoulder
     audit_lookup["5440"] = "Scavenger (cloth)";
