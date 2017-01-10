@@ -38,7 +38,7 @@ var showTotalArtifactPower = false;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.14;
+var current_version = 3.141;
 
 
 function relic(equippedRelic)
@@ -479,6 +479,14 @@ function wow(region,toonName,realmName)
             allItems.equippedItems++;
             allItems[slot].ilvl = item.itemLevel;
             allItems.totalIlvl += item.itemLevel;
+
+            //temporary workaround for armory still returning wrong ilvl (895 instead of 910) for legion legendaries
+            //provided by @lifeguttter
+            if (item.itemLevel == 895 && item.quality == 5)
+            {
+                allItems[slot].ilvl = 910;
+                allItems.totalIlvl += 15;
+            }
 
             if (item.itemLevel > CONST_AUDIT_ILVL)
             {
