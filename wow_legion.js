@@ -1,5 +1,5 @@
 ﻿/* ***********************************
- ***     Copyright (c) 2016 bruk
+ ***     Copyright (c) 2017 bruk
  *** This script is free software; you can redistribute it and/or modify
  *** it under the terms of the GNU General Public License as published by
  *** the Free Software Foundation; either version 3 of the License, or
@@ -38,7 +38,7 @@ var showTotalArtifactPower = false;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.141;
+var current_version = 3.1415;
 
 
 function relic(equippedRelic)
@@ -360,7 +360,10 @@ function wow(region,toonName,realmName)
     audit_lookup["5882"] = "Manaseeker (enchant)";
     audit_lookup["5881"] = "Salvager (ore/armor)";
     audit_lookup["5883"] = "Bloodhunter (Blood)";
-  
+    audit_lookup["5900"] = "Zookeeper (Pet)";
+    audit_lookup["5888"] = "Netherdrift";
+
+
   //gloves
     audit_lookup["5444"] = "Herb";
     audit_lookup["5445"] = "Mine";
@@ -482,10 +485,14 @@ function wow(region,toonName,realmName)
 
             //temporary workaround for armory still returning wrong ilvl (895 instead of 910) for legion legendaries
             //provided by @lifeguttter
-            if (item.itemLevel == 895 && item.quality == 5)
+            //modified to use bonuslist for 940 instead of 910
+            if (item.quality == 5)
             {
-                allItems[slot].ilvl = 910;
-                allItems.totalIlvl += 15;
+                if (item.bonusLists[0] == 3529)
+                {
+                    allItems[slot].ilvl = 940;
+                    allItems.totalIlvl += 30;
+                }
             }
 
             if (item.itemLevel > CONST_AUDIT_ILVL)
@@ -1042,10 +1049,10 @@ function wow(region,toonName,realmName)
         artifactRelics.push("x");
     }
   
-    var nightfallen = rep(toon.reputation[28].standing);
+    var nightfallen = rep(toon.reputation[30].standing);
     nightfallen = "Nightfallen - " + nightfallen + " " + toon.reputation[28].value + "/" + toon.reputation[28].max;
     
-    if (toon.reputation[28].id != 1859) // horde
+    if (toon.reputation[30].id != 1859) // horde
     {
         nightfallen = "Sorry Horde, Blizz needs to fix this";
     }
