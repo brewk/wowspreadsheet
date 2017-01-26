@@ -436,7 +436,7 @@ function wow(region,toonName,realmName)
             }
           
             //crafted gear upgrade stuff
-            var obliterum = 8; //current cap for obliterum upgrades
+            var obliterum = 10; //current cap for obliterum upgrades
             var craftedUpgrade = -1;
                           
             for (var j = 0; j < item.bonusLists.length; j++)
@@ -469,6 +469,12 @@ function wow(region,toonName,realmName)
                         break;
                     case 670:
                         craftedUpgrade = 8;
+                        break;
+                    case 671:
+                        craftedUpgrade = 9;
+                        break;
+                    case 672:
+                        craftedUpgrade = 10;
                         break;
                     default:
                         craftedUpgrade = "-";
