@@ -30,6 +30,9 @@ var CONST_EPICGEM_ILVL = 860;
 // You shouldn't need to change this, but this is threshold item level where gear is checked for enchants and gems
 var CONST_AUDIT_ILVL = 599;
 
+// Set this to be the minimum iLvl of the current raid's tier gear (helps weed out the tier column noise)
+var CONST_TIER_GEAR_ILVL = 860;
+
 //If you want total AP gathered displayed next to highest weapon rank, change this to true
 var showTotalArtifactPower = false;
 
@@ -38,7 +41,7 @@ var showTotalArtifactPower = false;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.1415;
+var current_version = 3.14159;
 
 
 function relic(equippedRelic)
@@ -362,6 +365,7 @@ function wow(region,toonName,realmName)
     audit_lookup["5883"] = "Bloodhunter (Blood)";
     audit_lookup["5900"] = "Zookeeper (Pet)";
     audit_lookup["5888"] = "Netherdrift";
+    audit_lookup["5899"] = "Builder (Engineer)";
 
 
   //gloves
@@ -374,7 +378,7 @@ function wow(region,toonName,realmName)
     var armory = "http://"+region+".battle.net/wow/en/character/"+realmName+"/"+toonName+"/advanced";
 
     var tier = " ";
-    var tier_pieces = [toon.items.head,toon.items.shoulder,toon.items.chest,toon.items.hands,toon.items.legs,toon.items.waist];
+    var tier_pieces = [toon.items.head,toon.items.shoulder,toon.items.chest,toon.items.hands,toon.items.legs,toon.items.back];
 
     var set1 = [];
     var set2 = [];
@@ -383,7 +387,7 @@ function wow(region,toonName,realmName)
 
     for (i = 0; i < tier_pieces.length; i++)
     {
-        if (tier_pieces[i] && tier_pieces[i].tooltipParams.set)
+        if (tier_pieces[i] && tier_pieces[i].tooltipParams.set && tier_pieces[i].itemLevel >= CONST_TIER_GEAR_ILVL)
         {
             if (!set1.length)
             {
