@@ -44,7 +44,7 @@ var NONGUILD = [];
 /* globals UrlFetchApp apikey*/
 /* exported guildOut vercheckGuild*/
 
-var current_versionGuild = 1.03;
+var current_versionGuild = 1.04;
 
 function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel) 
 {
@@ -148,7 +148,8 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
     {
         for (i=0; i<NONGUILD.length; i++)
         {
-            membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort.indexOf(playerRole), playerRole];
+          // not sure how this got weirded out, but thanks to @mattsmorrison for noticing it!
+            membermatrix[arrayPosition] = [NONGUILD[i][0], NONGUILD[i][1], 99, 0, -1,  -1, "NonGuild"];
             arrayPosition++;
         }
     }
