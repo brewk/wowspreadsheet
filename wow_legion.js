@@ -41,7 +41,7 @@ var showTotalArtifactPower = false;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.14159;
+var current_version = 3.141592;
 
 
 function relic(equippedRelic)
@@ -501,7 +501,7 @@ function wow(region,toonName,realmName)
                 if (item.bonusLists[0] == 3529)
                 {
                     allItems[slot].ilvl = 940;
-                    allItems.totalIlvl += 30;
+                    // allItems.totalIlvl += 30;  Believe this line was not needed, it was causing ilvl to be too high
                 }
             }
 
@@ -984,6 +984,7 @@ function wow(region,toonName,realmName)
     var artifactRank = "x";
     var artifactRelics = [];
     var relicItems = ["mainHand","offHand"];
+    var relicCount = 1; // this is to account for the "Free" trait given 
 
     for (i = 0; i < relicItems.length; i++)
     {
@@ -998,18 +999,38 @@ function wow(region,toonName,realmName)
                 {
                     artifactRelics.push(relic(relicGem));
                 });
+                relicCount++;
             }
         }
     }
+  
+    if (toon.items.mainHand.artifactTraits[0])
+    {
+        for (i=0; i<toon.items.mainHand.artifactTraits.length; i++)
+        {
+            artifactRank = artifactRank + toon.items.mainHand.artifactTraits[i].rank;
+        }
+        artifactRank = artifactRank - relicCount;
+    }
+
+    else if (toon.items.offHand.artifactTraits[0])
+     {
+        for (i=0; i<toon.items.offHand.artifactTraits.length; i++)
+        {
+            artifactRank = artifactRank + toon.items.offHand.artifactTraits[i].rank;
+        }
+        artifactRank = artifactRank - relicCount;
+    }
 
 
-    for (i=0; i<toon.achievements.criteria.length; i++)
+    // this was the previous method for calculating artifactRank
+    /*for (i=0; i<toon.achievements.criteria.length; i++)
     {
         if (toon.achievements.criteria[i] == "29395")
         {
             artifactRank = toon.achievements.criteriaQuantity[i];
         }
-    }
+    }*/
 
 
 // IDs for mythic+ were provied by @matdemy on twitter and this post: http://us.battle.net/forums/en/bnet/topic/20752275890
