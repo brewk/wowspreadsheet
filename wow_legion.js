@@ -511,7 +511,7 @@ function wow(region,toonName,realmName)
 
             if (item.quality === 5 && markLegendary)
             {
-               allItems[slot].ilvl = allItems[slot].ilvl + "+";  // * can be any character you want, use it for your conditional
+                allItems[slot].ilvl = allItems[slot].ilvl + "+";  // * can be any character you want, use it for your conditional
             }
 
 
