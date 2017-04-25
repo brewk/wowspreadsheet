@@ -36,12 +36,16 @@ var CONST_TIER_GEAR_ILVL = 860;
 //If you want total AP gathered displayed next to highest weapon rank, change this to true
 var showTotalArtifactPower = false;
 
+//If you want Legendary items to be marked with a + next to item level (use conditional formatting to change their color) change this to true
+
+var markLegendary = false;
+
 // Everything below this, you shouldn't have to edit
 //***************************************************************
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 3.141592;
+var current_version = 3.1415926;
 
 
 function relic(equippedRelic)
@@ -504,6 +508,12 @@ function wow(region,toonName,realmName)
                     // allItems.totalIlvl += 30;  Believe this line was not needed, it was causing ilvl to be too high
                 }
             }
+
+            if (item.quality === 5 && markLegendary)
+            {
+               allItems[slot].ilvl = allItems[slot].ilvl + "+";  // * can be any character you want, use it for your conditional
+            }
+
 
             if (item.itemLevel > CONST_AUDIT_ILVL)
             {
@@ -1004,24 +1014,27 @@ function wow(region,toonName,realmName)
         }
     }
   
-    if (toon.items.mainHand.artifactTraits[0])
+    if (toon.items.mainHand && toon.items.mainHand.quality == 6) 
     {
-        for (i=0; i<toon.items.mainHand.artifactTraits.length; i++)
+        if (toon.items.mainHand.artifactTraits[0])
         {
-            artifactRank = artifactRank + toon.items.mainHand.artifactTraits[i].rank;
+            for (i=0; i<toon.items.mainHand.artifactTraits.length; i++)
+            {
+                artifactRank = artifactRank + toon.items.mainHand.artifactTraits[i].rank;
+            }
+            artifactRank = artifactRank - relicCount;
         }
-        artifactRank = artifactRank - relicCount;
-    }
 
-    else if (toon.items.offHand.artifactTraits[0])
-     {
-        for (i=0; i<toon.items.offHand.artifactTraits.length; i++)
-        {
-            artifactRank = artifactRank + toon.items.offHand.artifactTraits[i].rank;
+        else if (toon.items.offHand.artifactTraits[0])
+         {
+            for (i=0; i<toon.items.offHand.artifactTraits.length; i++)
+            {
+                artifactRank = artifactRank + toon.items.offHand.artifactTraits[i].rank;
+            }
+            artifactRank = artifactRank - relicCount;
         }
-        artifactRank = artifactRank - relicCount;
     }
-
+ 
 
     // this was the previous method for calculating artifactRank
     /*for (i=0; i<toon.achievements.criteria.length; i++)
@@ -1080,12 +1093,14 @@ function wow(region,toonName,realmName)
         artifactRelics.push("x");
     }
   
-    var nightfallen = rep(toon.reputation[30].standing);
-    nightfallen = "Nightfallen - " + nightfallen + " " + toon.reputation[28].value + "/" + toon.reputation[28].max;
-    
-    if (toon.reputation[30].id != 1859) // horde
+    var nightfallen = "";    
+    for (i=0; i<toon.reputation.length; i++) 
     {
-        nightfallen = "Sorry Horde, Blizz needs to fix this";
+        if (toon.reputation[i].id == 1859)
+        {
+            nightfallen = rep(toon.reputation[i].standing);
+            nightfallen = "Nightfallen - " + nightfallen + " " + toon.reputation[i].value + "/" + toon.reputation[i].max;
+        }
     }
 
     var toonInfo = [
