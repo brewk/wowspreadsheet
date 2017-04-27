@@ -994,7 +994,7 @@ function wow(region,toonName,realmName)
     var artifactRank = "x";
     var artifactRelics = [];
     var relicItems = ["mainHand","offHand"];
-    var relicCount = 1; // this is to account for the "Free" trait given 
+    var relicCount = 0; 
 
     for (i = 0; i < relicItems.length; i++)
     {
@@ -1002,15 +1002,17 @@ function wow(region,toonName,realmName)
         if (toon.items[relicItems[i]])
         {
             var relicItem = toon.items[relicItems[i]];
-            if (relicItem.quality === 6)
+            if (relicItem.quality > 4)
             {
                 artifactRank = 0;
                 relicItem.relics.forEach(function(relicGem) 
                 {
                     artifactRelics.push(relic(relicGem));
+                    relicCount++;
                 });
-                relicCount++;
+
             }
+                          
         }
     }
   
