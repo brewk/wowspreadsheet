@@ -42,7 +42,7 @@ var markLegendary = false;
 
 // Everything below this, you shouldn't have to edit
 //***************************************************************
-/* globals Utilities, UrlFetchApp */
+/* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
 var current_version = 3.1415926;
@@ -190,6 +190,12 @@ function rep(standing)
     }
 }
 
+//thanks to github user bloodrash for this function
+function numberWithCommas(x) 
+{
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
+}
+
 
 function wow(region,toonName,realmName)
 {
@@ -215,12 +221,20 @@ function wow(region,toonName,realmName)
     region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
 
     var options={ muteHttpExceptions:true };
-    var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"", options);
-    var toon = JSON.parse(toonJSON.toString());
+    var toon = "";
   
-    if (!toon.name)
+    while (!toon.name)  //try again because of these frequent timeouts
     {
-        return "Error loading API: try refreshing and verify values are typed correctly. Ensure your API key is entered into the script correctly. Errors can also come from loading 100+ characters at a time";
+        try 
+        {
+            var  toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"", options);
+            toon = JSON.parse(toonJSON.toString());
+        }
+         catch (e)
+        {
+            Logger.log("Error Fetching:  "+ e.message);
+        }
+        Logger.log(toonJSON);
     }
 
     var mainspec = "none";
@@ -1057,7 +1071,7 @@ function wow(region,toonName,realmName)
             case (30103):
                 if (showTotalArtifactPower)
                {
-                    artifactRank = artifactRank + " | AP: " +  toon.achievements.criteriaQuantity[i];
+                    artifactRank = artifactRank + " | AP: " + numberWithCommas(toon.achievements.criteriaQuantity[i]);
                 }
                 break;
 
