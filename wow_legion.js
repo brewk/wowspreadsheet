@@ -230,7 +230,7 @@ function wow(region,toonName,realmName)
             var  toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"", options);
             toon = JSON.parse(toonJSON.toString());
         }
-         catch (e)
+        catch (e)
         {
             Logger.log("Error Fetching:  "+ e.message);
         }
