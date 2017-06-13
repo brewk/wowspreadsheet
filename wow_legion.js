@@ -1,4 +1,4 @@
-﻿/* ***********************************
+/* ***********************************
  ***     Copyright (c) 2017 bruk
  *** This script is free software; you can redistribute it and/or modify
  *** it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ var markLegendary = false;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 3.1415926;
+var current_version = 3.14159265;
 
 
 function relic(equippedRelic)
@@ -454,7 +454,7 @@ function wow(region,toonName,realmName)
             }
           
             //crafted gear upgrade stuff
-            var obliterum = 10; //current cap for obliterum upgrades
+            var obliterum = 11; //current cap for obliterum upgrades
             var craftedUpgrade = -1;
                           
             for (var j = 0; j < item.bonusLists.length; j++)
@@ -789,6 +789,10 @@ function wow(region,toonName,realmName)
         "NHnormal": 0,
         "NHheroic": 0,
         "NHmythic": 0,
+        "ToSlfr": 0,
+        "ToSnormal": 0,
+        "ToSheroic": 0,
+        "ToSmythic": 0,
         "Mythic":   0
     };
 
@@ -805,6 +809,10 @@ function wow(region,toonName,realmName)
         "NHnormal": 0,
         "NHheroic": 0,
         "NHmythic": 0,
+        "ToSlfr": 0,
+        "ToSnormal": 0,
+        "ToSheroic": 0,
+        "ToSmythic": 0,
         "Heroic":   0,
         "Mythic":   0
     };
@@ -822,6 +830,10 @@ function wow(region,toonName,realmName)
         "NHnormal": 0,
         "NHheroic": 0,
         "NHmythic": 0,
+        "ToSlfr": 0,
+        "ToSnormal": 0,
+        "ToSheroic": 0,
+        "ToSmythic": 0,
         "Heroic":   0,
         "Mythic":   0
     };
@@ -927,7 +939,43 @@ function wow(region,toonName,realmName)
         { id: 106, difficulty: "NHlfr" },
         { id: 107, difficulty: "NHnormal" },
         { id: 108, difficulty: "NHheroic" },
-        { id: 109, difficulty: "NHmythic" }
+        { id: 109, difficulty: "NHmythic" },
+        { id: 110, difficulty: "ToSlfr"},
+        { id: 111, difficulty: "ToSnormal"},
+        { id: 112, difficulty: "ToSheroic"},
+        { id: 113, difficulty: "ToSmythic"},
+        { id: 114, difficulty: "ToSlfr"},
+        { id: 115, difficulty: "ToSnormal"},
+        { id: 116, difficulty: "ToSheroic"},
+        { id: 117, difficulty: "ToSmythic"},
+        { id: 118, difficulty: "ToSlfr"},
+        { id: 119, difficulty: "ToSnormal"},
+        { id: 120, difficulty: "ToSheroic"},
+        { id: 121, difficulty: "ToSmythic"},
+        { id: 122, difficulty: "ToSlfr"},
+        { id: 123, difficulty: "ToSnormal"},
+        { id: 124, difficulty: "ToSheroic"},
+        { id: 125, difficulty: "ToSmythic"},
+        { id: 126, difficulty: "ToSlfr"},
+        { id: 127, difficulty: "ToSnormal"},
+        { id: 128, difficulty: "ToSheroic"},
+        { id: 129, difficulty: "ToSmythic"},
+        { id: 130, difficulty: "ToSlfr"},
+        { id: 131, difficulty: "ToSnormal"},
+        { id: 132, difficulty: "ToSheroic"},
+        { id: 133, difficulty: "ToSmythic"},
+        { id: 134, difficulty: "ToSlfr"},
+        { id: 135, difficulty: "ToSnormal"},
+        { id: 136, difficulty: "ToSheroic"},
+        { id: 137, difficulty: "ToSmythic"},
+        { id: 138, difficulty: "ToSlfr"},
+        { id: 139, difficulty: "ToSnormal"},
+        { id: 140, difficulty: "ToSheroic"},
+        { id: 141, difficulty: "ToSmythic"},
+        { id: 142, difficulty: "ToSlfr"},
+        { id: 143, difficulty: "ToSnormal"},
+        { id: 144, difficulty: "ToSheroic"},
+        { id: 145, difficulty: "ToSmythic"}
     ];
 
     var num_dungeons = dungeons.length;
@@ -1162,6 +1210,16 @@ function wow(region,toonName,realmName)
         Progress.NHheroic + "/10 [" +ActiveWeeks.NHheroic +"]",
         Progress.NHmythic + "/10 [" +ActiveWeeks.NHmythic +"]",
 
+        Lockout.ToSlfr    + "/9",
+        Lockout.ToSnormal + "/9",
+        Lockout.ToSheroic + "/9",
+        Lockout.ToSmythic + "/9",
+
+        Progress.ToSlfr    + "/9 [" +ActiveWeeks.ToSlfr    +"]",
+        Progress.ToSnormal + "/9 [" +ActiveWeeks.ToSnormal +"]",
+        Progress.ToSheroic + "/9 [" +ActiveWeeks.ToSheroic +"]",
+        Progress.ToSmythic + "/9 [" +ActiveWeeks.ToSmythic +"]",
+
         Lockout.Heroic  + "/8",
         Progress.Heroic + "/8 (" + totalDone.Heroic + ")",
 
@@ -1177,7 +1235,7 @@ function wow(region,toonName,realmName)
     for (i = 0; i<sortOrder.length;i++)
     {
         toonInfo.splice(possision,0,allItems[sortOrder[i]].ilvl);
-        toonInfo.splice(possision+36+i,0,allItems[sortOrder[i]].upgrade);
+        toonInfo.splice(possision+44+i,0,allItems[sortOrder[i]].upgrade);
         possision++;
     }
     possision+=4;
