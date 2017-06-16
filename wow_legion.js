@@ -63,8 +63,20 @@ function relic(equippedRelic)
         bonusLists = bonusLists +  bonusListNumber + ",";
     });
     Utilities.sleep(500);
-    var relicJSON = UrlFetchApp.fetch("https://us.api.battle.net/wow/item/"+id+"?bl="+bonusLists+"&locale=en_US&apikey="+apikey+"");
-    var relicDat = JSON.parse(relicJSON.toString());
+    var relicDat = "";
+    var relicJSON ="";
+    {
+        try
+        {
+            relicJSON = UrlFetchApp.fetch("https://us.api.battle.net/wow/item/"+id+"?bl="+bonusLists+"&locale=en_US&apikey="+apikey+"");
+            relicDat = JSON.parse(relicJSON.toString());
+        }
+        catch (e)
+        {
+            Logger.log("Error Fetching:  "+ e.message);
+        }
+        Logger.log(relicDat);
+    }
   
     var elementType = relicDat.gemInfo.type.type;
   
