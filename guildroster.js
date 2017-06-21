@@ -37,6 +37,20 @@ var WHITELIST = [];
 
 var NONGUILD = [];
 
+// **************** RANK BLACKLIST / WHITE LIST ****************
+// If you want a certain rank of players to never or always be shown
+// enter their number in the brackets, seperated by commas. Guild Master rank is 0
+// Individuals listed in the above white/blacklist section will override rank white/blacklisting
+
+// BLACK LIST: Add number of the rank yo udon't want to show up
+// Usage: var BLACKLIST = [3, 4, 8];
+
+var RANKBLACKLIST = [];
+
+// BLACK LIST: Add number of the rank yo udon't want to show up
+// Usage: var RANKWHITELIST = [2, 5, 7];
+
+var RANKWHITELIST = [];
 
 // ******************************************************
 
@@ -44,7 +58,7 @@ var NONGUILD = [];
 /* globals UrlFetchApp apikey*/
 /* exported guildOut vercheckGuild*/
 
-var current_versionGuild = 1.04;
+var current_versionGuild = 1.05;
 
 function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel) 
 {
@@ -112,7 +126,19 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         //It's still a touch buggy (seemingly for "stale" characters) but is currently much more accurate than the api
         var whiteListed = false;
         var blackListed = false;
-        
+      
+      
+        if (RANKBLACKLIST.indexOf(guild.members[i].rank) > -1)
+        {
+            blackListed = true;
+        }
+        else if (RANKWHITELIST.indexOf(guild.members[i].rank) > -1)
+        {
+            whiteListed = true;
+        }
+      
+      
+      // whitelist/blacklist of individual names will override the rank Black/whitelisting  
         if (BLACKLIST.indexOf(guild.members[i].character.name) > -1)
         {
             blackListed = true;
@@ -122,7 +148,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
             whiteListed = true;
         }
         
-        if (((guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel) || whiteListed)&& !blackListed)
+        if (((guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel) || whiteListed )&& !blackListed )
         {
             var playerRole = "BlizzError";
             if (guild.members[i].character.spec)
