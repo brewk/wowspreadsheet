@@ -132,7 +132,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         {
             blackListed = true;
         }
-        else if (RANKWHITELIST.indexOf(guild.members[i].rank) > -1)
+        else if (RANKWHITELIST.indexOf(guild.members[i].rank) > -1 && guild.members[i].character.level >= minLevel)
         {
             whiteListed = true;
         }
