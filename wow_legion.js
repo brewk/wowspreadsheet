@@ -45,7 +45,7 @@ var markLegendary = false;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 3.14159265;
+var current_version = 3.141592653;
 
 
 function relic(equippedRelic)
@@ -526,14 +526,14 @@ function wow(region,toonName,realmName)
             //temporary workaround for armory still returning wrong ilvl (895 instead of 910) for legion legendaries
             //provided by @lifeguttter
             //modified to use bonuslist for 940 instead of 910
-            if (item.quality == 5)
+            /*if (item.quality == 5)
             {
                 if (item.bonusLists[0] == 3529)
                 {
                     allItems[slot].ilvl = 940;
                     // allItems.totalIlvl += 30;  Believe this line was not needed, it was causing ilvl to be too high
                 }
-            }
+            }*/
 
             if (item.quality === 5 && markLegendary)
             {
