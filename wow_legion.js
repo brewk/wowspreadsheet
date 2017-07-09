@@ -864,11 +864,11 @@ function wow(region,toonName,realmName)
         thisInstance[nameOfInstance][difficultyName].bosses = thisInstance[nameOfInstance][difficultyName].bosses || {};
 
         var infoForBoss = { "kills": instanceBoss.quantity };
-        if (nameOfInstance === "Dungeon" && difficultyName === "Heroic")
+        if (typeOfInstance === "Dungeon" && difficultyName === "Heroic")
         {
             infoForBoss.lockout = instanceBoss.lastUpdated > sinceYesterday;
         }
-        else if (nameOfInstance !== "Dungeon" || difficultyName !== "Normal")// everything except normal dungeons
+        else if (typeOfInstance !== "Dungeon" || difficultyName !== "Normal")// everything except normal dungeons
         {
             infoForBoss.lockout = instanceBoss.lastUpdated > sinceTuesday;
         }
