@@ -831,7 +831,7 @@ function wow(region,toonName,realmName)
             difficultyName = info.shift() + " " +  info.shift(); // Raid Finder
             instanceName = info.join(" ").slice(0, -1); // rest is the name and we remove the last ")"
         }
-        else if(info[0] !== "Return")
+        else if (info[0] !== "Return")
         {
             difficultyName = info.shift(); // first info is what difficultie we have
             instanceName = info.join(" ").slice(0, -1); // rest is the name and we remove the last ")"
@@ -850,16 +850,16 @@ function wow(region,toonName,realmName)
         var bossName = instanceReturns[0];
         var instanceName = instanceReturns[1];
         var difficultyName = instanceReturns[2];
-        var instanceType = "Dungeon";
+        var typeOfInstance = "Dungeon";
         for (raid in raidInstancesSortOrder)// this is needed this as "the" is missing from instances.
         {
             if (raidInstancesSortOrder[raid].indexOf(instanceName) !== -1)
             {
                 instanceName = raidInstancesSortOrder[raid];
-                instanceType = "Raid";
+                typeOfInstance = "Raid";
             }
         }
-        var instance = instanceType === "Raid" ? instanceDetails.raids : instanceDetails.dungeons;
+        var instance = typeOfInstance === "Raid" ? instanceDetails.raids : instanceDetails.dungeons;
         instance[instanceName] = instance[instanceName] || {};
         instance[instanceName][difficultyName] = instance[instanceName][difficultyName] || {};
         instance[instanceName][difficultyName].bosses = instance[instanceName][difficultyName].bosses || {};
@@ -915,7 +915,8 @@ function wow(region,toonName,realmName)
                     thisDifficulty.kills += bossInfo.kills;
                     thisDifficulty.progress += bossInfo.kills === 0 ? 0 : 1;
                     thisDifficulty.lockout += bossInfo.lockout ? 1 : 0;
-                    if (instanceType === "dungeons" && difficulty === "Mythic" && bossInfo.lockout){
+                    if (instanceType === "dungeons" && difficulty === "Mythic" && bossInfo.lockout)
+                    {
                         thisDifficulty.details = thisDifficulty.details ? thisDifficulty.details + ", " + getShortInstanceName(instanceName) : getShortInstanceName(instanceName);
                     }
                 }
@@ -1085,28 +1086,28 @@ function wow(region,toonName,realmName)
     ];
 
     var possision = 6;
-    for (var i = 0; i<sortOrder.length;i++)
+    for (i = 0; i<sortOrder.length;i++)
     {
         toonInfo.splice(possision,0,allItems[sortOrder[i]].ilvl);
         toonInfo.splice(possision+12+i,0,allItems[sortOrder[i]].upgrade);
         possision++;
     }
     possision+=4;
-    for (var i = 0; i < enchantableItems.length-2;i++)
+    for (i = 0; i < enchantableItems.length-2;i++)
     {
         toonInfo.splice(possision,0,allItems[enchantableItems[i]].enchant);
         possision++;
     }
 
     var instanceInfoPossision = 31;
-    for (var i = 0; i < raidInstancesSortOrder.length; i++)
+    for (i = 0; i < raidInstancesSortOrder.length; i++)
     {
-        for (var k = 0; k < raidDifficultySortOrder.length; k++)
+        for (k = 0; k < raidDifficultySortOrder.length; k++)
         {
             var cellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
             toonInfo.splice(instanceInfoPossision+i*8+k, 0, cellInfo.lockout + "/" + cellInfo.instanceLength);
         }
-       for (var k = 0; k < raidDifficultySortOrder.length; k++)
+        for (k = 0; k < raidDifficultySortOrder.length; k++)
         {
             var cellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
             toonInfo.splice(instanceInfoPossision+i*8+k+4, 0, cellInfo.progress + "/" + cellInfo.instanceLength + " [" + cellInfo.activeWeeks + "] (" + cellInfo.kills + ")");
