@@ -879,7 +879,7 @@ function wow(region,toonName,realmName)
         else
         {
             var oldInfo = thisInstance[nameOfInstance][difficultyName].bosses["Violet Hold End Boss"] || {};
-            if (oldInfo)
+            if (oldInfo.kills)
             {
                 infoForBoss.kills += oldInfo.kills;
                 infoForBoss.lockout = infoForBoss.lockout || oldInfo.lockout; // since 0 is false and 1 is true this will work. 
