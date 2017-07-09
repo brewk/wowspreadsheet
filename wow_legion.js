@@ -805,7 +805,7 @@ function wow(region,toonName,realmName)
         {
             return split[0].slice(0,3).toUpperCase();
         }
-    }
+    };
     var getRaidAndBossName = function(inputString)
     {
         var info = "";
@@ -822,7 +822,7 @@ function wow(region,toonName,realmName)
             info = inputString.split(" kills (");
         }
         var bossName = info.shift(); // first we get boss name
-        var info = info[0].split(" ");
+        info = info[0].split(" ");
         var difficultyName = "";
         var nameForInstance = "";
         if (info[0] === "Raid")
@@ -841,7 +841,7 @@ function wow(region,toonName,realmName)
             nameForInstance = info.join(" ").slice(0, -1); // rest is the name and we remove the last ")"
         }
         return [bossName, nameForInstance, difficultyName];
-    }
+    };
     for (var instanceNumber in toon.statistics.subCategories[5].subCategories[STATS_RAIDS_LEGION].statistics)
     {
         var instanceBoss = toon.statistics.subCategories[5].subCategories[STATS_RAIDS_LEGION].statistics[instanceNumber];
@@ -903,7 +903,9 @@ function wow(region,toonName,realmName)
             }
             for (var difficulty in instance)
             {
-                infoOnDifficulty[difficulty] = infoOnDifficulty[difficulty] || { "activeWeeks":0, "lockout":0, "instanceLength": 0, "progress": 0, "kills": 0 };
+                infoOnDifficulty[difficulty] = infoOnDifficulty[difficulty] || {
+                    "activeWeeks":0, "lockout":0, "instanceLength": 0, "progress": 0, "kills": 0
+                };
                 var thisDifficulty = infoOnDifficulty[difficulty];
                 var bosses = instance[difficulty].bosses;
                 for (var boss in bosses)
