@@ -784,7 +784,7 @@ function wow(region,toonName,realmName)
     {
         raidInstancesSortOrder.push(toon.progression.raids[i].name);
     }
-    var instanceDetails = {"dungeons":{},"raids":{}};
+    var instanceDetails = { "dungeons":{},"raids":{} };
     for (i in raidInstancesSortOrder)
     {
         instanceDetails.raids[raidInstancesSortOrder[i]] = {};
@@ -847,49 +847,49 @@ function wow(region,toonName,realmName)
         var instanceBoss = toon.statistics.subCategories[5].subCategories[STATS_RAIDS_LEGION].statistics[instanceNumber];
         var instanceReturns = getRaidAndBossName(instanceBoss.name);
         var bossName = instanceReturns[0];
-        var instanceName = instanceReturns[1];
+        var nameOfInstance = instanceReturns[1];
         var difficultyName = instanceReturns[2];
         var typeOfInstance = "Dungeon";
-        for (raid in raidInstancesSortOrder)// this is needed this as "the" is missing from instances.
+        for (var raid in raidInstancesSortOrder)// this is needed this as "the" is missing from instances.
         {
-            if (raidInstancesSortOrder[raid].indexOf(instanceName) !== -1)
+            if (raidInstancesSortOrder[raid].indexOf(nameOfInstance) !== -1)
             {
-                instanceName = raidInstancesSortOrder[raid];
+                nameOfInstance = raidInstancesSortOrder[raid];
                 typeOfInstance = "Raid";
             }
         }
         var thisInstance = typeOfInstance === "Raid" ? instanceDetails.raids : instanceDetails.dungeons;
-        thisInstance[instanceName] = thisInstance[instanceName] || {};
-        thisInstance[instanceName][difficultyName] = thisInstance[instanceName][difficultyName] || {};
-        thisInstance[instanceName][difficultyName].bosses = thisInstance[instanceName][difficultyName].bosses || {};
+        thisInstance[nameOfInstance] = thisInstance[nameOfInstance] || {};
+        thisInstance[nameOfInstance][difficultyName] = thisInstance[nameOfInstance][difficultyName] || {};
+        thisInstance[nameOfInstance][difficultyName].bosses = thisInstance[nameOfInstance][difficultyName].bosses || {};
 
-        var infoForBoss = {"kills": instanceBoss.quantity};
-        if (instanceName === "Dungeon" && difficultyName === "Heroic")
+        var infoForBoss = { "kills": instanceBoss.quantity };
+        if (nameOfInstance === "Dungeon" && difficultyName === "Heroic")
         {
             infoForBoss.lockout = instanceBoss.lastUpdated > sinceYesterday;
         }
-        else if (instanceName !== "Dungeon" || difficultyName !== "Normal")// everything except normal dungeons
+        else if (nameOfInstance !== "Dungeon" || difficultyName !== "Normal")// everything except normal dungeons
         {
             infoForBoss.lockout = instanceBoss.lastUpdated > sinceTuesday;
         }
-        if (instanceName.indexOf("Violet Hold")===-1)
+        if (nameOfInstance.indexOf("Violet Hold")===-1)
         {
-            thisInstance[instanceName][difficultyName].bosses[bossName] = infoForBoss;
+            thisInstance[nameOfInstance][difficultyName].bosses[bossName] = infoForBoss;
         }
         else
         {
-            var oldInfo = thisInstance[instanceName][difficultyName].bosses["Violet Hold End Boss"] || {};
+            var oldInfo = thisInstance[nameOfInstance][difficultyName].bosses["Violet Hold End Boss"] || {};
             if (oldInfo)
             {
                 infoForBoss.kills += oldInfo.kills;
                 infoForBoss.lockout = infoForBoss.lockout || oldInfo.lockout; // since 0 is false and 1 is true this will work. 
             }
-            thisInstance[instanceName][difficultyName].bosses["Violet Hold End Boss"] = infoForBoss;
+            thisInstance[nameOfInstance][difficultyName].bosses["Violet Hold End Boss"] = infoForBoss;
         }
-        thisInstance[instanceName][difficultyName].kills = thisInstance[instanceName][difficultyName].kills || 0;
-        thisInstance[instanceName][difficultyName].kills += instanceBoss.quantity;
+        thisInstance[nameOfInstance][difficultyName].kills = thisInstance[nameOfInstance][difficultyName].kills || 0;
+        thisInstance[nameOfInstance][difficultyName].kills += instanceBoss.quantity;
     }
-    var displayInfo = {"raid": {}, "dungeon": {}};
+    var displayInfo = { "raid": {}, "dungeon": {} };
     for (var instanceType in instanceDetails)
     {
         var instances = instanceDetails[instanceType];
@@ -903,7 +903,7 @@ function wow(region,toonName,realmName)
             }
             for (var difficulty in instance)
             {
-                infoOnDifficulty[difficulty] = infoOnDifficulty[difficulty] || {"activeWeeks":0, "lockout":0, "instanceLength": 0, "progress": 0, "kills": 0};
+                infoOnDifficulty[difficulty] = infoOnDifficulty[difficulty] || { "activeWeeks":0, "lockout":0, "instanceLength": 0, "progress": 0, "kills": 0 };
                 var thisDifficulty = infoOnDifficulty[difficulty];
                 var bosses = instance[difficulty].bosses;
                 for (var boss in bosses)
@@ -918,7 +918,6 @@ function wow(region,toonName,realmName)
                     {
                         thisDifficulty.details = thisDifficulty.details ? thisDifficulty.details + ", " + getShortInstanceName(instanceName) : getShortInstanceName(instanceName);
                     }
-
                 }
             }
             if (instanceType === "raids")
