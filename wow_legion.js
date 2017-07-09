@@ -209,7 +209,7 @@ function numberWithCommas(x)
 }
 
 
-function wow1(region,toonName,realmName)
+function wow(region,toonName,realmName)
 {
 
     if (!toonName || !realmName)
