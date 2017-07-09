@@ -864,28 +864,28 @@ function wow(region,toonName,realmName)
         instance[instanceName][difficultyName] = instance[instanceName][difficultyName] || {};
         instance[instanceName][difficultyName].bosses = instance[instanceName][difficultyName].bosses || {};
 
-        var bossInfo = {"kills": instanceBoss.quantity};
+        var infoForBoss = {"kills": instanceBoss.quantity};
         if (instanceName === "Dungeon" && difficultyName === "Heroic")
         {
-            bossInfo.lockout = instanceBoss.lastUpdated > sinceYesterday;
+            infoForBoss.lockout = instanceBoss.lastUpdated > sinceYesterday;
         }
         else if (instanceName !== "Dungeon" || difficultyName !== "Normal")// everything except normal dungeons
         {
-            bossInfo.lockout = instanceBoss.lastUpdated > sinceTuesday;
+            infoForBoss.lockout = instanceBoss.lastUpdated > sinceTuesday;
         }
         if (instanceName.indexOf("Violet Hold")===-1)
         {
-            instance[instanceName][difficultyName].bosses[bossName] = bossInfo;
+            instance[instanceName][difficultyName].bosses[bossName] = infoForBoss;
         }
         else
         {
             var oldInfo = instance[instanceName][difficultyName].bosses["Violet Hold End Boss"] || {};
             if (oldInfo)
             {
-                bossInfo.kills += oldInfo.kills;
-                bossInfo.lockout = bossInfo.lockout || oldInfo.lockout; // since 0 is false and 1 is true this will work. 
+                infoForBoss.kills += oldInfo.kills;
+                infoForBoss.lockout = infoForBoss.lockout || oldInfo.lockout; // since 0 is false and 1 is true this will work. 
             }
-            instance[instanceName][difficultyName].bosses["Violet Hold End Boss"] = bossInfo;
+            instance[instanceName][difficultyName].bosses["Violet Hold End Boss"] = infoForBoss;
         }
         instance[instanceName][difficultyName].kills = instance[instanceName][difficultyName].kills || 0;
         instance[instanceName][difficultyName].kills += instanceBoss.quantity;
@@ -919,6 +919,7 @@ function wow(region,toonName,realmName)
                     {
                         thisDifficulty.details = thisDifficulty.details ? thisDifficulty.details + ", " + getShortInstanceName(instanceName) : getShortInstanceName(instanceName);
                     }
+
                 }
             }
             if (instanceType === "raids")
@@ -1102,15 +1103,15 @@ function wow(region,toonName,realmName)
     var instanceInfoPossision = 31;
     for (i = 0; i < raidInstancesSortOrder.length; i++)
     {
-        for (k = 0; k < raidDifficultySortOrder.length; k++)
+        for (var k = 0; k < raidDifficultySortOrder.length; k++)
         {
             var cellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
             toonInfo.splice(instanceInfoPossision+i*8+k, 0, cellInfo.lockout + "/" + cellInfo.instanceLength);
         }
         for (k = 0; k < raidDifficultySortOrder.length; k++)
         {
-            var cellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
-            toonInfo.splice(instanceInfoPossision+i*8+k+4, 0, cellInfo.progress + "/" + cellInfo.instanceLength + " [" + cellInfo.activeWeeks + "] (" + cellInfo.kills + ")");
+            var secondCellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
+            toonInfo.splice(instanceInfoPossision+i*8+k+4, 0, secondCellInfo.progress + "/" + secondCellInfo.instanceLength + " [" + secondCellInfo.activeWeeks + "] (" + secondCellInfo.kills + ")");
         }
     }
     return toonInfo;
