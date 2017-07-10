@@ -776,275 +776,162 @@ function wow(region,toonName,realmName)
         sinceTuesday = sinceTuesday-((7+today-reset))*86400000; // this was 6, but to account for EU it was changed to 7-reset to be either 6 or 5 to account for Wednesday resets
     }
 
-    // Stat categories
-    var STATS_RAIDS = 5;
-
     // Raid stat sub-categories
     var STATS_RAIDS_LEGION = 6;
-
-    // Counters
-    var totalDone = {
-        "Heroic": 0,
-        "Mythic": 0
-    };
-
-    var ActiveWeeks = {
-        "ENlfr":    0,
-        "ENnormal": 0,
-        "ENheroic": 0,
-        "ENmythic": 0,
-        "TVlfr":    0,
-        "TVnormal": 0,
-        "TVheroic": 0,
-        "TVmythic": 0,
-        "NHlfr":    0,
-        "NHnormal": 0,
-        "NHheroic": 0,
-        "NHmythic": 0,
-        "ToSlfr": 0,
-        "ToSnormal": 0,
-        "ToSheroic": 0,
-        "ToSmythic": 0,
-        "Mythic":   0
-    };
-
-    var Progress = {
-        "ENlfr":    0,
-        "ENnormal": 0,
-        "ENheroic": 0,
-        "ENmythic": 0,
-        "TVlfr":    0,
-        "TVnormal": 0,
-        "TVheroic": 0,
-        "TVmythic": 0,
-        "NHlfr":    0,
-        "NHnormal": 0,
-        "NHheroic": 0,
-        "NHmythic": 0,
-        "ToSlfr": 0,
-        "ToSnormal": 0,
-        "ToSheroic": 0,
-        "ToSmythic": 0,
-        "Heroic":   0,
-        "Mythic":   0
-    };
-
-    var Lockout = {
-        "ENlfr":    0,
-        "ENnormal": 0,
-        "ENheroic": 0,
-        "ENmythic": 0,
-        "TVlfr":    0,
-        "TVnormal": 0,
-        "TVheroic": 0,
-        "TVmythic": 0,
-        "NHlfr":    0,
-        "NHnormal": 0,
-        "NHheroic": 0,
-        "NHmythic": 0,
-        "ToSlfr": 0,
-        "ToSnormal": 0,
-        "ToSheroic": 0,
-        "ToSmythic": 0,
-        "Heroic":   0,
-        "Mythic":   0
-    };
-
-    var dungeons = [
-        { id: 1, difficulty: "Heroic" },
-        { id: 2, difficulty: "Mythic", name: "EoA" },  //Eye of Azshara
-        { id: 4, difficulty: "Heroic" },
-        { id: 5, difficulty: "Mythic", name: "DT" },  //Darkheart Thicket
-        { id: 7, difficulty: "Heroic" },
-        { id: 8, difficulty: "Mythic", name:  "NT" },  //Neltharion's Lair
-        { id: 10, difficulty: "Heroic" },
-        { id: 11, difficulty: "Mythic", name:  "HoV" }, //Halls of Valor
-        { id: 14, difficulty: "Heroic" },
-        { id: 15, difficulty: "Heroic" },
-        { id: 16, difficulty: "Mythic", name:  "VH" }, //Violet Hold
-        { id: 17, difficulty: "Mythic", name:  "VH" }, //Violet Hold
-        { id: 19, difficulty: "Heroic" },
-        { id: 20, difficulty: "Mythic", name:  "VotW" }, //Vault of the Wardens
-        { id: 22, difficulty: "Heroic" },
-        { id: 23, difficulty: "Mythic", name:  "BRH" }, //Black Rook Hold
-        { id: 25, difficulty: "Heroic" },
-        { id: 26, difficulty: "Mythic", name:  "MoS" }, //Maw of Souls
-        { id: 27, difficulty: "Mythic", name: "Arc" }, //Arcway
-        { id: 28, difficulty: "Mythic", name:  "CoS" }, //Court of Stars
-        { id: 29, difficulty: "Mythic", name:  "RtK" }, //Return to Karazhan
-        { id: 30, difficulty: "ENlfr" },
-        { id: 31, difficulty: "ENnormal" },
-        { id: 32, difficulty: "ENheroic" },
-        { id: 33, difficulty: "ENmythic" },
-        { id: 34, difficulty: "ENlfr" },
-        { id: 35, difficulty: "ENnormal" },
-        { id: 36, difficulty: "ENheroic" },
-        { id: 37, difficulty: "ENmythic" },
-        { id: 38, difficulty: "ENlfr" },
-        { id: 39, difficulty: "ENnormal" },
-        { id: 40, difficulty: "ENheroic" },
-        { id: 41, difficulty: "ENmythic" },
-        { id: 42, difficulty: "ENlfr" },
-        { id: 43, difficulty: "ENnormal" },
-        { id: 44, difficulty: "ENheroic" },
-        { id: 45, difficulty: "ENmythic" },
-        { id: 46, difficulty: "ENlfr" },
-        { id: 47, difficulty: "ENnormal" },
-        { id: 48, difficulty: "ENheroic" },
-        { id: 49, difficulty: "ENmythic" },
-        { id: 50, difficulty: "ENlfr" },
-        { id: 51, difficulty: "ENnormal" },
-        { id: 52, difficulty: "ENheroic" },
-        { id: 53, difficulty: "ENmythic" },
-        { id: 54, difficulty: "ENlfr" },
-        { id: 55, difficulty: "ENnormal" },
-        { id: 56, difficulty: "ENheroic" },
-        { id: 57, difficulty: "ENmythic" },
-        { id: 58, difficulty: "TVlfr" },
-        { id: 59, difficulty: "TVnormal" },
-        { id: 60, difficulty: "TVheroic" },
-        { id: 61, difficulty: "TVmythic" },
-        { id: 62, difficulty: "TVlfr" },
-        { id: 63, difficulty: "TVnormal" },
-        { id: 64, difficulty: "TVheroic" },
-        { id: 65, difficulty: "TVmythic" },
-        { id: 66, difficulty: "TVlfr" },
-        { id: 67, difficulty: "TVnormal" },
-        { id: 68, difficulty: "TVheroic" },
-        { id: 69, difficulty: "TVmythic" },
-        { id: 70, difficulty: "NHlfr" },
-        { id: 71, difficulty: "NHnormal" },
-        { id: 72, difficulty: "NHheroic" },
-        { id: 73, difficulty: "NHmythic" },
-        { id: 74, difficulty: "NHlfr" },
-        { id: 75, difficulty: "NHnormal" },
-        { id: 76, difficulty: "NHheroic" },
-        { id: 77, difficulty: "NHmythic" },
-        { id: 78, difficulty: "NHlfr" },
-        { id: 79, difficulty: "NHnormal" },
-        { id: 80, difficulty: "NHheroic" },
-        { id: 81, difficulty: "NHmythic" },
-        { id: 82, difficulty: "NHlfr" },
-        { id: 83, difficulty: "NHnormal" },
-        { id: 84, difficulty: "NHheroic" },
-        { id: 85, difficulty: "NHmythic" },
-        { id: 86, difficulty: "NHlfr" },
-        { id: 87, difficulty: "NHnormal" },
-        { id: 88, difficulty: "NHheroic" },
-        { id: 89, difficulty: "NHmythic" },
-        { id: 90, difficulty: "NHlfr" },
-        { id: 91, difficulty: "NHnormal" },
-        { id: 92, difficulty: "NHheroic" },
-        { id: 93, difficulty: "NHmythic" },
-        { id: 94, difficulty: "NHlfr" },
-        { id: 95, difficulty: "NHnormal" },
-        { id: 96, difficulty: "NHheroic" },
-        { id: 97, difficulty: "NHmythic" },
-        { id: 98, difficulty: "NHlfr" },
-        { id: 99, difficulty: "NHnormal" },
-        { id: 100, difficulty: "NHheroic" },
-        { id: 101, difficulty: "NHmythic" },
-        { id: 102, difficulty: "NHlfr" },
-        { id: 103, difficulty: "NHnormal" },
-        { id: 104, difficulty: "NHheroic" },
-        { id: 105, difficulty: "NHmythic" },
-        { id: 106, difficulty: "NHlfr" },
-        { id: 107, difficulty: "NHnormal" },
-        { id: 108, difficulty: "NHheroic" },
-        { id: 109, difficulty: "NHmythic" },
-        { id: 110, difficulty: "ToSlfr" },
-        { id: 111, difficulty: "ToSnormal" },
-        { id: 112, difficulty: "ToSheroic" },
-        { id: 113, difficulty: "ToSmythic" },
-        { id: 114, difficulty: "ToSlfr" },
-        { id: 115, difficulty: "ToSnormal" },
-        { id: 116, difficulty: "ToSheroic" },
-        { id: 117, difficulty: "ToSmythic" },
-        { id: 118, difficulty: "ToSlfr" },
-        { id: 119, difficulty: "ToSnormal" },
-        { id: 120, difficulty: "ToSheroic" },
-        { id: 121, difficulty: "ToSmythic" },
-        { id: 122, difficulty: "ToSlfr" },
-        { id: 123, difficulty: "ToSnormal" },
-        { id: 124, difficulty: "ToSheroic" },
-        { id: 125, difficulty: "ToSmythic" },
-        { id: 126, difficulty: "ToSlfr" },
-        { id: 127, difficulty: "ToSnormal" },
-        { id: 128, difficulty: "ToSheroic" },
-        { id: 129, difficulty: "ToSmythic" },
-        { id: 130, difficulty: "ToSlfr" },
-        { id: 131, difficulty: "ToSnormal" },
-        { id: 132, difficulty: "ToSheroic" },
-        { id: 133, difficulty: "ToSmythic" },
-        { id: 134, difficulty: "ToSlfr" },
-        { id: 135, difficulty: "ToSnormal" },
-        { id: 136, difficulty: "ToSheroic" },
-        { id: 137, difficulty: "ToSmythic" },
-        { id: 138, difficulty: "ToSlfr" },
-        { id: 139, difficulty: "ToSnormal" },
-        { id: 140, difficulty: "ToSheroic" },
-        { id: 141, difficulty: "ToSmythic" },
-        { id: 142, difficulty: "ToSlfr" },
-        { id: 143, difficulty: "ToSnormal" },
-        { id: 144, difficulty: "ToSheroic" },
-        { id: 145, difficulty: "ToSmythic" }
-    ];
-
-    var num_dungeons = dungeons.length;
-    var mythicDetails = ""; 
-
-    for (i = 0; i < num_dungeons; i++)
+    var raidInstancesSortOrder = [];
+    var raidDifficultySortOrder = ["Raid Finder", "Normal", "Heroic", "Mythic"];
+    for (i = 35; i <= 38; i++) // legion raids up to ToS increase 38 if new raid comes
     {
-        var dungeon_id = dungeons[i].id;
-        var difficulty = dungeons[i].difficulty;
-
-        var stats = toon.statistics.subCategories[STATS_RAIDS].subCategories[STATS_RAIDS_LEGION].statistics[dungeon_id];
-
-        if (stats.quantity > 0)
+        raidInstancesSortOrder.push(toon.progression.raids[i].name);
+    }
+    var instanceDetails = { "dungeons":{},"raids":{} };
+    for (i in raidInstancesSortOrder)
+    {
+        instanceDetails.raids[raidInstancesSortOrder[i]] = {};
+    }
+    var getShortInstanceName = function (inputString)
+    {
+        var split = inputString.split(" ");
+        if (split.length !== 1)
         {
-            Progress[difficulty]++;
-
-            if (stats.quantity > ActiveWeeks[difficulty])
+            var retstring = "";
+            for (i in split)
             {
-                ActiveWeeks[difficulty] = stats.quantity;
+                retstring = retstring + split[i].slice(0, 1);
             }
-
-            if (difficulty == "Heroic" && stats.lastUpdated > sinceYesterday)
+            return retstring;
+        }
+        else
+        {
+            return split[0].slice(0,3).toUpperCase();
+        }
+    };
+    var getRaidAndBossName = function(inputString)
+    {
+        var info = "";
+        if (inputString.indexOf("defeats") !== -1)
+        {
+            info = inputString.split(" defeats (");
+        }
+        else if (inputString.indexOf("redemptions") !== -1)
+        {
+            info = inputString.split(" redemptions (");
+        }
+        else
+        {
+            info = inputString.split(" kills (");
+        }
+        var bossName = info.shift(); // first we get boss name
+        info = info[0].split(" ");
+        var difficultyName = "";
+        var nameForInstance = "";
+        if (info[0] === "Raid")
+        {
+            difficultyName = info.shift() + " " +  info.shift(); // Raid Finder
+            nameForInstance = info.join(" ").slice(0, -1); // rest is the name and we remove the last ")"
+        }
+        else if (info[0] !== "Return")
+        {
+            difficultyName = info.shift(); // first info is what difficultie we have
+            nameForInstance = info.join(" ").slice(0, -1); // rest is the name and we remove the last ")"
+        }
+        else // this should only be Return to Karazhan
+        {
+            difficultyName = "Mythic";
+            nameForInstance = info.join(" ").slice(0, -1); // rest is the name and we remove the last ")"
+        }
+        return [bossName, nameForInstance, difficultyName];
+    };
+    for (var instanceNumber in toon.statistics.subCategories[5].subCategories[STATS_RAIDS_LEGION].statistics)
+    {
+        var instanceBoss = toon.statistics.subCategories[5].subCategories[STATS_RAIDS_LEGION].statistics[instanceNumber];
+        var instanceReturns = getRaidAndBossName(instanceBoss.name);
+        var bossName = instanceReturns[0];
+        var nameOfInstance = instanceReturns[1];
+        var difficultyName = instanceReturns[2];
+        var typeOfInstance = "Dungeon";
+        for (var raid in raidInstancesSortOrder)// this is needed this as "the" is missing from instances.
+        {
+            if (raidInstancesSortOrder[raid].indexOf(nameOfInstance) !== -1)
             {
-                Lockout.Heroic++;
-            }
-            else if (difficulty != "Heroic" && stats.lastUpdated > sinceTuesday)
-            {
-                Lockout[difficulty]++;
-           
-                if (difficulty === "Mythic")
-                {
-                    if (mythicDetails)
-                    {
-                        mythicDetails = mythicDetails + ", ";
-                    }
-                
-                    mythicDetails = mythicDetails + dungeons[i].name;
-                }
-            }                            
-            //Find total quantity done for Heroics and mythics
-            if (difficulty == "Heroic" || difficulty == "Mythic")
-            {
-                totalDone[difficulty] =  totalDone[difficulty]+stats.quantity;
+                nameOfInstance = raidInstancesSortOrder[raid];
+                typeOfInstance = "Raid";
             }
         }
-    }
+        var thisInstance = typeOfInstance === "Raid" ? instanceDetails.raids : instanceDetails.dungeons;
+        thisInstance[nameOfInstance] = thisInstance[nameOfInstance] || {};
+        thisInstance[nameOfInstance][difficultyName] = thisInstance[nameOfInstance][difficultyName] || {};
+        thisInstance[nameOfInstance][difficultyName].bosses = thisInstance[nameOfInstance][difficultyName].bosses || {};
 
-    //There are two possible end bosses for Violet Hold, factor this in when calculating the progress tally
-    if (toon.statistics.subCategories[5].subCategories[6].statistics[14].quantity > 0 && toon.statistics.subCategories[5].subCategories[6].statistics[15].quantity > 0)
-    {
-        Progress.Heroic--;
+        var infoForBoss = { "kills": instanceBoss.quantity };
+        if (typeOfInstance === "Dungeon" && difficultyName === "Heroic")
+        {
+            infoForBoss.lockout = instanceBoss.lastUpdated > sinceYesterday;
+        }
+        else if (typeOfInstance !== "Dungeon" || difficultyName !== "Normal")// everything except normal dungeons
+        {
+            infoForBoss.lockout = instanceBoss.lastUpdated > sinceTuesday;
+        }
+        if (nameOfInstance.indexOf("Violet Hold")===-1)
+        {
+            thisInstance[nameOfInstance][difficultyName].bosses[bossName] = infoForBoss;
+        }
+        else
+        {
+            var oldInfo = thisInstance[nameOfInstance][difficultyName].bosses["Violet Hold End Boss"] || {};
+            if (oldInfo.kills)
+            {
+                infoForBoss.kills += oldInfo.kills;
+                infoForBoss.lockout = infoForBoss.lockout || oldInfo.lockout; // since 0 is false and 1 is true this will work. 
+            }
+            thisInstance[nameOfInstance][difficultyName].bosses["Violet Hold End Boss"] = infoForBoss;
+        }
+        thisInstance[nameOfInstance][difficultyName].kills = thisInstance[nameOfInstance][difficultyName].kills || 0;
+        thisInstance[nameOfInstance][difficultyName].kills += instanceBoss.quantity;
     }
-    if (toon.statistics.subCategories[5].subCategories[6].statistics[16].quantity > 0 && toon.statistics.subCategories[5].subCategories[6].statistics[17].quantity > 0)
+    var displayInfo = { "raid": {}, "dungeon": {} };
+    for (var instanceType in instanceDetails)
     {
-        Progress.Mythic--;
+        var instances = instanceDetails[instanceType];
+        var infoOnDifficulty = {};
+        for (var instanceName in instances)
+        {
+            var instance = instances[instanceName];
+            if (instanceType === "raids") // for dungeons we take lockout for all instances, for raid we do it for each instance.
+            {
+                infoOnDifficulty = {};
+            }
+            for (var difficulty in instance)
+            {
+                infoOnDifficulty[difficulty] = infoOnDifficulty[difficulty] || {
+                    "activeWeeks":0, "lockout":0, "instanceLength": 0, "progress": 0, "kills": 0
+                };
+                var thisDifficulty = infoOnDifficulty[difficulty];
+                var bosses = instance[difficulty].bosses;
+                for (var boss in bosses)
+                {
+                    var bossInfo = bosses[boss];
+                    thisDifficulty.activeWeeks = Math.max(thisDifficulty.activeWeeks, bossInfo.kills);
+                    thisDifficulty.instanceLength++;
+                    thisDifficulty.kills += bossInfo.kills;
+                    thisDifficulty.progress += bossInfo.kills === 0 ? 0 : 1;
+                    thisDifficulty.lockout += bossInfo.lockout ? 1 : 0;
+                    if (instanceType === "dungeons" && difficulty === "Mythic" && bossInfo.lockout)
+                    {
+                        thisDifficulty.details = thisDifficulty.details ? thisDifficulty.details + ", " + getShortInstanceName(instanceName) : getShortInstanceName(instanceName);
+                    }
+                }
+            }
+            if (instanceType === "raids")
+            {
+                displayInfo.raid[instanceName] = infoOnDifficulty;
+            }
+        }
+        if (instanceType === "dungeons")
+        {
+            displayInfo.dungeon = infoOnDifficulty;
+        }
     }
-
 
     var profession1 = "none";
     if (toon.professions.primary[0])
@@ -1056,7 +943,6 @@ function wow(region,toonName,realmName)
     {
         profession2 =  toon.professions.primary[1].rank + " " + toon.professions.primary[1].name;
     }
-
 
     var upgradePercent = "-";
 
@@ -1084,9 +970,7 @@ function wow(region,toonName,realmName)
                     artifactRelics.push(relic(relicGem));
                     relicCount++;
                 });
-
             }
-                          
         }
     }
   
@@ -1130,11 +1014,10 @@ function wow(region,toonName,realmName)
         {
             case (30103):
                 if (showTotalArtifactPower)
-               {
+                {
                     artifactRank = artifactRank + " | AP: " + numberWithCommas(toon.achievements.criteriaQuantity[i]);
                 }
                 break;
-
 
             case (31466):
                 if (showTotalArtifactPower)
@@ -1192,51 +1075,11 @@ function wow(region,toonName,realmName)
         artifactRelics[0], artifactRelics[1], artifactRelics[2],
         auditInfo,
 
-        Lockout.ENlfr    + "/7",
-        Lockout.ENnormal + "/7",
-        Lockout.ENheroic + "/7",
-        Lockout.ENmythic + "/7",
+        displayInfo.dungeon.Heroic.lockout + "/" + displayInfo.dungeon.Heroic.instanceLength,
+        displayInfo.dungeon.Heroic.progress + "/" + displayInfo.dungeon.Heroic.instanceLength + " (" + displayInfo.dungeon.Heroic.kills + ")", 
 
-        Progress.ENlfr    + "/7 [" + ActiveWeeks.ENlfr    + "]",
-        Progress.ENnormal + "/7 [" + ActiveWeeks.ENnormal + "]",
-        Progress.ENheroic + "/7 [" + ActiveWeeks.ENheroic + "]",
-        Progress.ENmythic + "/7 [" + ActiveWeeks.ENmythic + "]",
-
-        Lockout.TVlfr    + "/3",
-        Lockout.TVnormal + "/3",
-        Lockout.TVheroic + "/3",
-        Lockout.TVmythic + "/3",
-
-        Progress.TVlfr    + "/3 [" + ActiveWeeks.TVlfr    + "]",
-        Progress.TVnormal + "/3 [" + ActiveWeeks.TVnormal + "]",
-        Progress.TVheroic + "/3 [" + ActiveWeeks.TVheroic + "]",
-        Progress.TVmythic + "/3 [" + ActiveWeeks.TVmythic + "]",
-
-        Lockout.NHlfr    + "/10",
-        Lockout.NHnormal + "/10",
-        Lockout.NHheroic + "/10",
-        Lockout.NHmythic + "/10",
-
-        Progress.NHlfr    + "/10 [" +ActiveWeeks.NHlfr    +"]",
-        Progress.NHnormal + "/10 [" +ActiveWeeks.NHnormal +"]",
-        Progress.NHheroic + "/10 [" +ActiveWeeks.NHheroic +"]",
-        Progress.NHmythic + "/10 [" +ActiveWeeks.NHmythic +"]",
-
-        Lockout.ToSlfr    + "/9",
-        Lockout.ToSnormal + "/9",
-        Lockout.ToSheroic + "/9",
-        Lockout.ToSmythic + "/9",
-
-        Progress.ToSlfr    + "/9 [" +ActiveWeeks.ToSlfr    +"]",
-        Progress.ToSnormal + "/9 [" +ActiveWeeks.ToSnormal +"]",
-        Progress.ToSheroic + "/9 [" +ActiveWeeks.ToSheroic +"]",
-        Progress.ToSmythic + "/9 [" +ActiveWeeks.ToSmythic +"]",
-
-        Lockout.Heroic  + "/8",
-        Progress.Heroic + "/8 (" + totalDone.Heroic + ")",
-
-        Lockout.Mythic  + "/11 " + mythicDetails,
-        Progress.Mythic + "/11 [" + ActiveWeeks.Mythic + "] (" + totalDone.Mythic + ") " + mythicPlus,
+        displayInfo.dungeon.Mythic.lockout + "/" + displayInfo.dungeon.Mythic.instanceLength + " " +  displayInfo.dungeon.Mythic.details,
+        displayInfo.dungeon.Mythic.progress + "/" + displayInfo.dungeon.Mythic.instanceLength + " [" + displayInfo.dungeon.Mythic.activeWeeks + "] (" + displayInfo.dungeon.Mythic.kills + ") " + mythicPlus, 
 
         profession1, profession2, thumbnail, armory, 
         allItems[enchantableItems[4]].enchant, allItems[enchantableItems[5]].enchant,
@@ -1247,7 +1090,7 @@ function wow(region,toonName,realmName)
     for (i = 0; i<sortOrder.length;i++)
     {
         toonInfo.splice(possision,0,allItems[sortOrder[i]].ilvl);
-        toonInfo.splice(possision+44+i,0,allItems[sortOrder[i]].upgrade);
+        toonInfo.splice(possision+12+i,0,allItems[sortOrder[i]].upgrade);
         possision++;
     }
     possision+=4;
@@ -1256,9 +1099,23 @@ function wow(region,toonName,realmName)
         toonInfo.splice(possision,0,allItems[enchantableItems[i]].enchant);
         possision++;
     }
+
+    var instanceInfoPossision = 31;
+    for (i = 0; i < raidInstancesSortOrder.length; i++)
+    {
+        for (var k = 0; k < raidDifficultySortOrder.length; k++)
+        {
+            var cellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
+            toonInfo.splice(instanceInfoPossision+i*8+k, 0, cellInfo.lockout + "/" + cellInfo.instanceLength);
+        }
+        for (k = 0; k < raidDifficultySortOrder.length; k++)
+        {
+            var secondCellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
+            toonInfo.splice(instanceInfoPossision+i*8+k+4, 0, secondCellInfo.progress + "/" + secondCellInfo.instanceLength + " [" + secondCellInfo.activeWeeks + "] (" + secondCellInfo.kills + ")");
+        }
+    }
     return toonInfo;
 }
-
 function vercheck()
 {
     return current_version;
