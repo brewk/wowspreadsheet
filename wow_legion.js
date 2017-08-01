@@ -45,7 +45,7 @@ var markLegendary = false;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 3.141592653;
+var current_version = 3.2; //sorry pi lovers, major update to the dungeon/raid stuff
 
 
 function relic(equippedRelic)
@@ -404,7 +404,7 @@ function wow(region,toonName,realmName)
     audit_lookup["5446"] = "Skin";
     audit_lookup["5447"] = "Survey";
 
-    var thumbnail = "http://"+region+".battle.net/static-render/"+region+"/"+  toon.thumbnail;
+    var thumbnail = "http://render-"+region+".worldofwarcraft.com/character/"+  toon.thumbnail;
     var armory = "http://"+region+".battle.net/wow/en/character/"+realmName+"/"+toonName+"/advanced";
 
     var tier = " ";
