@@ -45,7 +45,7 @@ var markLegendary = false;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 3.2; //sorry pi lovers, major update to the dungeon/raid stuff
+var current_version = 3.21;
 
 
 function relic(equippedRelic)
@@ -809,6 +809,8 @@ function wow(region,toonName,realmName)
     var getRaidAndBossName = function(inputString)
     {
         var info = "";
+
+        //attempt to get boss name, raid, and difficulty by splitting based on this string
         if (inputString.indexOf("defeats") !== -1)
         {
             info = inputString.split(" defeats (");
@@ -816,6 +818,10 @@ function wow(region,toonName,realmName)
         else if (inputString.indexOf("redemptions") !== -1)
         {
             info = inputString.split(" redemptions (");
+        }
+        else if (inputString.indexOf("defenses") !== -1)
+        {
+            info = inputString.split(" defenses (");
         }
         else
         {
