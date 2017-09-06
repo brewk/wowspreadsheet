@@ -45,7 +45,7 @@ var markLegendary = false;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 3.21;
+var current_version = 3.22;
 
 
 function relic(equippedRelic)
@@ -307,12 +307,12 @@ function wow(region,toonName,realmName)
     // Time to do some gear audits
     var auditInfo ="";
 
-    var totalGems = [0, 0, 0];
+    var totalGems = [0, 0, 0, 0];
 
     var gemAudit = [
         { bool: 0, issue: " Old:" },    
         { bool: 0, issue: " Cheap:" },
-        { bool: 0, issue: " No Epic Gems" },    // this was a list of non-epic gems, when they weren't unique
+        { bool: 0, issue: " No Prime Stat Epic" },    // this was a list of non-epic gems, when they weren't unique
         { bool: 0, issue: " Mixed Gems" }  
     ];
 
@@ -323,8 +323,15 @@ function wow(region,toonName,realmName)
         { value: 0, stat: "Mast" },
         { value: 0, stat: "Str" },
         { value: 0, stat: "Agi" },
-        { value: 0, stat: "Int" }
+        { value: 0, stat: "Int" },
+        { value: 0, stat: "Crit" },  //look, this is gonna be weird.. but it's for the new epic gems which are weirdly numbered and different from previous order
+        { value: 0, stat: "-" },
+        { value: 0, stat: "-" },
+        { value: 0, stat: "Haste" },
+        { value: 0, stat: "Mast" },
+        { value: 0, stat: "Vers" },
     ];
+
 
     // I love me some look up tables! These are to check if you have a crappy enchant or gem
     var audit_lookup = {};
@@ -369,6 +376,12 @@ function wow(region,toonName,realmName)
     audit_lookup["130246"] =         //strengh
         audit_lookup["130247"] =     //agility
         audit_lookup["130248"] =  2; //Int
+  
+    // NEW epic gems
+    audit_lookup["151580"] =
+        audit_lookup["151583"] =
+        audit_lookup["151584"] =
+        audit_lookup["151585"] = 3;
 
     //neck
     audit_lookup["5437"] = "Claw";
@@ -413,7 +426,7 @@ function wow(region,toonName,realmName)
     var set1 = [];
     var set2 = [];
 
-    var gemMatch = 0; //check if our rare/uncommon gems match
+    //var gemMatch = 0; //check if our rare/uncommon gems match
 
     for (i = 0; i < tier_pieces.length; i++)
     {
@@ -545,7 +558,11 @@ function wow(region,toonName,realmName)
             {
                 if (item.tooltipParams.gem0&&slot!="mainHand"&&slot!="offHand")
                 {
-                    if (item.tooltipParams.gem0 > 130245) //(epic) I think this could be beautified/simplifed, basically it adds to the stat value for each quality
+                    if (item.tooltipParams.gem0 > 151579)  // new epic gems
+                   {
+                        gemStats[item.tooltipParams.gem0-151580+7].value = gemStats[item.tooltipParams.gem0-151580+7].value+200;
+                    }
+                    else if (item.tooltipParams.gem0 > 130245) //(epic) I think this could be beautified/simplifed, basically it adds to the stat value for each quality
                    {
                         gemStats[item.tooltipParams.gem0-130246+4].value = gemStats[item.tooltipParams.gem0-130246+4].value+200;
                     }
@@ -580,7 +597,7 @@ function wow(region,toonName,realmName)
                       
                     }
                    
-                   //Mixed Gems - if a gem is not epic, check if it has the same stat type, if so, then copy it into gemMatch to compare it to the next one
+                  /* //Mixed Gems - if a gem is not epic, check if it has the same stat type, if so, then copy it into gemMatch to compare it to the next one
                     if (audit_lookup[item.tooltipParams.gem0] != 2 && (gemMatch == 0 || gemMatch === item.tooltipParams.gem0 || gemMatch === item.tooltipParams.gem0+4 || gemMatch === item.tooltipParams.gem0-4))
                     {
                         gemMatch = item.tooltipParams.gem0;      
@@ -588,7 +605,7 @@ function wow(region,toonName,realmName)
                     else if (audit_lookup[item.tooltipParams.gem0] != 2 && audit_lookup[item.tooltipParams.gem0] > -1)
                     {
                         gemAudit[3].bool = 1; // if we fail to pass the above if, the stats don't match on our gems
-                    }
+                    }*/
                   
                     totalGems[audit_lookup[item.tooltipParams.gem0]]++;
                 }
@@ -672,7 +689,7 @@ function wow(region,toonName,realmName)
     }
 
 
-    if (totalGems[0]+totalGems[1]+totalGems[2]>0) //gems exist!
+    if (totalGems[0]+totalGems[1]+totalGems[2]+totalGems[3]>0) //gems exist!
     {
         auditInfo = auditInfo + "Gems" ;
      
@@ -686,9 +703,14 @@ function wow(region,toonName,realmName)
             auditInfo = auditInfo + " Rare:" + totalGems[1];
         }
       
+        if (totalGems[3] > 0)
+        {
+            auditInfo = auditInfo + " Epic:" + totalGems[3];
+        }
+      
         if (totalGems[2] > 0)
         {
-            auditInfo = auditInfo + " Epic:" + totalGems[2];   
+            auditInfo = auditInfo + " PrimeEpic:" + totalGems[2];   
         }
 
         for (i=0; i<gemStats.length; i++) 
