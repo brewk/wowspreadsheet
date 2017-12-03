@@ -45,7 +45,7 @@ var markLegendary = false;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 3.22;
+var current_version = 3.3;
 
 
 function relic(equippedRelic)
@@ -162,7 +162,14 @@ function relic(equippedRelic)
             case (915): relicIlvl="62"; break;
             case (920): relicIlvl="64"; break;
             case (925): relicIlvl="65"; break;
-            default: relicIlvl="65+";
+            case (930): relicIlvl="67"; break;
+            case (935): relicIlvl="68"; break;
+            case (940): relicIlvl="70"; break;
+            case (945): relicIlvl="71"; break;            
+            case (950): relicIlvl="72"; break;
+            case (955): relicIlvl="74"; break;
+            case (960): relicIlvl="75"; break;                                                
+            default: relicIlvl="75+";
         }
     }
     return elementType+" +"+relicIlvl+" ilvls";
@@ -418,7 +425,7 @@ function wow(region,toonName,realmName)
     audit_lookup["5447"] = "Survey";
 
     var thumbnail = "http://render-"+region+".worldofwarcraft.com/character/"+  toon.thumbnail;
-    var armory = "http://"+region+".battle.net/wow/en/character/"+realmName+"/"+toonName+"/advanced";
+    var armory = "http://"+region+".battle.net/wow/en/character/"+realmName+"/"+toonName+"/";
 
     var tier = " ";
     var tier_pieces = [toon.items.head,toon.items.shoulder,toon.items.chest,toon.items.hands,toon.items.legs,toon.items.back];
@@ -802,7 +809,7 @@ function wow(region,toonName,realmName)
     var STATS_RAIDS_LEGION = 6;
     var raidInstancesSortOrder = [];
     var raidDifficultySortOrder = ["Raid Finder", "Normal", "Heroic", "Mythic"];
-    for (i = 35; i <= 38; i++) // legion raids up to ToS increase 38 if new raid comes
+    for (i = 35; i <= 39; i++) // legion raids up to ToS increase 38 if new raid comes
     {
         raidInstancesSortOrder.push(toon.progression.raids[i].name);
     }
