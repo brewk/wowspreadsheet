@@ -40,7 +40,7 @@ var showTotalArtifactPower = false;
 
 var markLegendary = false;
 
-//If you want Pantheon Trinkets to be marked with a * next to item level (use conditional formatting to change their color) change this to true
+//If you want Pantheon Trinkets to be marked with a 'p' next to item level (use conditional formatting to change their color) change this to true
 var markPantheon = false; 
 
 // Everything below this, you shouldn't have to edit
@@ -565,7 +565,7 @@ function wow(region,toonName,realmName)
 
             if ((item.id === 154172 || item.id === 154176 || item.id === 154175 || item.id === 154177 || item.id === 154174 || item.id === 154173 || item.id === 147002 ) && markPantheon)
             {
-                allItems[slot].ilvl = allItems[slot].ilvl + "*";  // * can be any character you want, use it for your conditional
+                allItems[slot].ilvl = allItems[slot].ilvl + "p";  // * can be any character you want, use it for your conditional
             } 
           
             if (item.itemLevel > CONST_AUDIT_ILVL)
