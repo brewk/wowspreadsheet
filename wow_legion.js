@@ -1089,17 +1089,17 @@ function wow(region,toonName,realmName)
         }
     }
 
-    for (var i = artifactRelics.length; i < 3; i++)
+    for (i = artifactRelics.length; i < 3; i++)
     {
         artifactRelics.push("x");
     }
 
     var reps = [
-        {"id":1859, "text":""},//Nightfallen
-        {"id":2165, "text":""},//Army of the Light
-        {"id":2170, "text":""},//Argussian Reach
+        { "id":1859, "text":"" },//Nightfallen
+        { "id":2165, "text":"" },//Army of the Light
+        { "id":2170, "text":"" },//Argussian Reach
     ];
-    for (var i=0; i<toon.reputation.length; i++)
+    for (i = 0; i<toon.reputation.length; i++)
     {
         for (var j = 0; j < reps.length; j++)
         {
@@ -1148,22 +1148,22 @@ function wow(region,toonName,realmName)
     }
 
     var instanceInfoPossision = 31;
-    for (var i = 0; i < raidInstancesSortOrder.length; i++)
+    for (i = 0; i < raidInstancesSortOrder.length; i++)
     {
         for (var k = 0; k < raidDifficultySortOrder.length; k++)
         {
             var cellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
             toonInfo.splice(instanceInfoPossision+i*8+k, 0, cellInfo.lockout + "/" + cellInfo.instanceLength);
         }
-        for (var k = 0; k < raidDifficultySortOrder.length; k++)
+        for (k = 0; k < raidDifficultySortOrder.length; k++)
         {
             var secondCellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
             toonInfo.splice(instanceInfoPossision+i*8+k+4, 0, secondCellInfo.progress + "/" + secondCellInfo.instanceLength + " [" + secondCellInfo.activeWeeks + "] (" + secondCellInfo.kills + ")");
         }
     }
-    for (var i = 0; i < reps.length; i++)
+    for (i = 0; i < reps.length; i++)
     {
-        toonInfo.push(reps[i].text)
+        toonInfo.push(reps[i].text);
     }
     return toonInfo;
 }
