@@ -1093,14 +1093,20 @@ function wow(region,toonName,realmName)
     {
         artifactRelics.push("x");
     }
-  
-    var nightfallen = "";    
-    for (i=0; i<toon.reputation.length; i++) 
+
+    var reps = [
+        {"id":1859, "text":""},//Nightfallen
+        {"id":2165, "text":""},//Army of the Light
+        {"id":2170, "text":""},//Argussian Reach
+    ];
+    for (var i=0; i<toon.reputation.length; i++)
     {
-        if (toon.reputation[i].id == 1859)
+        for (var j = 0; j < reps.length; j++)
         {
-            nightfallen = rep(toon.reputation[i].standing);
-            nightfallen = "Nightfallen - " + nightfallen + " " + toon.reputation[i].value + "/" + toon.reputation[i].max;
+            if (toon.reputation[i].id == reps[j].id)
+            {
+                reps[j].text = toon.reputation[i].name + " - " + rep(toon.reputation[i].standing) + " " + toon.reputation[i].value + "/" + toon.reputation[i].max;
+            }
         }
     }
 
@@ -1125,7 +1131,6 @@ function wow(region,toonName,realmName)
 
         profession1, profession2, thumbnail, armory,
         allItems[enchantableItems[4]].enchant, allItems[enchantableItems[5]].enchant,
-        nightfallen, 
     ];
 
     var possision = 6;
@@ -1155,6 +1160,10 @@ function wow(region,toonName,realmName)
             var secondCellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
             toonInfo.splice(instanceInfoPossision+i*8+k+4, 0, secondCellInfo.progress + "/" + secondCellInfo.instanceLength + " [" + secondCellInfo.activeWeeks + "] (" + secondCellInfo.kills + ")");
         }
+    }
+    for (var i = 0; i < reps.length; i++)
+    {
+        toonInfo.push(reps[i].text)
     }
     return toonInfo;
 }
