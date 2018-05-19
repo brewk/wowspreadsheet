@@ -41,7 +41,7 @@ var showTotalArtifactPower = false;
 var markLegendary = false;
 
 //If you want Pantheon Trinkets to be marked with a 'p' next to item level (use conditional formatting to change their color) change this to true
-var markPantheon = false; 
+var markPantheon = false;
 
 // Everything below this, you shouldn't have to edit
 //***************************************************************
@@ -54,14 +54,14 @@ var current_version = 3.31;
 function relic(equippedRelic)
 {
     var id = equippedRelic.itemId;
-  
+
     if (id == 140070)
     {
         return "Frost +45 ilvls";
     }
-  
+
     var bonusLists = "";
-    equippedRelic.bonusLists.forEach(function(bonusListNumber) 
+    equippedRelic.bonusLists.forEach(function(bonusListNumber)
     {
         bonusLists = bonusLists +  bonusListNumber + ",";
     });
@@ -80,16 +80,16 @@ function relic(equippedRelic)
         }
         Logger.log(relicDat);
     }
-  
+
     var elementType = relicDat.gemInfo.type.type;
-  
+
     if (elementType === "WIND") //Fixing a bug on Blizzard's end for the storm relic
     {
         elementType = "STORM";
     }
 
     var ilvl = relicDat.itemLevel;
-    
+
    //@Corazu: ilvl is wonky for lower level where they aren't necessarily on increments of 5. 3 rounds down, 8 rounds up
    //the data is collected via item links in game to get the right +ilvl bonus for each ilvl of relic. The data may be incomplete
    //for certain increments that aren't 5, even with the rounding, as there are gaps in between the 5 increments where the +ilvl
@@ -168,10 +168,10 @@ function relic(equippedRelic)
             case (930): relicIlvl="67"; break;
             case (935): relicIlvl="68"; break;
             case (940): relicIlvl="70"; break;
-            case (945): relicIlvl="71"; break;            
+            case (945): relicIlvl="71"; break;
             case (950): relicIlvl="72"; break;
             case (955): relicIlvl="74"; break;
-            case (960): relicIlvl="75"; break;                                                
+            case (960): relicIlvl="75"; break;
             default: relicIlvl="75+";
         }
     }
@@ -213,9 +213,9 @@ function rep(standing)
 }
 
 //thanks to github user bloodrash for this function
-function numberWithCommas(x) 
+function numberWithCommas(x)
 {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); 
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 
@@ -244,10 +244,10 @@ function wow(region,toonName,realmName)
 
     var options={ muteHttpExceptions:true };
     var toon = "";
-  
+
     while (!toon.name)  //try again because of these frequent timeouts
     {
-        try 
+        try
         {
             var  toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"", options);
             toon = JSON.parse(toonJSON.toString());
@@ -320,10 +320,10 @@ function wow(region,toonName,realmName)
     var totalGems = [0, 0, 0, 0];
 
     var gemAudit = [
-        { bool: 0, issue: " Old:" },    
+        { bool: 0, issue: " Old:" },
         { bool: 0, issue: " Cheap:" },
         { bool: 0, issue: " No Prime Stat Epic" },    // this was a list of non-epic gems, when they weren't unique
-        { bool: 0, issue: " Mixed Gems" }  
+        { bool: 0, issue: " Mixed Gems" }
     ];
 
     var gemStats = [
@@ -386,7 +386,7 @@ function wow(region,toonName,realmName)
     audit_lookup["130246"] =         //strengh
         audit_lookup["130247"] =     //agility
         audit_lookup["130248"] =  2; //Int
-  
+
     // NEW epic gems
     audit_lookup["151580"] =
         audit_lookup["151583"] =
@@ -407,7 +407,7 @@ function wow(region,toonName,realmName)
     audit_lookup["5897"] = "Quick";
     audit_lookup["5898"] = "Deadly";
 
-  
+
   //shoulder
     audit_lookup["5440"] = "Scavenger (cloth)";
     audit_lookup["5441"] = "Gemfinder";
@@ -487,11 +487,11 @@ function wow(region,toonName,realmName)
                 allItems.upgrade.total+=item.tooltipParams.upgrade.total;
                 allItems.upgrade.current+=item.tooltipParams.upgrade.current;
             }
-          
+
             //crafted gear upgrade stuff
             var obliterum = 11; //current cap for obliterum upgrades
             var craftedUpgrade = -1;
-                          
+
             for (var j = 0; j < item.bonusLists.length; j++)
             {
                 switch (item.bonusLists[j])
@@ -534,14 +534,14 @@ function wow(region,toonName,realmName)
 
                 }
             }
-            
+
             if (craftedUpgrade > -1)
             {
                 allItems[slot].upgrade= craftedUpgrade + "/" + obliterum;
                 allItems.upgrade.total+=obliterum;
                 allItems.upgrade.current+=craftedUpgrade;
             }
-               
+
             allItems.equippedItems++;
             allItems[slot].ilvl = item.itemLevel;
             allItems.totalIlvl += item.itemLevel;
@@ -566,8 +566,8 @@ function wow(region,toonName,realmName)
             if ((item.id === 154172 || item.id === 154176 || item.id === 154175 || item.id === 154177 || item.id === 154174 || item.id === 154173 || item.id === 147002 ) && markPantheon)
             {
                 allItems[slot].ilvl = allItems[slot].ilvl + "p";  // * can be any character you want, use it for your conditional
-            } 
-          
+            }
+
             if (item.itemLevel > CONST_AUDIT_ILVL)
             {
                 if (item.tooltipParams.gem0&&slot!="mainHand"&&slot!="offHand")
@@ -582,11 +582,11 @@ function wow(region,toonName,realmName)
                     }
                     else if (item.tooltipParams.gem0 > 130218) //(rare)
                    {
-                        gemStats[item.tooltipParams.gem0-130219].value = gemStats[item.tooltipParams.gem0-130219].value+150; 
+                        gemStats[item.tooltipParams.gem0-130219].value = gemStats[item.tooltipParams.gem0-130219].value+150;
                     }
                     else if (item.tooltipParams.gem0 > 130214) //(uncommon)
                    {
-                        gemStats[item.tooltipParams.gem0-130215].value = gemStats [item.tooltipParams.gem0-130215].value+100; 
+                        gemStats[item.tooltipParams.gem0-130215].value = gemStats [item.tooltipParams.gem0-130215].value+100;
                     }
 
                     if (item.itemLevel>CONST_EPICGEM_ILVL)
@@ -598,7 +598,7 @@ function wow(region,toonName,realmName)
                             //gemAudit[2].issue += " "+ slot;
                         }
                     }
-                  
+
                     else if (audit_lookup[item.tooltipParams.gem0] === 0)
                     {
                         gemAudit[1].bool = 1;
@@ -608,19 +608,19 @@ function wow(region,toonName,realmName)
                     {
                         gemAudit[0].bool = 1;
                         gemAudit[0].issue += " " + slot;
-                      
+
                     }
-                   
+
                   /* //Mixed Gems - if a gem is not epic, check if it has the same stat type, if so, then copy it into gemMatch to compare it to the next one
                     if (audit_lookup[item.tooltipParams.gem0] != 2 && (gemMatch == 0 || gemMatch === item.tooltipParams.gem0 || gemMatch === item.tooltipParams.gem0+4 || gemMatch === item.tooltipParams.gem0-4))
                     {
-                        gemMatch = item.tooltipParams.gem0;      
+                        gemMatch = item.tooltipParams.gem0;
                     }
                     else if (audit_lookup[item.tooltipParams.gem0] != 2 && audit_lookup[item.tooltipParams.gem0] > -1)
                     {
                         gemAudit[3].bool = 1; // if we fail to pass the above if, the stats don't match on our gems
                     }*/
-                  
+
                     totalGems[audit_lookup[item.tooltipParams.gem0]]++;
                 }
 
@@ -666,7 +666,7 @@ function wow(region,toonName,realmName)
     {
         getItemInfo(toon.items[sortOrder[i]],sortOrder[i]);
     }
-  
+
 
    //always put the higher level trinket/ring on the leftier column
     var bruksOCDswap = function (item1,item2)
@@ -681,12 +681,12 @@ function wow(region,toonName,realmName)
 
     bruksOCDswap("finger1","finger2");
     bruksOCDswap("trinket1","trinket2");
-  
+
     // /u/orange_gauss supplied this for fixing the double weight of 2handers
-    if (allItems.offHand.ilvl == "\u2063" ) 
-   { 
-        allItems.totalIlvl += allItems.mainHand.ilvl; 
-        allItems.equippedItems += 1; 
+    if (allItems.offHand.ilvl == "\u2063" )
+   {
+        allItems.totalIlvl += allItems.mainHand.ilvl;
+        allItems.equippedItems += 1;
     }
 
     allItems.averageIlvl = allItems.totalIlvl / allItems.equippedItems;
@@ -694,7 +694,7 @@ function wow(region,toonName,realmName)
     //fall back to max unequipped ilvl if they're currently partially nude
     if (isNaN(allItems.averageIlvl))
     {
-        allItems.averageIlvl = toon.items.averageItemLevel; 
+        allItems.averageIlvl = toon.items.averageItemLevel;
     }
 
     if (toon.audit.emptySockets !== 0)
@@ -706,8 +706,8 @@ function wow(region,toonName,realmName)
     if (totalGems[0]+totalGems[1]+totalGems[2]+totalGems[3]>0) //gems exist!
     {
         auditInfo = auditInfo + "Gems" ;
-     
-        if (totalGems[0] > 0) 
+
+        if (totalGems[0] > 0)
         {
             auditInfo = auditInfo + " UnCom:" + totalGems[0];
         }
@@ -716,18 +716,18 @@ function wow(region,toonName,realmName)
         {
             auditInfo = auditInfo + " Rare:" + totalGems[1];
         }
-      
+
         if (totalGems[3] > 0)
         {
             auditInfo = auditInfo + " Epic:" + totalGems[3];
         }
-      
+
         if (totalGems[2] > 0)
         {
-            auditInfo = auditInfo + " PrimeEpic:" + totalGems[2];   
+            auditInfo = auditInfo + " PrimeEpic:" + totalGems[2];
         }
 
-        for (i=0; i<gemStats.length; i++) 
+        for (i=0; i<gemStats.length; i++)
         {
             if (gemStats[i].value > 0)
             {
@@ -737,7 +737,7 @@ function wow(region,toonName,realmName)
 
     }
 
-    for (i=0; i<gemAudit.length; i++) 
+    for (i=0; i<gemAudit.length; i++)
     {
         if (gemAudit[i].bool > 0)
         {
@@ -924,7 +924,7 @@ function wow(region,toonName,realmName)
             if (oldInfo.kills)
             {
                 infoForBoss.kills += oldInfo.kills;
-                infoForBoss.lockout = infoForBoss.lockout || oldInfo.lockout; // since 0 is false and 1 is true this will work. 
+                infoForBoss.lockout = infoForBoss.lockout || oldInfo.lockout; // since 0 is false and 1 is true this will work.
             }
             thisInstance[nameOfInstance][difficultyName].bosses["Violet Hold End Boss"] = infoForBoss;
         }
@@ -996,7 +996,7 @@ function wow(region,toonName,realmName)
     var artifactRank = "x";
     var artifactRelics = [];
     var relicItems = ["mainHand","offHand"];
-    var relicCount = 0; 
+    var relicCount = 0;
 
     for (i = 0; i < relicItems.length; i++)
     {
@@ -1007,7 +1007,7 @@ function wow(region,toonName,realmName)
             if (relicItem.quality > 4)
             {
                 artifactRank = 0;
-                relicItem.relics.forEach(function(relicGem) 
+                relicItem.relics.forEach(function(relicGem)
                 {
                     artifactRelics.push(relic(relicGem));
                     relicCount++;
@@ -1015,8 +1015,8 @@ function wow(region,toonName,realmName)
             }
         }
     }
-  
-    if (toon.items.mainHand && toon.items.mainHand.quality == 6) 
+
+    if (toon.items.mainHand && toon.items.mainHand.quality == 6)
     {
         if (toon.items.mainHand.artifactTraits[0])
         {
@@ -1036,7 +1036,7 @@ function wow(region,toonName,realmName)
             artifactRank = artifactRank - relicCount;
         }
     }
- 
+
 
     // this was the previous method for calculating artifactRank
     /*for (i=0; i<toon.achievements.criteria.length; i++)
@@ -1066,8 +1066,8 @@ function wow(region,toonName,realmName)
                 {
                     artifactRank = artifactRank + " | AK: " +  toon.achievements.criteriaQuantity[i];
                 }
-                break; 
-           
+                break;
+
             case (33096):
                 mythicPlus = mythicPlus + "m+2: " + toon.achievements.criteriaQuantity[i];
                 break;
@@ -1075,21 +1075,21 @@ function wow(region,toonName,realmName)
             case (33097):
                 mythicPlus = mythicPlus + " m+5: " + toon.achievements.criteriaQuantity[i];
                 break;
-           
+
             case (33098):
                 mythicPlus = mythicPlus + " m+10: " + toon.achievements.criteriaQuantity[i];
                 break;
-           
+
             case (32028):
                 mythicPlus = mythicPlus + " m+15: " + toon.achievements.criteriaQuantity[i];
-                break;   
+                break;
 
-            default: 
+            default:
                 break;
         }
     }
-  
-    for (i = artifactRelics.length; i < 3; i++)
+
+    for (var i = artifactRelics.length; i < 3; i++)
     {
         artifactRelics.push("x");
     }
@@ -1105,7 +1105,7 @@ function wow(region,toonName,realmName)
     }
 
     var toonInfo = [
-      
+
         toon_class,
         toon.level,
         mainspec,
@@ -1118,12 +1118,12 @@ function wow(region,toonName,realmName)
         auditInfo,
 
         displayInfo.dungeon.Heroic.lockout + "/" + displayInfo.dungeon.Heroic.instanceLength,
-        displayInfo.dungeon.Heroic.progress + "/" + displayInfo.dungeon.Heroic.instanceLength + " (" + displayInfo.dungeon.Heroic.kills + ")", 
+        displayInfo.dungeon.Heroic.progress + "/" + displayInfo.dungeon.Heroic.instanceLength + " (" + displayInfo.dungeon.Heroic.kills + ")",
 
         displayInfo.dungeon.Mythic.lockout + "/" + displayInfo.dungeon.Mythic.instanceLength + " " +  displayInfo.dungeon.Mythic.details,
-        displayInfo.dungeon.Mythic.progress + "/" + displayInfo.dungeon.Mythic.instanceLength + " [" + displayInfo.dungeon.Mythic.activeWeeks + "] (" + displayInfo.dungeon.Mythic.kills + ") " + mythicPlus, 
+        displayInfo.dungeon.Mythic.progress + "/" + displayInfo.dungeon.Mythic.instanceLength + " [" + displayInfo.dungeon.Mythic.activeWeeks + "] (" + displayInfo.dungeon.Mythic.kills + ") " + mythicPlus,
 
-        profession1, profession2, thumbnail, armory, 
+        profession1, profession2, thumbnail, armory,
         allItems[enchantableItems[4]].enchant, allItems[enchantableItems[5]].enchant,
         nightfallen, 
     ];
@@ -1143,14 +1143,14 @@ function wow(region,toonName,realmName)
     }
 
     var instanceInfoPossision = 31;
-    for (i = 0; i < raidInstancesSortOrder.length; i++)
+    for (var i = 0; i < raidInstancesSortOrder.length; i++)
     {
         for (var k = 0; k < raidDifficultySortOrder.length; k++)
         {
             var cellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
             toonInfo.splice(instanceInfoPossision+i*8+k, 0, cellInfo.lockout + "/" + cellInfo.instanceLength);
         }
-        for (k = 0; k < raidDifficultySortOrder.length; k++)
+        for (var k = 0; k < raidDifficultySortOrder.length; k++)
         {
             var secondCellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
             toonInfo.splice(instanceInfoPossision+i*8+k+4, 0, secondCellInfo.progress + "/" + secondCellInfo.instanceLength + " [" + secondCellInfo.activeWeeks + "] (" + secondCellInfo.kills + ")");
@@ -1158,6 +1158,7 @@ function wow(region,toonName,realmName)
     }
     return toonInfo;
 }
+
 function vercheck()
 {
     return current_version;
