@@ -1,5 +1,5 @@
 /* ***********************************
- ***     Copyright (c) 2017 bruk
+ ***     Copyright (c) 2018 bruk
  *** This script is free software; you can redistribute it and/or modify
  *** it under the terms of the GNU General Public License as published by
  *** the Free Software Foundation; either version 3 of the License, or
@@ -25,13 +25,13 @@ var apikey = "";
 
 
 // Change this to the threshold you want to start checking for epic gems (ie: if it's 709 anything 710 or above will be checked for epic gems)
-var CONST_EPICGEM_ILVL = 860;
+var CONST_EPICGEM_ILVL = 160;
 
 // You shouldn't need to change this, but this is threshold item level where gear is checked for enchants and gems
-var CONST_AUDIT_ILVL = 599;
+var CONST_AUDIT_ILVL = 160;
 
 // Set this to be the minimum iLvl of the current raid's tier gear (helps weed out the tier column noise)
-var CONST_TIER_GEAR_ILVL = 860;
+var CONST_TIER_GEAR_ILVL =160;
 
 //If you want total AP gathered displayed next to highest weapon rank, change this to true
 var showTotalArtifactPower = false;
@@ -48,7 +48,7 @@ var markPantheon = false;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 3.31;
+var current_version = 3.4;
 
 
 function relic(equippedRelic)
@@ -95,7 +95,7 @@ function relic(equippedRelic)
    //for certain increments that aren't 5, even with the rounding, as there are gaps in between the 5 increments where the +ilvl
    //bonus jumps by more than 1, leaving room for say, a xx8 to be in the middle.
    //At some point for posterity I'll probably come back and fix those cases, but it's a lot of manual work to hand-check all the values
-    if (ilvl%5!=0)
+    /*if (ilvl%5!=0)
     {
         var spare = ilvl%10;
         if (spare<=3)
@@ -107,72 +107,93 @@ function relic(equippedRelic)
             ilvl+=(5-spare);
         }
 
-    }
+    }*/
 
     var relicIlvl = 0;
-    if (ilvl<=690)
+    if (ilvl<=141)
     {
         relicIlvl = 2; //anything less than this adds 2
+    }
+    else if (ilvl == 870)
+    {
+      relicIlvl="22"
+    }
+    else if (ilvl > 500)
+    {
+      relicIlvl = "??? item: " + id  + " (" + ilvl + ")";
+    }
+    else if (ilvl > 255)
+    {
+        relicIlvl = ">35";
     }
     else
    {
         switch (ilvl)
        {
-            case (695): relicIlvl="3"; break;
-            case (700): relicIlvl="4"; break;
-            case (705): relicIlvl="5"; break;
-            case (710): relicIlvl="7"; break;
-            case (715): relicIlvl="8"; break;
-            case (720): relicIlvl="9"; break;
-            case (725): relicIlvl="10"; break;
-            case (730): relicIlvl="12"; break;
-            case (735): relicIlvl="13"; break;
-            case (740): relicIlvl="14"; break;
-            case (745): relicIlvl="15"; break;
-            case (750): relicIlvl="17"; break;
-            case (755): relicIlvl="18"; break;
-            case (760): relicIlvl="19"; break;
-            case (765): relicIlvl="21"; break;
-            case (770): relicIlvl="22"; break;
-            case (775): relicIlvl="23"; break;
-            case (780): relicIlvl="24"; break;
-            case (785): relicIlvl="26"; break;
-            case (790): relicIlvl="27"; break;
-            case (795): relicIlvl="28"; break;
-            case (800): relicIlvl="29"; break;
-            case (805): relicIlvl="31"; break;
-            case (810): relicIlvl="32"; break;
-            case (815): relicIlvl="33"; break;
-            case (820): relicIlvl="35"; break;
-            case (825): relicIlvl="36"; break;
-            case (830): relicIlvl="37"; break;
-            case (835): relicIlvl="39"; break;
-            case (840): relicIlvl="40"; break;
-            case (845): relicIlvl="42"; break;
-            case (850): relicIlvl="43"; break;
-            case (855): relicIlvl="45"; break;
-            case (860): relicIlvl="46"; break;
-            case (865): relicIlvl="48"; break;
-            case (870): relicIlvl="49"; break;
-            case (875): relicIlvl="51"; break;
-            case (880): relicIlvl="52"; break;
-            case (885): relicIlvl="53"; break;
-            case (890): relicIlvl="55"; break;
-            case (895): relicIlvl="56"; break;
-            case (900): relicIlvl="58"; break;
-            case (905): relicIlvl="59"; break;
-            case (910): relicIlvl="61"; break;
-            case (915): relicIlvl="62"; break;
-            case (920): relicIlvl="64"; break;
-            case (925): relicIlvl="65"; break;
-            case (930): relicIlvl="67"; break;
-            case (935): relicIlvl="68"; break;
-            case (940): relicIlvl="70"; break;
-            case (945): relicIlvl="71"; break;
-            case (950): relicIlvl="72"; break;
-            case (955): relicIlvl="74"; break;
-            case (960): relicIlvl="75"; break;
-            default: relicIlvl="75+";
+            case (142): relicIlvl="3"; break;
+            case (144): relicIlvl="3"; break;            
+            case (145): relicIlvl="3"; break;
+            case (147): relicIlvl="4"; break;
+            case (148): relicIlvl="4"; break;
+            case (149): relicIlvl="5"; break;
+            case (156): relicIlvl="7"; break;
+            case (158): relicIlvl="7"; break;
+            case (160): relicIlvl="8"; break;
+            case (161): relicIlvl="8"; break;
+            case (162): relicIlvl="8"; break;
+            case (164): relicIlvl="9"; break;
+            case (166): relicIlvl="9"; break;
+            case (168): relicIlvl="10"; break;
+            case (167): relicIlvl="10?"; break;
+            case (169): relicIlvl="10??"; break;
+            case (171): relicIlvl="10???"; break;
+            case (170): relicIlvl="11"; break;
+            case (172): relicIlvl="11"; break;
+            case (176): relicIlvl="12"; break;
+            case (173): relicIlvl="12"; break;
+            case (174): relicIlvl="12"; break;
+            case (175): relicIlvl="12"; break;
+            case (178): relicIlvl="13"; break;
+            case (180): relicIlvl="13"; break;
+            case (182): relicIlvl="14"; break;
+            case (183): relicIlvl="15?"; break;
+            case (184): relicIlvl="15"; break;
+            case (185): relicIlvl="15"; break;
+            case (186): relicIlvl="15"; break;
+            case (187): relicIlvl="16??"; break;
+            case (188): relicIlvl="16"; break;
+            case (189): relicIlvl="16??"; break;
+            case (190): relicIlvl="16"; break;
+            case (191): relicIlvl="16???"; break;
+            case (192): relicIlvl="17"; break;
+            case (193): relicIlvl="17?"; break;
+            case (194): relicIlvl="17"; break;
+            case (195): relicIlvl="18"; break;
+            case (198): relicIlvl="19"; break;
+            case (199): relicIlvl="19?"; break;
+            case (200): relicIlvl="20"; break;
+            case (201): relicIlvl="20?"; break;
+            case (202): relicIlvl="20??"; break;
+            case (203): relicIlvl="20"; break;
+            case (204): relicIlvl="20"; break;
+            case (205): relicIlvl="20"; break;
+            case (208): relicIlvl="21"; break;
+            case (210): relicIlvl="22"; break;
+            case (213): relicIlvl="23"; break;
+            case (215): relicIlvl="23"; break;
+            case (220): relicIlvl="25"; break;
+            case (223): relicIlvl="26"; break;
+            case (225): relicIlvl="26"; break;
+            case (228): relicIlvl="27"; break;
+            case (230): relicIlvl="27"; break;           
+            case (235): relicIlvl="29"; break;
+            case (240): relicIlvl="30"; break;
+            case (243): relicIlvl="31"; break;
+            case (245): relicIlvl="32"; break;           
+            case (250): relicIlvl="33"; break;
+            case (255): relicIlvl="35"; break;
+           
+            default: relicIlvl="???";
         }
     }
     return elementType+" +"+relicIlvl+" ilvls";
@@ -976,15 +997,90 @@ function wow(region,toonName,realmName)
     }
 
     var profession1 = "none";
-    if (toon.professions.primary[0])
-    {
-        profession1 = toon.professions.primary[0].rank + " " + toon.professions.primary[0].name;
-    }
     var profession2 = "none";
-    if (toon.professions.primary[1])
-    {
-        profession2 =  toon.professions.primary[1].rank + " " + toon.professions.primary[1].name;
+    var prof1Icon = "none";
+    var prof2Icon = "none";
+    var proftemp = "0";
+
+    var prof1array = ["-", "-", "-", "-", "-", "-", "-"];
+    var prof2array = ["-", "-", "-", "-", "-", "-", "-"];
+
+  
+    var prof_lookup = {};
+  
+    prof_lookup["Kul"] = 7;
+    prof_lookup["Zandalari"] = 7;
+    prof_lookup["Legion"] = 6;
+    prof_lookup["Draenor"] = 5;
+    prof_lookup["Pandaria"] = 4;
+    prof_lookup["Cataclysm"] = 3;
+    prof_lookup["Northrend"] = 2;
+    prof_lookup["Outland"] = 1;
+    prof_lookup["0"] = 0;
+
+    
+
+  
+    for ( i = 0; i < toon.professions.primary.length; i++)
+    {     
+      
+      if(prof1Icon == "none" || prof1Icon == toon.professions.primary[i].icon)
+      {
+        prof1Icon = toon.professions.primary[i].icon;
+        if (toon.professions.primary[i].id < 900)
+        {
+          profession1 = toon.professions.primary[i].name;
+          proftemp[0] = 0;
+        }
+        else
+        {
+          proftemp = toon.professions.primary[i].name.split(" ");
+        }
+        
+        if (toon.professions.primary[i].rank >= toon.professions.primary[i].max)
+        {
+             prof1array[prof_lookup[proftemp[0]]]= "\u2713"
+        }
+        
+        
+        else
+        {
+          prof1array[prof_lookup[proftemp[0]]]= toon.professions.primary[i].rank;
+        }
+
+      }
+        
+      else if(prof2Icon == "none" || prof2Icon == toon.professions.primary[i].icon)
+      {
+        prof2Icon = toon.professions.primary[i].icon;
+        if (toon.professions.primary[i].id < 900)
+        {
+          profession2 = toon.professions.primary[i].name;
+          proftemp[0] = 0;
+        }
+        else
+        {
+          proftemp = toon.professions.primary[i].name.split(" ");
+        }
+         if (toon.professions.primary[i].rank >= toon.professions.primary[i].max)
+          {
+             prof2array[prof_lookup[proftemp[0]]]= "\u2713"
+          }
+        
+        
+        else
+        {
+          prof2array[prof_lookup[proftemp[0]]]= toon.professions.primary[i].rank;
+        }
+
+      }
+        
+
     }
+   
+      profession1 = profession1 + " " + prof1array;
+      profession2 = profession2 + " " + prof2array;
+      
 
     var upgradePercent = "-";
 
@@ -1018,24 +1114,34 @@ function wow(region,toonName,realmName)
 
     if (toon.items.mainHand && toon.items.mainHand.quality == 6)
     {
-        if (toon.items.mainHand.artifactTraits[0])
+        if (toon.items.mainHand.artifactTraits[1])
         {
-            for (i=0; i<toon.items.mainHand.artifactTraits.length; i++)
+            if (toon.items.mainHand.artifactTraits[0])
             {
-                artifactRank = artifactRank + toon.items.mainHand.artifactTraits[i].rank;
+                for (i=0; i<toon.items.mainHand.artifactTraits.length; i++)
+                {
+                    artifactRank = artifactRank + toon.items.mainHand.artifactTraits[i].rank;
+                }
+                artifactRank = artifactRank - relicCount;
             }
-            artifactRank = artifactRank - relicCount;
-        }
 
-        else if (toon.items.offHand.artifactTraits[0])
-         {
-            for (i=0; i<toon.items.offHand.artifactTraits.length; i++)
+            else if (toon.items.offHand.artifactTraits[1])
             {
-                artifactRank = artifactRank + toon.items.offHand.artifactTraits[i].rank;
-            }
-            artifactRank = artifactRank - relicCount;
-        }
-    }
+               if (toon.items.offHand.artifactTraits[0])
+               {
+                   for (i=0; i<toon.items.offHand.artifactTraits.length; i++)
+                   {
+                       artifactRank = artifactRank + toon.items.offHand.artifactTraits[i].rank;
+                   }
+                   artifactRank = artifactRank - relicCount;
+               }
+           }
+           else
+           {
+               artifactRank = 0;
+           }
+       }
+   }
 
 
     // this was the previous method for calculating artifactRank
@@ -1133,32 +1239,32 @@ function wow(region,toonName,realmName)
         allItems[enchantableItems[4]].enchant, allItems[enchantableItems[5]].enchant,
     ];
 
-    var possision = 6;
+    var Position = 6;
     for (i = 0; i<sortOrder.length;i++)
     {
-        toonInfo.splice(possision,0,allItems[sortOrder[i]].ilvl);
-        toonInfo.splice(possision+12+i,0,allItems[sortOrder[i]].upgrade);
-        possision++;
+        toonInfo.splice(Position,0,allItems[sortOrder[i]].ilvl);
+        toonInfo.splice(Position+12+i,0,allItems[sortOrder[i]].upgrade);
+        Position++;
     }
-    possision+=4;
+    Position+=4;
     for (i = 0; i < enchantableItems.length-2;i++)
     {
-        toonInfo.splice(possision,0,allItems[enchantableItems[i]].enchant);
-        possision++;
+        toonInfo.splice(Position,0,allItems[enchantableItems[i]].enchant);
+        Position++;
     }
 
-    var instanceInfoPossision = 31;
+    var instanceInfoPosition = 31;
     for (i = 0; i < raidInstancesSortOrder.length; i++)
     {
         for (var k = 0; k < raidDifficultySortOrder.length; k++)
         {
             var cellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
-            toonInfo.splice(instanceInfoPossision+i*8+k, 0, cellInfo.lockout + "/" + cellInfo.instanceLength);
+            toonInfo.splice(instanceInfoPosition+i*8+k, 0, cellInfo.lockout + "/" + cellInfo.instanceLength);
         }
         for (k = 0; k < raidDifficultySortOrder.length; k++)
         {
             var secondCellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
-            toonInfo.splice(instanceInfoPossision+i*8+k+4, 0, secondCellInfo.progress + "/" + secondCellInfo.instanceLength + " [" + secondCellInfo.activeWeeks + "] (" + secondCellInfo.kills + ")");
+            toonInfo.splice(instanceInfoPosition+i*8+k+4, 0, secondCellInfo.progress + "/" + secondCellInfo.instanceLength + " [" + secondCellInfo.activeWeeks + "] (" + secondCellInfo.kills + ")");
         }
     }
     for (i = 0; i < reps.length; i++)
@@ -1172,5 +1278,3 @@ function vercheck()
 {
     return current_version;
 }
-
-//When copy pasting, delete 0Looking at the bottom if it shows up, otherwise it'll cause an error
