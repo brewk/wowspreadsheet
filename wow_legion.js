@@ -1036,7 +1036,7 @@ function wow(region,toonName,realmName)
         
             if (toon.professions.primary[i].rank >= toon.professions.primary[i].max)
             {
-                prof1array[prof_lookup[proftemp[0]]]= "\u2713"
+                prof1array[prof_lookup[proftemp[0]]]= "\u2713";
             }
             else
             {
@@ -1058,7 +1058,7 @@ function wow(region,toonName,realmName)
             }
             if (toon.professions.primary[i].rank >= toon.professions.primary[i].max)
             {
-            	prof2array[prof_lookup[proftemp[0]]]= "\u2713"
+                prof2array[prof_lookup[proftemp[0]]]= "\u2713";
             }
             else
             {
@@ -1116,21 +1116,21 @@ function wow(region,toonName,realmName)
 
             else if (toon.items.offHand.artifactTraits[1])
             {
-               if (toon.items.offHand.artifactTraits[0])
-               {
+                if (toon.items.offHand.artifactTraits[0])
+                {
                    for (i=0; i<toon.items.offHand.artifactTraits.length; i++)
                    {
                        artifactRank = artifactRank + toon.items.offHand.artifactTraits[i].rank;
                    }
                    artifactRank = artifactRank - relicCount;
-               }
-           }
-           else
-           {
-               artifactRank = 0;
-           }
-       }
-   }
+                }
+            }
+            else
+            {
+                artifactRank = 0;
+            }
+        }
+    }
 
 
     // this was the previous method for calculating artifactRank
