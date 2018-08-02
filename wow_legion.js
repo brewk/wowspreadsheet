@@ -116,11 +116,11 @@ function relic(equippedRelic)
     }
     else if (ilvl == 870)
     {
-      relicIlvl="22"
+        relicIlvl="22";
     }
     else if (ilvl > 500)
     {
-      relicIlvl = "??? item: " + id  + " (" + ilvl + ")";
+        relicIlvl = "??? item: " + id  + " (" + ilvl + ")";
     }
     else if (ilvl > 255)
     {
@@ -1008,78 +1008,67 @@ function wow(region,toonName,realmName)
   
     var prof_lookup = {};
   
-    prof_lookup["Kul"] = 7;
-    prof_lookup["Zandalari"] = 7;
-    prof_lookup["Legion"] = 6;
-    prof_lookup["Draenor"] = 5;
-    prof_lookup["Pandaria"] = 4;
-    prof_lookup["Cataclysm"] = 3;
-    prof_lookup["Northrend"] = 2;
-    prof_lookup["Outland"] = 1;
-    prof_lookup["0"] = 0;
+    prof_lookup.Kul = 7;
+    prof_lookup.Zandalari = 7;
+    prof_lookup.Legion = 6;
+    prof_lookup.Draenor = 5;
+    prof_lookup.Pandaria = 4;
+    prof_lookup.Cataclysm = 3;
+    prof_lookup.Northrend = 2;
+    prof_lookup.Outland = 1;
+    prof_lookup[0] = 0;
 
-    
-
-  
     for ( i = 0; i < toon.professions.primary.length; i++)
     {     
       
-      if(prof1Icon == "none" || prof1Icon == toon.professions.primary[i].icon)
-      {
-        prof1Icon = toon.professions.primary[i].icon;
-        if (toon.professions.primary[i].id < 900)
+        if (prof1Icon == "none" || prof1Icon == toon.professions.primary[i].icon)
         {
-          profession1 = toon.professions.primary[i].name;
-          proftemp[0] = 0;
-        }
-        else
-        {
-          proftemp = toon.professions.primary[i].name.split(" ");
+            prof1Icon = toon.professions.primary[i].icon;
+            if (toon.professions.primary[i].id < 900)
+            {
+                profession1 = toon.professions.primary[i].name;
+                proftemp[0] = 0;
+            }
+            else
+            {
+                proftemp = toon.professions.primary[i].name.split(" ");
+            }
+        
+            if (toon.professions.primary[i].rank >= toon.professions.primary[i].max)
+            {
+                prof1array[prof_lookup[proftemp[0]]]= "\u2713"
+            }
+            else
+            {
+                prof1array[prof_lookup[proftemp[0]]]= toon.professions.primary[i].rank;
+            }
         }
         
-        if (toon.professions.primary[i].rank >= toon.professions.primary[i].max)
+        else if (prof2Icon == "none" || prof2Icon == toon.professions.primary[i].icon)
         {
-             prof1array[prof_lookup[proftemp[0]]]= "\u2713"
+            prof2Icon = toon.professions.primary[i].icon;
+            if (toon.professions.primary[i].id < 900)
+            {
+                profession2 = toon.professions.primary[i].name;
+                proftemp[0] = 0;
+            }
+            else
+            {
+                proftemp = toon.professions.primary[i].name.split(" ");
+            }
+            if (toon.professions.primary[i].rank >= toon.professions.primary[i].max)
+            {
+            	prof2array[prof_lookup[proftemp[0]]]= "\u2713"
+            }
+            else
+            {
+            	prof2array[prof_lookup[proftemp[0]]]= toon.professions.primary[i].rank;
+            }
         }
-        
-        
-        else
-        {
-          prof1array[prof_lookup[proftemp[0]]]= toon.professions.primary[i].rank;
-        }
-
-      }
-        
-      else if(prof2Icon == "none" || prof2Icon == toon.professions.primary[i].icon)
-      {
-        prof2Icon = toon.professions.primary[i].icon;
-        if (toon.professions.primary[i].id < 900)
-        {
-          profession2 = toon.professions.primary[i].name;
-          proftemp[0] = 0;
-        }
-        else
-        {
-          proftemp = toon.professions.primary[i].name.split(" ");
-        }
-         if (toon.professions.primary[i].rank >= toon.professions.primary[i].max)
-          {
-             prof2array[prof_lookup[proftemp[0]]]= "\u2713"
-          }
-        
-        
-        else
-        {
-          prof2array[prof_lookup[proftemp[0]]]= toon.professions.primary[i].rank;
-        }
-
-      }
-        
-
     }
-   
-      profession1 = profession1 + " " + prof1array;
-      profession2 = profession2 + " " + prof2array;
+
+    profession1 = profession1 + " " + prof1array;
+    profession2 = profession2 + " " + prof2array;
       
 
     var upgradePercent = "-";
