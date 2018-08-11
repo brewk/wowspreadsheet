@@ -22,7 +22,7 @@ World of Warcraft character tracking spreadsheet for Google Docs
 Other sheets
 ----
 The other files contain code for the other sheets.
-### [Check the Wiki](https://github.com/brewk/wowspreadsheet/wiki/Other-Spreadsheets) for details!
+### [Check the Wiki](https://github.com/brewk/wowspreadsheet/wiki/Other-Spreadsheets-and-Tools) for details!
 
 Contributing
 ---
