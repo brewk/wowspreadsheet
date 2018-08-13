@@ -48,7 +48,7 @@ var markPantheon = false;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 3.4;
+var current_version = 3.41;
 
 
 function relic(equippedRelic)
@@ -370,14 +370,14 @@ function wow(region,toonName,realmName)
     //cheap enchants and gems
 
     //ring
-    audit_lookup["5423"] = "Word +150C";
-    audit_lookup["5424"] = "Word +150H";
-    audit_lookup["5425"] = "Word +150M";
-    audit_lookup["5426"] = "Word +150V";
+    audit_lookup["5423"] = "Word +7Crit";
+    audit_lookup["5424"] = "Word +7Hst";
+    audit_lookup["5425"] = "Word +7Mast";
+    audit_lookup["5426"] = "Word +7Vers";
     //cloak
-    audit_lookup["5431"] = "Word +150S";
-    audit_lookup["5432"] = "Word +150A";
-    audit_lookup["5433"] = "Word +150I";
+    audit_lookup["5431"] = "Word +7Str";
+    audit_lookup["5432"] = "Word +7Agi";
+    audit_lookup["5433"] = "Word +7Int";
     //gems
     audit_lookup["130218"] =
         audit_lookup["130217"] =
@@ -387,15 +387,15 @@ function wow(region,toonName,realmName)
     //better enchants and gems
 
     //ring
-    audit_lookup["5427"] = "Binding +200C";
-    audit_lookup["5428"] = "Binding +200H";
-    audit_lookup["5429"] = "Binding +200M";
-    audit_lookup["5430"] = "Binding +200V";
+    audit_lookup["5427"] = "Binding +9Crit";
+    audit_lookup["5428"] = "Binding +9Hst";
+    audit_lookup["5429"] = "Binding +9Mast";
+    audit_lookup["5430"] = "Binding +7Vers";
 
         //cloak
-    audit_lookup["5434"] = "Binding +200S";
-    audit_lookup["5435"] = "Binding +200A";
-    audit_lookup["5436"] = "Binding +200I";
+    audit_lookup["5434"] = "Binding +9Str";
+    audit_lookup["5435"] = "Binding +9Agi";
+    audit_lookup["5436"] = "Binding +9Int";
 
         //gems
     audit_lookup["130219"] =
@@ -595,19 +595,19 @@ function wow(region,toonName,realmName)
                 {
                     if (item.tooltipParams.gem0 > 151579)  // new epic gems
                    {
-                        gemStats[item.tooltipParams.gem0-151580+7].value = gemStats[item.tooltipParams.gem0-151580+7].value+200;
+                        gemStats[item.tooltipParams.gem0-151580+7].value = gemStats[item.tooltipParams.gem0-151580+7].value+11;
                     }
                     else if (item.tooltipParams.gem0 > 130245) //(epic) I think this could be beautified/simplifed, basically it adds to the stat value for each quality
                    {
-                        gemStats[item.tooltipParams.gem0-130246+4].value = gemStats[item.tooltipParams.gem0-130246+4].value+200;
+                        gemStats[item.tooltipParams.gem0-130246+4].value = gemStats[item.tooltipParams.gem0-130246+4].value+9;
                     }
                     else if (item.tooltipParams.gem0 > 130218) //(rare)
                    {
-                        gemStats[item.tooltipParams.gem0-130219].value = gemStats[item.tooltipParams.gem0-130219].value+150;
+                        gemStats[item.tooltipParams.gem0-130219].value = gemStats[item.tooltipParams.gem0-130219].value+9;
                     }
                     else if (item.tooltipParams.gem0 > 130214) //(uncommon)
                    {
-                        gemStats[item.tooltipParams.gem0-130215].value = gemStats [item.tooltipParams.gem0-130215].value+100;
+                        gemStats[item.tooltipParams.gem0-130215].value = gemStats [item.tooltipParams.gem0-130215].value+7;
                     }
 
                     if (item.itemLevel>CONST_EPICGEM_ILVL)
