@@ -235,6 +235,10 @@ function wow(region,toonName,realmName)
     audit_lookup["5965"] = "Deadly Nav";
     audit_lookup["5966"] = "Stalwart Nav";
 
+    //scopes
+    audit_lookup["5955"] = "Crow's Nest Scope";
+    audit_lookup["5956"] = "Monelite Scope";   
+
     audit_lookup["3847"] = "(DK)Stoneskin Gargoyle";
     audit_lookup["3368"] = "(DK)Fallen Crusader";
     audit_lookup["3366"] = "(DK)Lichbane";
