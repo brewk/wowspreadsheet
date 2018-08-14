@@ -786,7 +786,7 @@ function wow(region,toonName,realmName)
     }
 
     profession1 = profession1 + " " + prof1array;
-
+    profession2 = profession2 + " " + prof2array;
 
 // IDs for mythic+ were provied by @matdemy on twitter and this post: http://us.battle.net/forums/en/bnet/topic/20752275890
     var mythicPlus = "";
