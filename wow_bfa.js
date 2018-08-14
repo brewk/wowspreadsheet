@@ -32,7 +32,7 @@ var markLegendary = true;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 4.011;
+var current_version = 4.012;
 
 function rep(standing)
 {
@@ -277,9 +277,7 @@ function wow(region,toonName,realmName)
 
     // Azerite Info
     var heartOfAzeroth = "-";
-    var azeriteHead = "-";
-    var azeriteShoulder = "-";
-    var azeriteChest = "-";
+
   
     if (toon.items.neck.quality===6)
     { 
@@ -287,12 +285,13 @@ function wow(region,toonName,realmName)
     }
 
     var enchantableItems=["mainHand","offHand","finger1","finger2","hands"];
- //   var azeriteItems=["head","shoulder","chest"];
+    var azeriteItems=["head","shoulder","chest"];
+
     var getItemInfo = function (item, slot)
     {
         allItems[slot] = {
             ilvl:"\u2063",
-            upgrade:"-"
+            power:"-"
         };
 
         if (item)
@@ -300,7 +299,6 @@ function wow(region,toonName,realmName)
             allItems.equippedItems++;
             allItems[slot].ilvl = item.itemLevel;
             allItems.totalIlvl += item.itemLevel;
-
             if (item.quality === 5 && markLegendary)
             {
                 allItems[slot].ilvl = allItems[slot].ilvl + "+";  // * can be any character you want, use it for your conditional
@@ -376,6 +374,25 @@ function wow(region,toonName,realmName)
                             allItems[slot].enchant = "Old";
                         }
                     }
+                }
+              
+            }
+
+           //unfortunately it doesn't seem like there's any valuable info in the tooltip params even though azerite power appears there
+            if (azeriteItems.indexOf(slot)!=-1)
+            {
+                allItems[slot].power= "-";
+                if (item.azeriteEmpoweredItem.azeritePowers[0])
+                {
+                    allItems[slot].power=0;
+                    for (j=0; j<item.azeriteEmpoweredItem.azeritePowers.length; j++)
+                    {
+                        if (item.azeriteEmpoweredItem.azeritePowers[j].spellId > 0)
+                        {
+                            allItems[slot].power = allItems[slot].power+1;
+                        }
+                    }
+                    allItems[slot].power = allItems[slot].power + " unlocked";
                 }
             }
         }
@@ -853,7 +870,6 @@ function wow(region,toonName,realmName)
 
 
         heartOfAzeroth,
-        azeriteHead, azeriteShoulder, azeriteChest,
         auditInfo,
 
         displayInfo.dungeon.Heroic.lockout + "/" + displayInfo.dungeon.Heroic.instanceLength,
@@ -873,7 +889,14 @@ function wow(region,toonName,realmName)
     //    toonInfo.splice(Position+12+i,0,allItems[sortOrder[i]].upgrade);
         Position++;
     }
-    Position+=4;
+    Position+=1;
+
+    for (i = 0; i < azeriteItems.length;i++)
+    {
+        toonInfo.splice(Position,0,allItems[azeriteItems[i]].power);
+        Position++;
+    }
+
     for (i = 0; i < enchantableItems.length;i++)
     {
         toonInfo.splice(Position,0,allItems[enchantableItems[i]].enchant);
