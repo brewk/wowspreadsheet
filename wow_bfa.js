@@ -6,7 +6,9 @@
  *** (at your option) any later version.
  ***
  ************************************* */
+
 // For more info, help, or to contribute: http://bruk.org/wow 
+
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IMPORTANT!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //    You need to put your api key here, inside the quotes
@@ -30,7 +32,7 @@ var markLegendary = true;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 4.01;
+var current_version = 4.011;
 
 function rep(standing)
 {
@@ -184,6 +186,7 @@ function wow(region,toonName,realmName)
         { value: 0, stat: "Str" },
         { value: 0, stat: "Agi" },
         { value: 0, stat: "Int" },
+        { value: 0, stat: "OLD GEMS" },
     ];
 
 
@@ -272,7 +275,19 @@ function wow(region,toonName,realmName)
         }
     };
 
+    // Azerite Info
+    var heartOfAzeroth = "-";
+    var azeriteHead = "-";
+    var azeriteShoulder = "-";
+    var azeriteChest = "-";
+  
+    if (toon.items.neck.quality===6)
+    { 
+        heartOfAzeroth = toon.items.neck.azeriteItem.azeriteLevel + " (" + toon. items.neck.azeriteItem.azeriteExperience + "/" + toon.items.neck.azeriteItem.azeriteExperienceRemaining + ")";
+    }
+
     var enchantableItems=["mainHand","offHand","finger1","finger2","hands"];
+ //   var azeriteItems=["head","shoulder","chest"];
     var getItemInfo = function (item, slot)
     {
         allItems[slot] = {
@@ -317,6 +332,10 @@ function wow(region,toonName,realmName)
                    {
                         gemStats[item.tooltipParams.gem0-153707+6].value = gemStats [item.tooltipParams.gem0-153707+6].value+9;
                     }
+                    else
+                    {
+                        gemStats[9].value = gemStats[9].value + 1;
+                    }
 
                     if (item.itemLevel>CONST_EPICGEM_ILVL)
                     {
@@ -338,6 +357,7 @@ function wow(region,toonName,realmName)
                         gemAudit[0].issue += " " + slot;
 
                     }
+                  
 
                     totalGems[audit_lookup[item.tooltipParams.gem0]]++;
                 }
@@ -386,16 +406,16 @@ function wow(region,toonName,realmName)
     }
 
 
-   //always put the higher level trinket/ring on the leftier column
     var bruksOCDswap = function (item1,item2)
     {
-        if (allItems[item1].ilvl<allItems[item2].ilvl)
+        if (allItems[item1].ilvl<allItems[item2].ilvl || allItems[item2].ilvl =="265+" ||  allItems[item2].ilvl =="240+" )
         {
             var swapValue = allItems[item1].ilvl;
             allItems[item1].ilvl = allItems[item2].ilvl;
             allItems[item2].ilvl = swapValue;
         }
     };
+
 
     bruksOCDswap("finger1","finger2");
     bruksOCDswap("trinket1","trinket2");
@@ -462,13 +482,6 @@ function wow(region,toonName,realmName)
             auditInfo = auditInfo + gemAudit[i].issue;
         }
     }
-
-
-    // Azerite Info
-    var heartOfAzeroth = 0;
-    var azeriteHead = 0;
-    var azeriteShoulder = 0;
-    var azeriteChest = 0;
 
 
     // lock out "Weekly checker"
@@ -538,10 +551,10 @@ function wow(region,toonName,realmName)
     }
 
     // Raid stat sub-categories
-    var CURRENT_XPAC = 6;
+    var CURRENT_XPAC = 7;
     var raidInstancesSortOrder = [];
     var raidDifficultySortOrder = ["Raid Finder", "Normal", "Heroic", "Mythic"];
-    for (i = 35; i <= 35; i++) // legion raids up to ToS increase 38 if new raid comes
+    for (i = 21; i <= 21; i++) // legion raids up to ToS increase 38 if new raid comes
     {
         raidInstancesSortOrder.push(toon.progression.raids[i].name);
     }
@@ -707,8 +720,8 @@ function wow(region,toonName,realmName)
     var prof2Icon = "none";
     var proftemp = "0";
 
-    var prof1array = ["-", "-", "-", "-", "-", "-", "-"];
-    var prof2array = ["-", "-", "-", "-", "-", "-", "-"];
+    var prof1array = ["-", "-", "-", "-", "-", "-", "-", "-"];
+    var prof2array = ["-", "-", "-", "-", "-", "-", "-", "-"];
 
   
     var prof_lookup = {};
