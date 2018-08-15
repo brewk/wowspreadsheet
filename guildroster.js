@@ -1,5 +1,5 @@
 /* ***********************************
- ***     Copyright (c) 2017 bruk
+ ***     Copyright (c) 2018 bruk
  *** This script is free software; you can redistribute it and/or modify
  *** it under the terms of the GNU General Public License as published by
  *** the Free Software Foundation; either version 3 of the License, or
@@ -165,6 +165,12 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
                     }
                 }
             }
+
+            if (!guild.members[i].character.realm)
+            {
+                guild.members[i].character.realm = guild.members[i].character.guildRealm;
+            }
+
             membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort.indexOf(playerRole), playerRole];
             arrayPosition++;
         }   // ...end of manual code for role
