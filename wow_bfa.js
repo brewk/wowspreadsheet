@@ -32,7 +32,7 @@ var markLegendary = true;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 4.012;
+var current_version = 4.0122;
 
 function rep(standing)
 {
@@ -386,17 +386,20 @@ function wow(region,toonName,realmName)
             if (azeriteItems.indexOf(slot)!=-1)
             {
                 allItems[slot].power= "-";
-                if (item.azeriteEmpoweredItem.azeritePowers[0])
+                if (item.azeriteEmpoweredItem)
                 {
-                    allItems[slot].power=0;
-                    for (j=0; j<item.azeriteEmpoweredItem.azeritePowers.length; j++)
+                    if (item.azeriteEmpoweredItem.azeritePowers[0])
                     {
-                        if (item.azeriteEmpoweredItem.azeritePowers[j].spellId > 0)
+                        allItems[slot].power=0;
+                        for (j=0; j<item.azeriteEmpoweredItem.azeritePowers.length; j++)
                         {
-                            allItems[slot].power = allItems[slot].power+1;
+                            if (item.azeriteEmpoweredItem.azeritePowers[j].spellId > 0)
+                            {
+                                allItems[slot].power = allItems[slot].power+1;
+                            }
                         }
+                        allItems[slot].power = allItems[slot].power + " unlocked";
                     }
-                    allItems[slot].power = allItems[slot].power + " unlocked";
                 }
             }
         }
