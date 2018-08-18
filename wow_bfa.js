@@ -368,6 +368,7 @@ function wow(region,toonName,realmName)
                 {
                     if (slot=="offHand" && !toon.items.offHand.weaponInfo)
                     {
+                        allItems[slot].enchant = ""; //this is just here to make lint happy, wish i could just stick a ; at the end of that if
                     }
                     else
                     {
