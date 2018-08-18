@@ -32,7 +32,7 @@ var markLegendary = true;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 4.0122;
+var current_version = 4.0123;
 
 function rep(standing)
 {
@@ -366,16 +366,22 @@ function wow(region,toonName,realmName)
 
                 if (enchantableItems.indexOf(slot)!=-1)
                 {
-                    allItems[slot].enchant= "None";
-                    if (item.tooltipParams.enchant)
+                    if (slot=="offHand" && !toon.items.offHand.weaponInfo)
                     {
-                        if (audit_lookup[item.tooltipParams.enchant])
+                    }
+                    else
+                    {
+                        allItems[slot].enchant= "None";
+                        if (item.tooltipParams.enchant)
                         {
-                            allItems[slot].enchant = audit_lookup[item.tooltipParams.enchant];
-                        }
-                        else
-                        {
-                            allItems[slot].enchant = "Old";
+                            if (audit_lookup[item.tooltipParams.enchant])
+                            {
+                                allItems[slot].enchant = audit_lookup[item.tooltipParams.enchant];
+                            }
+                            else
+                            {
+                                allItems[slot].enchant = "Old";
+                            }
                         }
                     }
                 }
