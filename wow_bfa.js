@@ -32,7 +32,7 @@ var markLegendary = true;
 /* globals Utilities, UrlFetchApp, Logger */
 /* exported wow, vercheck */
 
-var current_version = 4.0123;
+var current_version = 4.0124;
 
 function rep(standing)
 {
@@ -214,14 +214,14 @@ function wow(region,toonName,realmName)
         audit_lookup["153709"] = 2; //Int
 
     //ring
-    audit_lookup["5942"] = "Pact +9C";
-    audit_lookup["5943"] = "Pact +9H";
-    audit_lookup["5944"] = "Pact +9M";
-    audit_lookup["5945"] = "Pact +9V";
-    audit_lookup["5938"] = "Seal +7C";
-    audit_lookup["5939"] = "Seal +7H";
-    audit_lookup["5940"] = "Seal +7M";
-    audit_lookup["5941"] = "Seal +7V";
+    audit_lookup["5942"] = "Pact +37C";
+    audit_lookup["5943"] = "Pact +37H";
+    audit_lookup["5944"] = "Pact +37M";
+    audit_lookup["5945"] = "Pact +37V";
+    audit_lookup["5938"] = "Seal +27C";
+    audit_lookup["5939"] = "Seal +27H";
+    audit_lookup["5940"] = "Seal +27M";
+    audit_lookup["5941"] = "Seal +27V";
 
 
     //weapons
@@ -282,11 +282,14 @@ function wow(region,toonName,realmName)
     // Azerite Info
     var heartOfAzeroth = "-";
 
-  
-    if (toon.items.neck.quality===6)
-    { 
-        heartOfAzeroth = toon.items.neck.azeriteItem.azeriteLevel + " (" + toon. items.neck.azeriteItem.azeriteExperience + "/" + toon.items.neck.azeriteItem.azeriteExperienceRemaining + ")";
+    if (toon.items.neck)
+    {
+        if (toon.items.neck.quality===6)
+        {
+            heartOfAzeroth = toon.items.neck.azeriteItem.azeriteLevel + " (" + toon. items.neck.azeriteItem.azeriteExperience + "/" + toon.items.neck.azeriteItem.azeriteExperienceRemaining + ")";
+        }
     }
+
 
     var enchantableItems=["mainHand","offHand","finger1","finger2","hands"];
     var azeriteItems=["head","shoulder","chest"];
@@ -316,7 +319,7 @@ function wow(region,toonName,realmName)
                    //if statement set up in descending order for gem IDs
                     if (item.tooltipParams.gem0 > 154125) //rare 
                    {
-                        gemStats[item.tooltipParams.gem0-154126].value = gemStats[item.tooltipParams.gem0-154126].value+9;
+                        gemStats[item.tooltipParams.gem0-154126].value = gemStats[item.tooltipParams.gem0-154126].value+40;
                     }
                     else if (item.tooltipParams.gem0 > 153714) // +move 
                     {
@@ -328,11 +331,11 @@ function wow(region,toonName,realmName)
                     }
                     else if (item.tooltipParams.gem0 > 153709) //uncommon
                    {
-                        gemStats[item.tooltipParams.gem0-153710].value = gemStats[item.tooltipParams.gem0-153710].value+7;
+                        gemStats[item.tooltipParams.gem0-153710].value = gemStats[item.tooltipParams.gem0-153710].value+30;
                     }
                     else if (item.tooltipParams.gem0 > 153706) //unique epic
                    {
-                        gemStats[item.tooltipParams.gem0-153707+6].value = gemStats [item.tooltipParams.gem0-153707+6].value+9;
+                        gemStats[item.tooltipParams.gem0-153707+6].value = gemStats [item.tooltipParams.gem0-153707+6].value+40;
                     }
                     else
                     {
