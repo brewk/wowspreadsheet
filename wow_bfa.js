@@ -20,7 +20,11 @@ var apikey = "";
 var CONST_EPICGEM_ILVL = 350;
 
 // This is threshold item level where gear is checked for enchants and gems
-var CONST_AUDIT_ILVL = 310;
+var CONST_AUDIT_ILVL = 309;
+
+//If you want to list the uncompleted Mythic dungeons instead of the completed Mythics, change this from false to true
+
+var listMissing = false;
 
 //If you want Legendary items to be marked with a + next to item level (use conditional formatting to change their color) change this to true
 
@@ -29,10 +33,10 @@ var markLegendary = true;
 
 // Everything below this, you shouldn't have to edit
 //***************************************************************
-/* globals Utilities, UrlFetchApp, Logger */
+/* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 4.0124;
+var current_version = 4.0125;
 
 function rep(standing)
 {
@@ -82,7 +86,6 @@ function wow(region,toonName,realmName)
         return "Error: No API key entered. Please visit http://dev.battle.net/ to obtain one. Instructions availible at http://bruk.org/wow";
     }
 
-
     Utilities.sleep(Math.floor((Math.random() * 10000) + 1000)); // This is a random sleepy time so that we dont spam the api and get bonked with an error
 
     //Getting rid of any sort of pesky no width white spaces we may run into
@@ -95,18 +98,12 @@ function wow(region,toonName,realmName)
     var options={ muteHttpExceptions:true };
     var toon = "";
 
-    while (!toon.name)  //try again because of these frequent timeouts
+    var  toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"", options);
+    toon = JSON.parse(toonJSON.toString());
+
+    if (toon.detail)
     {
-        try
-        {
-            var  toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"", options);
-            toon = JSON.parse(toonJSON.toString());
-        }
-        catch (e)
-        {
-            Logger.log("Error Fetching:  "+ e.message);
-        }
-        Logger.log(toonJSON);
+        return "API Error, check if your API key is entered properly and that the API is working";
     }
 
     var mainspec = "none";
@@ -237,7 +234,9 @@ function wow(region,toonName,realmName)
 
     //scopes
     audit_lookup["5955"] = "Crow's Nest Scope";
-    audit_lookup["5956"] = "Monelite Scope";   
+    audit_lookup["5956"] = "Monelite Scope";
+    audit_lookup["5957"] = "Incendiary Ammo";
+    audit_lookup["5958"] = "Frost-Laced Ammo";
 
     audit_lookup["3847"] = "(DK)Stoneskin Gargoyle";
     audit_lookup["3368"] = "(DK)Fallen Crusader";
@@ -746,6 +745,31 @@ function wow(region,toonName,realmName)
             displayInfo.dungeon = infoOnDifficulty;
         }
     }
+
+
+    //code for displaying missing mythics instead of completed, needs updating of more mythics are added
+    var missingMythics ="Missing: ";
+
+    // remove the undefined if 0 completed, or the "Missing: " if all completed (increment this if more dungeons added)
+    if (!displayInfo.dungeon.Mythic.details || displayInfo.dungeon.Mythic.lockout ==10)
+    {
+        missingMythics = "";
+    }
+
+    else if (listMissing == 1)
+    {
+        var mythicList = ["ATA", "FRE", "KR", "SotS", "SoB", "ToS", "TM", "TU", "TD", "WM"];  //add abbrvs to list if more are added
+        for (i=0; i<mythicList.length; i++)
+        {
+            var n=displayInfo.dungeon.Mythic.details.search(mythicList[i]);
+            if (n==-1)
+            {
+                missingMythics = missingMythics + mythicList[i] + " ";
+            }
+        }
+    }
+
+    displayInfo.dungeon.Mythic.details = missingMythics;
 
 
     var profession1 = "none";
