@@ -280,12 +280,18 @@ function wow(region,toonName,realmName)
 
     // Azerite Info
     var heartOfAzeroth = "-";
+  
+  //thanks to github user bloodrash for this function
+    function numberWithCommas(x)
+    {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
 
     if (toon.items.neck)
     {
         if (toon.items.neck.quality===6)
         {
-            heartOfAzeroth = toon.items.neck.azeriteItem.azeriteLevel + " (" + toon. items.neck.azeriteItem.azeriteExperience + "/" + toon.items.neck.azeriteItem.azeriteExperienceRemaining + ")";
+            heartOfAzeroth = toon.items.neck.azeriteItem.azeriteLevel + " (" + numberWithCommas(toon.items.neck.azeriteItem.azeriteExperience) + " / " + numberWithCommas(toon.items.neck.azeriteItem.azeriteExperienceRemaining) + ")";
         }
     }
 
