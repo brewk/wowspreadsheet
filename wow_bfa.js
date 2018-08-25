@@ -753,10 +753,11 @@ function wow(region,toonName,realmName)
     // remove the undefined if 0 completed, or the "Missing: " if all completed (increment this if more dungeons added)
     if (!displayInfo.dungeon.Mythic.details || displayInfo.dungeon.Mythic.lockout ==10)
     {
+        displayInfo.dungeon.Mythic.details = "";
         missingMythics = "";
     }
 
-    else if (listMissing == 1)
+    else if (listMissing == true)
     {
         var mythicList = ["ATA", "FRE", "KR", "SotS", "SoB", "ToS", "TM", "TU", "TD", "WM"];  //add abbrvs to list if more are added
         for (i=0; i<mythicList.length; i++)
@@ -767,10 +768,8 @@ function wow(region,toonName,realmName)
                 missingMythics = missingMythics + mythicList[i] + " ";
             }
         }
+        displayInfo.dungeon.Mythic.details = missingMythics;
     }
-
-    displayInfo.dungeon.Mythic.details = missingMythics;
-
 
     var profession1 = "none";
     var profession2 = "none";
