@@ -26,6 +26,10 @@ var CONST_AUDIT_ILVL = 309;
 
 var listMissing = false;
 
+// Option to include data from raider.io
+
+var raiderIO = true;
+
 //If you want Legendary items to be marked with a + next to item level (use conditional formatting to change their color) change this to true
 
 var markLegendary = true;
@@ -36,42 +40,7 @@ var markLegendary = true;
 /* globals Utilities, UrlFetchApp */
 /* exported wow, vercheck */
 
-var current_version = 4.0125;
-
-function rep(standing)
-{
-
-    switch (standing)
-    {
-        case 0:
-            return "Hated";
-
-        case 1:
-            return "Hostile";
-
-        case 2:
-            return "Unfriendly";
-
-        case 3:
-            return "Neutral";
-
-        case 4:
-            return "Friendly";
-
-        case 5:
-            return "Honored";
-
-        case 6:
-            return "Revered";
-
-        case 7:
-            return "Exalted";
-
-        default:
-            return "ERROR";
-    }
-}
-
+var current_version = 4.02;
 
 function wow(region,toonName,realmName)
 {
@@ -89,8 +58,8 @@ function wow(region,toonName,realmName)
     Utilities.sleep(Math.floor((Math.random() * 10000) + 1000)); // This is a random sleepy time so that we dont spam the api and get bonked with an error
 
     //Getting rid of any sort of pesky no width white spaces we may run into
-    toonName = toonName.replace(/[\u200B-\u200D\uFEFF]/g, "");
-    region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
+    toonName = toonName.replace(/\s/g, "");
+    region = region.replace(/\s/g, "");
     realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
 
     region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
@@ -101,9 +70,9 @@ function wow(region,toonName,realmName)
     var  toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"", options);
     toon = JSON.parse(toonJSON.toString());
 
-    if (toon.detail)
+    if (toon.detail || toon.status)
     {
-        return "API Error, check if your API key is entered properly and that the API is working";
+        return "API Error, check if your API key is entered properly and that the API is working, check character on Armory to see if it loads";
     }
 
     var mainspec = "none";
@@ -116,50 +85,21 @@ function wow(region,toonName,realmName)
     }
 
     // figuring out what the class is
-    var toon_class = 0;
-
-    switch (toon.class)
-    {
-        case 1:
-            toon_class = "Warrior";
-            break;
-        case 2:
-            toon_class = "Paladin";
-            break;
-        case 3:
-            toon_class = "Hunter";
-            break;
-        case 4:
-            toon_class = "Rogue";
-            break;
-        case 5:
-            toon_class = "Priest";
-            break;
-        case 6:
-            toon_class = "DeathKnight";
-            break;
-        case 7:
-            toon_class = "Shaman";
-            break;
-        case 8:
-            toon_class = "Mage";
-            break;
-        case 9:
-            toon_class = "Warlock";
-            break;
-        case 10:
-            toon_class = "Monk";
-            break;
-        case 11:
-            toon_class = "Druid";
-            break;
-        case 12:
-            toon_class = "Demon Hunter";
-            break;
-        default:
-            toon_class = "?";
-    }
-
+    var classes = {
+        1:"Warrior", 
+        2:"Paladin",
+        3:"Hunter",
+        4:"Rogue",
+        5:"Priest",
+        6:"DeathKnight",
+        7:"Shaman",
+        8:"Mage",
+        9:"Warlock",
+        10:"Monk",
+        11:"Druid",
+        12:"Demon Hunter"
+    };
+    var toon_class = classes[toon.class];
 
     // Time to do some gear audits
     var auditInfo ="";
@@ -299,12 +239,19 @@ function wow(region,toonName,realmName)
     var enchantableItems=["mainHand","offHand","finger1","finger2","hands"];
     var azeriteItems=["head","shoulder","chest"];
 
+
     var getItemInfo = function (item, slot)
     {
         allItems[slot] = {
             ilvl:"\u2063",
-            power:"-"
+            power:"",
+            enchant:""
         };
+
+        if (enchantableItems.indexOf(slot)!=-1) //this is to form the array properly later
+        {
+            allItems[slot].enchant = " ";
+        }
 
         if (item)
         {
@@ -413,7 +360,14 @@ function wow(region,toonName,realmName)
                                 allItems[slot].power = allItems[slot].power+1;
                             }
                         }
-                        allItems[slot].power = allItems[slot].power + " unlocked";
+                        if (allItems[slot].ilvl > 339)
+                        {
+                            allItems[slot].power = allItems[slot].power + "/4 unlocked";
+                        }
+                        else
+                        {
+                            allItems[slot].power = allItems[slot].power + "/3 unlocked";
+                        }
                     }
                 }
             }
@@ -777,6 +731,18 @@ function wow(region,toonName,realmName)
         displayInfo.dungeon.Mythic.details = missingMythics;
     }
 
+    var worldBosses = [52196, 52163, 52169, 52181, 52157, 52166];
+    var worldBossKill = " ";
+
+    for (i=0; i < toon.quests.length; i++)
+    {
+        if (worldBosses.indexOf(toon.quests[i]) > 0)
+        {
+            worldBossKill = "\u2713"; //unicode checkmark
+            break;
+        }
+    } 
+
     var profession1 = "none";
     var profession2 = "none";
     var prof1Icon = "none";
@@ -894,15 +860,95 @@ function wow(region,toonName,realmName)
         { "id":2157, "text":"" },//The Honorbound
     ];
 
-    var repCount = 0;
+    var repStanding = {
+        0:"Hated",
+        1:"Hostile", 
+        2:"Unfriendly",
+        3:"Neutral",
+        4:"Friendly",
+        5:"Honored",
+        6:"Revered",
+        7:"Exalted",
+    };
+
+
+    var x = 0;
+    var reputations = []; //our output array
     for (i = 0; i<toon.reputation.length; i++)
     {
+
         for (var j = 0; j < reps.length; j++)
         {
             if (toon.reputation[i].id == reps[j].id && toon.reputation[i].standing > 2)
             {
-                reps[repCount].text = toon.reputation[i].name + " - " + rep(toon.reputation[i].standing) + " " + toon.reputation[i].value + "/" + toon.reputation[i].max;
-                repCount++;
+                reputations.push(toon.reputation[i].name + " - " + repStanding[toon.reputation[i].standing] + " " + toon.reputation[i].value + "/" + toon.reputation[i].max);
+                x=x+1;
+            }
+        }
+    }
+
+
+     // Preforming the outputs so they're easier to move around in the output array
+    var heroicLockouts = displayInfo.dungeon.Heroic.lockout + "/" + displayInfo.dungeon.Heroic.instanceLength;
+    var heroicProgress = displayInfo.dungeon.Heroic.progress + "/" + displayInfo.dungeon.Heroic.instanceLength + " (" + displayInfo.dungeon.Heroic.kills + ")";
+    var mythicLockouts = displayInfo.dungeon.Mythic.lockout + "/" + displayInfo.dungeon.Mythic.instanceLength + " " +  displayInfo.dungeon.Mythic.details;
+    var mythicProgress = displayInfo.dungeon.Mythic.progress + "/" + displayInfo.dungeon.Mythic.instanceLength + " (" + displayInfo.dungeon.Mythic.kills + ") ";// + mythicPlus,
+
+
+    //output arrays
+    var gearIlvl= [];
+    var azeritePower = [];
+    var enchants = [];
+
+    for (i = 0; i<sortOrder.length; i++)
+    {
+        gearIlvl[i] = allItems[sortOrder[i]].ilvl;
+        if (allItems[sortOrder[i]].power)
+        {
+            azeritePower.push(allItems[sortOrder[i]].power);
+        }
+        if (i < enchantableItems.length)
+        {
+            enchants.push(allItems[enchantableItems[i]].enchant);
+        }
+
+    }
+
+    var raidArray=[];
+
+    for (i = 0; i < raidInstancesSortOrder.length; i++)
+    {
+        for (var k = 0; k < raidDifficultySortOrder.length; k++)
+        {
+            var cellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
+            raidArray[ i*8+k] = cellInfo.lockout + "/" + cellInfo.instanceLength;
+        }
+        for (k = 0; k < raidDifficultySortOrder.length; k++)
+        {
+            var secondCellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
+            raidArray[i*8+k+4] = secondCellInfo.progress + "/" + secondCellInfo.instanceLength + " [" + secondCellInfo.activeWeeks + "] (" + secondCellInfo.kills + ")";
+        }
+    }
+
+
+    if (raiderIO)
+    {
+        var raiderJSON = UrlFetchApp.fetch("https://raider.io/api/v1/characters/profile?region="+region+"&realm="+realmName+"&name="+toonName+"&fields=mythic_plus_highest_level_runs,mythic_plus_scores,mythic_plus_weekly_highest_level_runs", options);
+        var raider = JSON.parse(raiderJSON.toString());
+
+        if (!raider.statusCode)
+        {
+            if (raider.mythic_plus_weekly_highest_level_runs[0])
+            {
+                mythicLockouts = mythicLockouts + " weekly highest M+: " + raider.mythic_plus_weekly_highest_level_runs[0].mythic_level;
+            }
+            if (raider.mythic_plus_highest_level_runs[0])
+            {
+                mythicProgress = mythicProgress + " highest BfA M+: " + raider.mythic_plus_highest_level_runs[0].mythic_level;
+            }
+            if (raider.mythic_plus_scores)
+            {
+                mythicProgress = mythicProgress + " Score: " + raider.mythic_plus_scores.all;
             }
         }
     }
@@ -913,61 +959,48 @@ function wow(region,toonName,realmName)
         toon.level,
         mainspec,
         allItems.averageIlvl,
-
+      
+        gearIlvl,
 
         heartOfAzeroth,
+        azeritePower,
+        enchants,
         auditInfo,
 
-        displayInfo.dungeon.Heroic.lockout + "/" + displayInfo.dungeon.Heroic.instanceLength,
-        displayInfo.dungeon.Heroic.progress + "/" + displayInfo.dungeon.Heroic.instanceLength + " (" + displayInfo.dungeon.Heroic.kills + ")",
+        worldBossKill,      
+        raidArray,
+        heroicLockouts,
+        heroicProgress, 
+        mythicLockouts,
+        mythicProgress,
+        
 
-        displayInfo.dungeon.Mythic.lockout + "/" + displayInfo.dungeon.Mythic.instanceLength + " " +  displayInfo.dungeon.Mythic.details,
-        displayInfo.dungeon.Mythic.progress + "/" + displayInfo.dungeon.Mythic.instanceLength + " [" + displayInfo.dungeon.Mythic.activeWeeks + "] (" + displayInfo.dungeon.Mythic.kills + ") " + mythicPlus,
-
-        profession1, profession2, thumbnail, armory,
+        profession1, profession2, thumbnail, armory, reputations
 
     ];
 
-    var Position = 4;
-    for (i = 0; i<sortOrder.length;i++)
-    {
-        toonInfo.splice(Position,0,allItems[sortOrder[i]].ilvl);
-    //    toonInfo.splice(Position+12+i,0,allItems[sortOrder[i]].upgrade);
-        Position++;
-    }
-    Position+=1;
 
-    for (i = 0; i < azeriteItems.length;i++)
+    function flatten(input) 
     {
-        toonInfo.splice(Position,0,allItems[azeriteItems[i]].power);
-        Position++;
-    }
-
-    for (i = 0; i < enchantableItems.length;i++)
-    {
-        toonInfo.splice(Position,0,allItems[enchantableItems[i]].enchant);
-        Position++;
-    }
-
-    var instanceInfoPosition = 30;
-    for (i = 0; i < raidInstancesSortOrder.length; i++)
-    {
-        for (var k = 0; k < raidDifficultySortOrder.length; k++)
+        var flatter = [];
+        for (i =0; i < input.length; i++)
         {
-            var cellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
-            toonInfo.splice(instanceInfoPosition+i*8+k, 0, cellInfo.lockout + "/" + cellInfo.instanceLength);
+            if (Array.isArray(input[i])) 
+            {
+                for (j=0; j<input[i].length; j++)
+                {
+                    flatter.push(input[i][j]);
+                }
+            }
+            else
+            {
+                flatter.push(input[i]);  
+            }
         }
-        for (k = 0; k < raidDifficultySortOrder.length; k++)
-        {
-            var secondCellInfo = displayInfo.raid[raidInstancesSortOrder[i]][raidDifficultySortOrder[k]];
-            toonInfo.splice(instanceInfoPosition+i*8+k+4, 0, secondCellInfo.progress + "/" + secondCellInfo.instanceLength + " [" + secondCellInfo.activeWeeks + "] (" + secondCellInfo.kills + ")");
-        }
+        return flatter;
     }
 
-    for (i = 0; i < reps.length; i++)
-    {
-        toonInfo.push(reps[i].text);
-    }
+    toonInfo = flatten(toonInfo);
     return toonInfo;
 }
 
