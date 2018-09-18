@@ -28,7 +28,7 @@ var listMissing = false;
 
 // Option to include data from raider.io
 
-var raiderIO = true;
+var raiderIO = false;
 
 //If you want Legendary items to be marked with a + next to item level (use conditional formatting to change their color) change this to true
 
