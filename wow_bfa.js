@@ -736,7 +736,7 @@ function wow(region,toonName,realmName)
 
     for (i=0; i < toon.quests.length; i++)
     {
-        if (worldBosses.indexOf(toon.quests[i]) > 0)
+        if (worldBosses.indexOf(toon.quests[i]) > -1)
         {
             worldBossKill = "\u2713"; //unicode checkmark
             break;
@@ -931,7 +931,7 @@ function wow(region,toonName,realmName)
     }
 
 
-    if (raiderIO)
+    if (raiderIO == true)
     {
         var raiderJSON = UrlFetchApp.fetch("https://raider.io/api/v1/characters/profile?region="+region+"&realm="+realmName+"&name="+toonName+"&fields=mythic_plus_highest_level_runs,mythic_plus_scores,mythic_plus_weekly_highest_level_runs", options);
         var raider = JSON.parse(raiderJSON.toString());
