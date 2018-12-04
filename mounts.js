@@ -18,43 +18,67 @@
 // Farm: =transpose(farm(A4,B4,C4,Mounts!E$6:E,$A$1))
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IMPORTANT!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//    You need to put your api key here, inside the quotes of line 25
-//    Request one here: https://dev.battle.net/apps/register
-//    Step by step instructions: http://bruk.org/api
-//   if you have this as part of a combined spreadsheet you can comment it out instead
-var apikey = "";
+//    You need to put your Client ID and client Secret below, inside the quotes
+//    Sign up and obtain them here: https://develop.battle.net/
+//   Step by step instructions: http://bruk.org/api
 
+var clientID = "";
+
+var clientSecret = "";
 
 // Everything below this, you shouldn't have to edit
 //***************************************************************
-/* globals Utilities, UrlFetchApp */
+/* globals Utilities, UrlFetchApp, PropertiesService */
 /* exported mounts, farm */
 
 
 function mounts(region,toonName,realmName)
 {
 
+
     if (!toonName || !realmName)
     {
         return " ";  // If there's nothing in the column, don't even bother calling the API
     }
 
-
-    Utilities.sleep(Math.floor((Math.random() * 10000) + 1000)); // This is a random sleepy time so that we dont spam the api and get bonked with an error
+    var scriptProperties = PropertiesService.getScriptProperties();
+    var token = scriptProperties.getProperty("STORED_TOKEN");
 
     //Getting rid of any sort of pesky no width white spaces we may run into
-    toonName = toonName.replace(/[\u200B-\u200D\uFEFF]/g, "");
-    region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
+    toonName = toonName.replace(/\s/g, "");
+    region = region.replace(/\s/g, "");
     realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
 
     region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
 
-    var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=mounts&?locale=en_US&jsonp=callback&apikey="+apikey+"");
+    var options={ muteHttpExceptions:true };
+    var toon = "";
 
-    toonJSON = toonJSON.toString().substring(9);
-    toonJSON = toonJSON.substring(0, toonJSON.length - 2);
+    var  toonJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/character/"+realmName+"/"+toonName+"?fields=mounts&?locale=en_US&access_token="+token+"", options);
 
-    var toon = JSON.parse(toonJSON);
+    if (!token || toonJSON.toString().length === 0)
+    {
+        var oauth_response = UrlFetchApp.fetch("https://"+region+".battle.net/oauth/token", {
+            "headers" : {
+                "Authorization": "Basic " + Utilities.base64Encode(clientID + ":" + clientSecret),
+                "Cache-Control": "max-age=0"
+            },
+            "payload" : { "grant_type": "client_credentials" }
+        });
+
+        token = JSON.parse(oauth_response.toString()).access_token;
+
+        
+        scriptProperties.setProperty("STORED_TOKEN", token);
+        toonJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/character/"+realmName+"/"+toonName+"?fields=mounts&?locale=en_US&access_token="+token+"", options);
+        
+        if (!token)
+        {
+            return "Error getting an API token. Please visit https://develop.battle.net/ and sign up for an account";
+        }
+    }
+    
+    toon = JSON.parse(toonJSON);
 
 
     var collected = toon.mounts.numCollected;
@@ -103,9 +127,34 @@ function farm(region, realmName, toonName, list)
     var options={ muteHttpExceptions:true };
     var toon = "";
 
-    var  toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=statistics,feed&?locale=en_US&apikey="+apikey+"", options);
-    toon = JSON.parse(toonJSON.toString());
+    
+    var scriptProperties = PropertiesService.getScriptProperties();
+    var token = scriptProperties.getProperty("STORED_TOKEN");
 
+    var  toonJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/character/"+realmName+"/"+toonName+"?fields=statistics,feed&?locale=en_US&access_token="+token+"", options);
+
+    if (!token || toonJSON.toString().length === 0)
+    {
+        var oauth_response = UrlFetchApp.fetch("https://"+region+".battle.net/oauth/token", {
+            "headers" : {
+                "Authorization": "Basic " + Utilities.base64Encode(clientID + ":" + clientSecret),
+                "Cache-Control": "max-age=0"
+            },
+            "payload" : { "grant_type": "client_credentials" }
+        });
+
+        token = JSON.parse(oauth_response.toString()).access_token;
+
+        
+        scriptProperties.setProperty("STORED_TOKEN", token);
+        toonJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/character/"+realmName+"/"+toonName+"?fields=statistics,feed&?locale=en_US&access_token="+token+"", options);
+        
+        if (!token)
+        {
+            return "Error getting an API token. Please visit https://develop.battle.net/ and sign up for an account";
+        }
+    }
+    toon = JSON.parse(toonJSON);
 
     var size = list.length;
      // Lookup table stuff
@@ -242,7 +291,7 @@ function farm(region, realmName, toonName, list)
         sinceYesterday.setDate(hrm - 1);
     }
   
-  sinceTuesday = todayStamp - sinceTuesday;
+    sinceTuesday = todayStamp - sinceTuesday;
 
 
      //   someDate = sinceYesterday.getTime(); //not sure if this is needed to convert to epoch
@@ -284,9 +333,7 @@ function farm(region, realmName, toonName, list)
         }
     }
   
-
-
-   for (i=0; i < toon.statistics.subCategories[5].subCategories.length; i++)
+    for (i=0; i < toon.statistics.subCategories[5].subCategories.length; i++)
  
     {
 
@@ -295,10 +342,7 @@ function farm(region, realmName, toonName, list)
             //boss kill routine
             var id = toon.statistics.subCategories[5].subCategories[i].statistics[k].id;
             var date= toon.statistics.subCategories[5].subCategories[i].statistics[k].lastUpdated;
-
-                       
-          
-          if (mounts_lookup[boss_lookup[id]] && mounts_lookup[boss_lookup[id]].check == 1 && date > sinceTuesday)  //our id exists
+            if (mounts_lookup[boss_lookup[id]] && mounts_lookup[boss_lookup[id]].check == 1 && date > sinceTuesday)  //our id exists
             {
 
                 //deal with bosses that can drop 2 mounts
@@ -339,9 +383,6 @@ function farm(region, realmName, toonName, list)
                         output[arrayPos[boss_lookup[id]]] = "0";
                     }
                 }
-            
-              
-
             }
         }
     }
