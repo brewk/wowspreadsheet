@@ -26,44 +26,66 @@
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IMPORTANT!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//    You need to put your api key here, inside the quotes of line 25
-//    Request one here: https://dev.battle.net/apps/register
-//    Step by step instructions: http://bruk.org/api
+//    You need to put your Client ID and client Secret below, inside the quotes
+//    Sign up and obtain them here: https://develop.battle.net/
+//   Step by step instructions: http://bruk.org/api
 
-var apikey = "";
+var clientID = "";
+
+var clientSecret = "";
 
 
 // Everything below this, you shouldn't have to edit
 //***************************************************************
-/* globals Utilities, UrlFetchApp */
+/* globals Utilities, UrlFetchApp, PropertiesService */
 /* exported pets */
 
 
 function pets(region,toonName,realmName)
 {
-
     if (!toonName || !realmName)
     {
         return " ";  // If there's nothing in the column, don't even bother calling the API
     }
 
-    Utilities.sleep(Math.floor((Math.random() * 10000) + 1000)); // This is a random sleepy time so that we dont spam the api and get bonked with an error
+    var scriptProperties = PropertiesService.getScriptProperties();
+    var token = scriptProperties.getProperty("STORED_TOKEN");
 
     //Getting rid of any sort of pesky no width white spaces we may run into
-    toonName = toonName.replace(/[\u200B-\u200D\uFEFF]/g, "");
-    region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
+    toonName = toonName.replace(/\s/g, "");
+    region = region.replace(/\s/g, "");
     realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
 
     region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
 
-    toonName = toonName.replace(/[\u200B-\u200D\uFEFF]/g, "");
-    region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
-    realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
+    var options={ muteHttpExceptions:true };
+    var toon = "";
 
-    region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
+    var  toonJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/character/"+realmName+"/"+toonName+"?fields=pets&?locale=en_US&access_token="+token+"", options);
 
-    var toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=pets&?locale=en_US&apikey="+apikey+"");
-    var toon = JSON.parse(toonJSON.toString());
+    if (!token || toonJSON.toString().length === 0)
+    {
+        var oauth_response = UrlFetchApp.fetch("https://"+region+".battle.net/oauth/token", {
+            "headers" : {
+                "Authorization": "Basic " + Utilities.base64Encode(clientID + ":" + clientSecret),
+                "Cache-Control": "max-age=0"
+            },
+            "payload" : { "grant_type": "client_credentials" }
+        });
+
+        token = JSON.parse(oauth_response.toString()).access_token;
+
+        
+        scriptProperties.setProperty("STORED_TOKEN", token);
+        toonJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/character/"+realmName+"/"+toonName+"?fields=pets&?locale=en_US&access_token="+token+"", options);
+        
+        if (!token)
+        {
+            return "Error getting an API token. Please visit https://develop.battle.net/ and sign up for an account";
+        }
+    }
+
+    toon = JSON.parse(toonJSON.toString());
 
 
     //Init all the curds!
@@ -241,7 +263,7 @@ function pets(region,toonName,realmName)
         }
     }
 
-    var thumbnail = "http://"+region+".battle.net/static-render/"+region+"/"+  toon.thumbnail;
+    var thumbnail = "http://render-"+region+".worldofwarcraft.com/character/" +  toon.thumbnail;
 
 
     var numbersArray = [ toon.pets.numCollected, needUpgrade, needLevel, levels, battlePet ];
