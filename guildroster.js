@@ -11,10 +11,6 @@
 // max rank is the maximum rank to output, we do this to try avoid too many calls to the api for big guilds with lots of alts
 // Accepted sort methods: Level, Rank, CheevoPts, Role, Name
 
-// enter your api key here:
-// if you have this as part of a combined spreadsheet you can comment this line out
-// var apikey = "";
-
 
 // **************** BLACKLIST / WHITELIST ****************
 //   You can put these variables into a seperate .gs script file to facilitate updating your script in the future
@@ -55,10 +51,10 @@ var RANKWHITELIST = [];
 // ******************************************************
 
 
-/* globals UrlFetchApp apikey*/
-/* exported guildOut vercheckGuild*/
+/* globals Utilities, UrlFetchApp, PropertiesService, clientID, clientSecret*/
+/* exported guildOut vercheckGuild */
 
-var current_versionGuild = 1.05;
+var current_versionGuild = 1.1;
 
 function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel) 
 {
@@ -68,10 +64,41 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         return "\u2063";  // If there's nothing don't even bother calling the API
     }
 
-    if (!apikey)
+    var scriptProperties = PropertiesService.getScriptProperties();
+    var token = scriptProperties.getProperty("STORED_TOKEN");
+
+    //Getting rid of any sort of pesky no width white spaces we may run into
+    region = region.replace(/\s/g, "");
+    realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
+    region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
+
+    var options={ muteHttpExceptions:true };
+
+
+    var guildJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&access_token="+token+"", options);
+
+
+    if (!token || guildJSON.toString().length === 0)
     {
-        return "Error: No API key entered. Please visit http://dev.battle.net/ to obtain one. Instructions availible at http://bruk.org/wow";
+        var oauth_response = UrlFetchApp.fetch("https://"+region+".battle.net/oauth/token", {
+            "headers" : {
+                "Authorization": "Basic " + Utilities.base64Encode(clientID + ":" + clientSecret),
+                "Cache-Control": "max-age=0"
+            },
+            "payload" : { "grant_type": "client_credentials" }
+        });
+
+        token = JSON.parse(oauth_response.toString()).access_token;
+
+        
+        scriptProperties.setProperty("STORED_TOKEN", token);
+        guildJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&access_token="+token+"", options);
+        if (!token)
+        {
+            return "Error getting an API token. Please visit https://develop.battle.net/ and sign up for an account";
+        }
     }
+
 
     //Getting rid of any sort of pesky no width white spaces we may run into
     region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
@@ -82,8 +109,6 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         return "Error loading API: try refreshing and verify values are typed correctly. Ensure your API key is entered into the script correctly. Errors can also come from loading 100+ characters at a time";
     }
 
-    var options={ muteHttpExceptions:true };
-    var guildJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&apikey="+apikey+"", options);
 
     var guild = JSON.parse(guildJSON);
 

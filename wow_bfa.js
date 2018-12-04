@@ -11,10 +11,13 @@
 
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IMPORTANT!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//    You need to put your api key here, inside the quotes
-//    Request one here: https://dev.battle.net/apps/register
-//    Step by step instructions: http://bruk.org/api
-var apikey = "";
+//    You need to put your Client ID and client Secret below, inside the quotes
+//    Sign up and obtain them here: https://develop.battle.net/
+//   Step by step instructions: http://bruk.org/api
+
+var clientID = "";
+
+var clientSecret = "";
 
 // Change this to the threshold you want to start checking for epic gems (ie: if it's 349 anything 350 or above will be checked for epic gems)
 var CONST_EPICGEM_ILVL = 350;
@@ -30,6 +33,26 @@ var listMissing = false;
 
 var raiderIO = false;
 
+
+/* Advanced User Feature: Warcraft Logs best performance average percentile output for normal/heroic/mythic (current tier only)
+   you'll need a warcraftlogs API key, which you can find here:
+     https://www.warcraftlogs.com/profile
+   at the bottom of the page, marked as public key. 
+   Make sure you define an Application Name in the box above the keys
+   you will need to add in this line to the output array:
+
+    warcraftLogs,
+
+  The output array starts at around line 1080 and begins with this line: 
+      var toonInfo = [
+
+  insert warcraftLogs, where you'd like them to appear in the output
+  You'll then need to add THREE columns to your sheet where you want that info to be, and label them accordingly (normal, heroic, mythic) */
+
+// put your warcraft api key here
+var warcraftlogskey = "";
+
+
 //If you want Legendary items to be marked with a + next to item level (use conditional formatting to change their color) change this to true
 
 var markLegendary = true;
@@ -37,10 +60,13 @@ var markLegendary = true;
 
 // Everything below this, you shouldn't have to edit
 //***************************************************************
-/* globals Utilities, UrlFetchApp */
-/* exported wow, vercheck */
+/* globals Utilities, UrlFetchApp, PropertiesService */
+/* exported wow, vercheck, warcraftLogs */
 
-var current_version = 4.02;
+
+var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
+
+var current_version = 4.03;
 
 function wow(region,toonName,realmName)
 {
@@ -50,12 +76,10 @@ function wow(region,toonName,realmName)
         return " ";  // If there's nothing in the column, don't even bother calling the API
     }
 
-    if (!apikey)
-    {
-        return "Error: No API key entered. Please visit http://dev.battle.net/ to obtain one. Instructions availible at http://bruk.org/wow";
-    }
-
     Utilities.sleep(Math.floor((Math.random() * 10000) + 1000)); // This is a random sleepy time so that we dont spam the api and get bonked with an error
+
+    var scriptProperties = PropertiesService.getScriptProperties();
+    var token = scriptProperties.getProperty("STORED_TOKEN");
 
     //Getting rid of any sort of pesky no width white spaces we may run into
     toonName = toonName.replace(/\s/g, "");
@@ -67,7 +91,31 @@ function wow(region,toonName,realmName)
     var options={ muteHttpExceptions:true };
     var toon = "";
 
-    var  toonJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&apikey="+apikey+"", options);
+    var  toonJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&access_token="+token+"", options);
+
+    if (!token || toonJSON.toString().length === 0)
+    {
+        var oauth_response = UrlFetchApp.fetch("https://"+region+".battle.net/oauth/token", {
+            "headers" : {
+                "Authorization": "Basic " + Utilities.base64Encode(clientID + ":" + clientSecret),
+                "Cache-Control": "max-age=0"
+            },
+            "payload" : { "grant_type": "client_credentials" }
+        });
+
+        token = JSON.parse(oauth_response.toString()).access_token;
+
+        
+        scriptProperties.setProperty("STORED_TOKEN", token);
+        toonJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/character/"+realmName+"/"+toonName+"?fields=reputation,statistics,items,quests,achievements,audit,progression,feed,professions,talents&?locale=en_US&access_token="+token+"", options);
+        
+        if (!token)
+        {
+            return "Error getting an API token. Please visit https://develop.battle.net/ and sign up for an account";
+        }
+    }
+    
+
     toon = JSON.parse(toonJSON.toString());
 
     if (toon.detail || toon.status)
@@ -456,6 +504,8 @@ function wow(region,toonName,realmName)
         if (totalGems[2] > 0)
         {
             auditInfo = auditInfo + " PrimeEpic:" + totalGems[2];
+            gemAudit[2] = 0;
+
         }
 
         for (i=0; i<gemStats.length; i++)
@@ -953,6 +1003,81 @@ function wow(region,toonName,realmName)
         }
     }
 
+
+    function wlogs ()
+    {
+        if (!toonName || !realmName)
+        {
+            return " ";  // If there's nothing in the column, don't even bother calling the API
+        }
+        if (!warcraftlogskey)
+        {
+            return "Error: No API key entered. Please visit https://www.warcraftlogs.com/profile to obtain one.";
+        }
+
+        toonName = toonName.replace(/\s/g, "");
+        region = region.replace(/\s/g, "");
+        realmName = realmName.replace("'", "");   //remove 's
+        realmName = realmName.replace(/\s/g, "-");   //replace space with -
+
+        var logs = "-";
+
+        var fetchLogs = UrlFetchApp.fetch("https://www.warcraftlogs.com/v1/rankings/character/"+toonName+"/"+realmName+"/"+region+"?metric=dps&timeframe=historical&api_key="+warcraftlogskey+"", options);
+        logs = JSON.parse(fetchLogs.toString());
+
+        if (!logs[0])
+        {
+            var errorArray = ["No logs", " ", ""];
+            return errorArray;
+        }
+
+        //check to see if the most recent log was a healing one.. if so, we're going to REALLY HOPE this is a full time healer
+        else if (logs[0].spec == "Restoration" || logs[0].spec == "Mistweaver" || logs[0].spec == "Holy" || logs[0].spec == "Discipline")
+        {
+            fetchLogs = UrlFetchApp.fetch("https://www.warcraftlogs.com/v1/rankings/character/"+toonName+"/"+realmName+"/"+region+"?metric=hps&timeframe=historical&api_key="+warcraftlogskey+"", options);
+            logs = JSON.parse(fetchLogs.toString());
+        }
+
+
+        if (logs.class || logs.status)
+        {
+            return "API Error, check if your API key is entered properly and that the API is working, check character on Armory to see if it loads";
+        }
+
+        var difficultyCounter = [0, 0, 0, 0, 0, 0];
+        var difficultySums = [0, 0, 0, 0, 0, 0];
+
+        for (i=0; i<logs.length; i++)
+        {
+            if (logs[i].difficulty < 6)
+            {
+                difficultyCounter[logs[i].difficulty] = difficultyCounter[logs[i].difficulty]+1;
+                difficultySums[logs[i].difficulty] = difficultySums[logs[i].difficulty] + logs[i].percentile;
+            }
+        }
+
+        //this is to prevent /0 and making an icky output
+        for (i=0; i<difficultyCounter.length; i++)
+        {
+            if (difficultyCounter[i] == 0)
+            {
+                difficultyCounter[i] = 1;
+            }
+        }
+
+        var logInfo = [
+            difficultySums[3]/difficultyCounter[3],
+            difficultySums[4]/difficultyCounter[4],
+            difficultySums[5]/difficultyCounter[5]
+        ];
+        return logInfo;
+    }
+
+    if (warcraftlogskey)
+    {
+        warcraftLogs = wlogs(region,realmName,toonName);
+    }
+
     var toonInfo = [
 
         toon_class,
@@ -975,7 +1100,14 @@ function wow(region,toonName,realmName)
         mythicProgress,
         
 
-        profession1, profession2, thumbnail, armory, reputations
+        profession1, 
+        profession2, 
+      
+        thumbnail, 
+        armory, 
+      
+        reputations,
+    
 
     ];
 
