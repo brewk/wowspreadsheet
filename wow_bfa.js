@@ -410,17 +410,13 @@ function wow(region,toonName,realmName)
                         }
                         if (allItems[slot].ilvl > 369)
                         {
-                            if (item.azeriteEmpoweredItem.azeritePowers[4])
-                            {
-                                if (item.azeriteEmpoweredItem.azeritePowers[4].spellId == 0) // for pre-patch 8.1 items
-                                {
-                                    allItems[slot].power = allItems[slot].power + "/4 unlocked";
-                                }
-                            }
-                            
-                            else
+                            if (item.azeriteEmpoweredItem.azeritePowers[4] && item.azeriteEmpoweredItem.azeritePowers[4].spellId != 0)
                             {
                                 allItems[slot].power = allItems[slot].power + "/5 unlocked";
+                            }
+                            else
+                            {
+                                allItems[slot].power = allItems[slot].power + "/4 unlocked";  // for pre-patch 8.1 items
                             }
                         }
                       
