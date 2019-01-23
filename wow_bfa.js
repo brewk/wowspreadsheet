@@ -66,7 +66,7 @@ var markLegendary = true;
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
 
-var current_version = 4.1;
+var current_version = 4.101;
 
 function wow(region,toonName,realmName)
 {
@@ -408,7 +408,20 @@ function wow(region,toonName,realmName)
                                 allItems[slot].power = allItems[slot].power+1;
                             }
                         }
-                        if (allItems[slot].ilvl > 339)
+                        if (allItems[slot].ilvl > 369)
+                        {
+                            if (item.azeriteEmpoweredItem.azeritePowers[4].spellId == 0) // for pre-patch 8.1 items
+                            {
+                                allItems[slot].power = allItems[slot].power + "/4 unlocked";
+                            }
+                            
+                            else
+                            {
+                                allItems[slot].power = allItems[slot].power + "/5 unlocked";
+                            }
+                        }
+                      
+                        else if (allItems[slot].ilvl > 339)
                         {
                             allItems[slot].power = allItems[slot].power + "/4 unlocked";
                         }
@@ -743,6 +756,12 @@ function wow(region,toonName,realmName)
                     {
                         thisDifficulty.details = thisDifficulty.details ? thisDifficulty.details + ", " + getShortInstanceName(instanceName) : getShortInstanceName(instanceName);
                     }
+                }
+
+                // really didn't want to do it this way, but... Daz needs special code to deal with alliance/horde having different entries in stats
+                if (instanceName == "Battle of Dazar'alor")
+                {
+                    thisDifficulty.instanceLength = 9;
                 }
             }
             if (instanceType === "raids")
