@@ -539,6 +539,9 @@ function wow(region,toonName,realmName)
     }
 
 
+    //prune off raids that aren't out yet, causing mythic dungeon count to be off
+    toon.statistics.subCategories[5].subCategories[7].statistics.length = toon.statistics.subCategories[5].subCategories[7].statistics.length - 8;
+
     // lock out "Weekly checker"
     var todayStamp =new Date();
     var today = todayStamp.getDay();
