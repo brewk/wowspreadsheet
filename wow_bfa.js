@@ -539,9 +539,6 @@ function wow(region,toonName,realmName)
     }
 
 
-    //prune off raids that aren't out yet, causing mythic dungeon count to be off
-    toon.statistics.subCategories[5].subCategories[7].statistics.length = toon.statistics.subCategories[5].subCategories[7].statistics.length - 8;
-
     // lock out "Weekly checker"
     var todayStamp =new Date();
     var today = todayStamp.getDay();
@@ -959,7 +956,12 @@ function wow(region,toonName,realmName)
     }
 
 
-     // Preforming the outputs so they're easier to move around in the output array
+    // There appears to be an issue caused by unreleased raids causing the mythic count to be wrong
+    // unfortunately pruning them the entries caused other issues, for now just manually setting it to the proper number
+    displayInfo.dungeon.Mythic.instanceLength = 10;
+
+
+    // Preforming the outputs so they're easier to move around in the output array
     var heroicLockouts = displayInfo.dungeon.Heroic.lockout + "/" + displayInfo.dungeon.Heroic.instanceLength;
     var heroicProgress = displayInfo.dungeon.Heroic.progress + "/" + displayInfo.dungeon.Heroic.instanceLength + " (" + displayInfo.dungeon.Heroic.kills + ")";
     var mythicLockouts = displayInfo.dungeon.Mythic.lockout + "/" + displayInfo.dungeon.Mythic.instanceLength + " " +  displayInfo.dungeon.Mythic.details;
