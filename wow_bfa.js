@@ -255,7 +255,11 @@ function wow(region,toonName,realmName)
     audit_lookup["5937"] = "Crafting";
 
     var thumbnail = "http://render-"+region+".worldofwarcraft.com/character/"+  toon.thumbnail;
-    var armory = "http://"+region+".battle.net/wow/en/character/"+realmName+"/"+toonName+"/";
+    if (region == "eu")
+    {
+        region = "gb";
+    }
+    var armory = "https://worldofwarcraft.com/en-"+region+"/character/"+realmName+"/"+toonName;
 
     var allItems={
         equippedItems:0,
@@ -799,17 +803,35 @@ function wow(region,toonName,realmName)
         displayInfo.dungeon.Mythic.details = missingMythics;
     }
 
-    var worldBosses = [52196, 52163, 52169, 52181, 52157, 52166];
-    var worldBossKill = " ";
+    var worldBosses = [52196, 52163, 52169, 52181, 52157, 52166];          
+
+    var worldBossKill = "";
+    var warfront = "";
 
     for (i=0; i < toon.quests.length; i++)
     {
         if (worldBosses.indexOf(toon.quests[i]) > -1)
         {
-            worldBossKill = "\u2713"; //unicode checkmark
-            break;
+            worldBossKill = worldBossKill + "Weekly: \u2713 "; //unicode checkmark
+        }
+        if (toon.quests[i] == 54895 || toon.quests[i] == 54896)
+        {
+            worldBossKill = worldBossKill + "Ivus: \u2713 "; 
+        }
+        if (toon.quests[i] == 52847 || toon.quests[i] == 52848)
+        {
+            worldBossKill = worldBossKill + "DH: \u2713 "; 
+        }
+        if (toon.quests[i] == 53414 || toon.quests[i] == 53416)
+        {
+            warfront = warfront + "Stormgarde: \u2713 ";
+        }
+        if (toon.quests[i] == 53955 || toon.quests[i] == 53992)
+        {
+            warfront = warfront + "Darkshore: \u2713 ";
         }
     } 
+
 
     var profession1 = "none";
     var profession2 = "none";
