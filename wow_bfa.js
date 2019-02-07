@@ -259,6 +259,11 @@ function wow(region,toonName,realmName)
     {
         region = "gb";
     }
+    
+    realmName = realmName.replace("-",  "");
+    realmName = realmName.replace(" ", "-");
+    realmName = realmName.replace("'", "");
+
     var armory = "https://worldofwarcraft.com/en-"+region+"/character/"+realmName+"/"+toonName;
 
     var allItems={
