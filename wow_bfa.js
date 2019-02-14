@@ -66,7 +66,7 @@ var markLegendary = true;
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
 
-var current_version = 4.101;
+var current_version = 4.102;
 
 function wow(region,toonName,realmName)
 {
@@ -255,16 +255,18 @@ function wow(region,toonName,realmName)
     audit_lookup["5937"] = "Crafting";
 
     var thumbnail = "http://render-"+region+".worldofwarcraft.com/character/"+  toon.thumbnail;
+
+    var thumbReg = "us";
     if (region == "eu")
     {
-        region = "gb";
+        thumbReg = "gb";
     }
     
     realmName = realmName.replace("-",  "");
     realmName = realmName.replace(" ", "-");
     realmName = realmName.replace("'", "");
 
-    var armory = "https://worldofwarcraft.com/en-"+region+"/character/"+realmName+"/"+toonName;
+    var armory = "https://worldofwarcraft.com/en-"+thumbReg+"/character/"+realmName+"/"+toonName;
 
     var allItems={
         equippedItems:0,
