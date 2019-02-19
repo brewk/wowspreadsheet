@@ -814,6 +814,7 @@ function wow(region,toonName,realmName)
 
     var worldBossKill = "";
     var warfront = "";
+    var islandExpeditions = "-";
 
     for (i=0; i < toon.quests.length; i++)
     {
@@ -836,6 +837,10 @@ function wow(region,toonName,realmName)
         if (toon.quests[i] == 53955 || toon.quests[i] == 53992)
         {
             warfront = warfront + "Darkshore: \u2713 ";
+        }
+        if (toon.quests[i] == 53435 || toon.quests[i] == 53436)
+        {
+            islandExpeditions = "\u2713 ";
         }
     } 
 
