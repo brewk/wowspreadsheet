@@ -62,6 +62,7 @@ var markLegendary = true;
 //***************************************************************
 /* globals Utilities, UrlFetchApp, PropertiesService */
 /* exported wow, vercheck, warcraftLogs */
+/*eslint no-unused-vars: "islandExpeditions"*/
 
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
@@ -814,7 +815,7 @@ function wow(region,toonName,realmName)
 
     var worldBossKill = "";
     var warfront = "";
-    var islandExpeditions = "-";
+    var islandExpeditions = "";
 
     for (i=0; i < toon.quests.length; i++)
     {
