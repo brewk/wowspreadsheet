@@ -67,7 +67,7 @@ var markLegendary = true;
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
 
-var current_version = 4.102;
+var current_version = 4.2;
 
 function wow(region,toonName,realmName)
 {
@@ -621,7 +621,7 @@ function wow(region,toonName,realmName)
     var CURRENT_XPAC = 7;
     var raidInstancesSortOrder = [];
     var raidDifficultySortOrder = ["Raid Finder", "Normal", "Heroic", "Mythic"];
-    for (i = 40; i <= 41; i++) // BfA raids start at 40, increase i <= when more are released
+    for (i = 40; i <= 42; i++) // BfA raids start at 40, increase i <= when more are released
     {
         raidInstancesSortOrder.push(toon.progression.raids[i].name);
     }
@@ -989,11 +989,6 @@ function wow(region,toonName,realmName)
             }
         }
     }
-
-
-    // There appears to be an issue caused by unreleased raids causing the mythic count to be wrong
-    // unfortunately pruning them the entries caused other issues, for now just manually setting it to the proper number
-    displayInfo.dungeon.Mythic.instanceLength = 10;
 
 
     // Preforming the outputs so they're easier to move around in the output array
