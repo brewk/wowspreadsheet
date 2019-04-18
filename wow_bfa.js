@@ -62,7 +62,7 @@ var markLegendary = true;
 //***************************************************************
 /* globals Utilities, UrlFetchApp, PropertiesService */
 /* exported wow, vercheck, warcraftLogs */
-/*eslint no-unused-vars: "islandExpeditions"*/
+/*eslint no-unused-vars: 0*/
 
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
