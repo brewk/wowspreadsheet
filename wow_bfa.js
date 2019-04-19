@@ -829,7 +829,7 @@ function wow(region,toonName,realmName)
         }
         if (toon.quests[i] == 52847 || toon.quests[i] == 52848)
         {
-            worldBossKill = worldBossKill + "DH: \u2713 "; 
+            worldBossKill = worldBossKill + "Tank: \u2713 "; 
         }
         if (toon.quests[i] == 53414 || toon.quests[i] == 53416)
         {
