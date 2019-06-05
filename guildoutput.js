@@ -1,10 +1,22 @@
 /* ***********************************
- ***     Copyright (c) 2016 bruk
+ ***     Copyright (c) 2019 bruk
  *** This script is free software; you can redistribute it and/or modify
  *** it under the terms of the GNU General Public License as published by
  *** the Free Software Foundation; either version 3 of the License, or
  *** (at your option) any later version.
-   **********************************  */
+ ***
+ ************************************* */
+
+// For more info, help, or to contribute: http://bruk.org/wow 
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IMPORTANT!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//    You need to put your Client ID and client Secret below, inside the quotes
+//    Sign up and obtain them here: https://develop.battle.net/
+//   Step by step instructions: http://bruk.org/api
+
+
+
 
 
 // formula usage =guild(region, realm, guildname, outputMethod)
@@ -14,7 +26,9 @@
 
 // enter your api key here:
 // if you have this as part of a combined spreadsheet you can comment this line out
-var apikey = "";
+var clientID = "";
+
+var clientSecret = "";
 
 
 /* globals UrlFetchApp */
@@ -32,8 +46,13 @@ function sortFunction(a, b)
     }
 }
 
-function guildOut(region,realmName,guildName,outputMethod) 
+function guildRoster(region,realmName,guildName,outputMethod) 
 {
+  
+    var scriptProperties = PropertiesService.getScriptProperties();
+    var token = scriptProperties.getProperty("STORED_TOKEN");
+  
+
   
     if (!guildName || !realmName )
     {
@@ -49,9 +68,56 @@ function guildOut(region,realmName,guildName,outputMethod)
         return "Invalid outputMethod, please select 0 for rank output, or 1 for alt finder";
     }
   
-    var guildJSON = UrlFetchApp.fetch("https://"+region+".api.battle.net/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&apikey="+apikey+"");
+    if (!guildName || !realmName )
+    {
+        return "\u2063";  // If there's nothing don't even bother calling the API
+    }
+
+    var scriptProperties = PropertiesService.getScriptProperties();
+    var token = scriptProperties.getProperty("STORED_TOKEN");
+
+    //Getting rid of any sort of pesky no width white spaces we may run into
+    region = region.replace(/\s/g, "");
+    realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
+    region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
+
+    var options={ muteHttpExceptions:true };
+
+
+    var guildJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&access_token="+token+"", options);
+
+
+    if (!token || guildJSON.toString().length === 0)
+    {
+        var oauth_response = UrlFetchApp.fetch("https://"+region+".battle.net/oauth/token", {
+            "headers" : {
+                "Authorization": "Basic " + Utilities.base64Encode(clientID + ":" + clientSecret),
+                "Cache-Control": "max-age=0"
+            },
+            "payload" : { "grant_type": "client_credentials" }
+        });
+
+        token = JSON.parse(oauth_response.toString()).access_token;
+
+        
+        scriptProperties.setProperty("STORED_TOKEN", token);
+        guildJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&access_token="+token+"", options);
+        if (!token)
+        {
+            return "Error getting an API token. Please visit https://develop.battle.net/ and sign up for an account";
+        }
+    }
+    
+    
+    //Getting rid of any sort of pesky no width white spaces we may run into
+    region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
+    realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
+  
+
 
     var guild = JSON.parse(guildJSON);
+
+
 
     var membermatrix = [ ]; 
     var rank = 0;
