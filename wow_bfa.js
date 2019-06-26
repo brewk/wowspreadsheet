@@ -445,7 +445,7 @@ function wow(region,toonName,realmName)
               
             }
 
-           //unfortunately it doesn't seem like there's any valuable info in the tooltip params even though azerite power appears there
+            //unfortunately it doesn't seem like there's any valuable info in the tooltip params even though azerite power appears there
             if (azeriteItems.indexOf(slot)!=-1)
             {
                 allItems[slot].power= "-";
@@ -528,7 +528,7 @@ function wow(region,toonName,realmName)
 
     // /u/orange_gauss supplied this for fixing the double weight of 2handers
     if (allItems.offHand.ilvl == "\u2063" )
-   {
+    {
         allItems.totalIlvl += allItems.mainHand.ilvl;
         allItems.equippedItems += 1;
     }
@@ -961,7 +961,7 @@ function wow(region,toonName,realmName)
     profession1 = profession1 + " " + prof1array;
     profession2 = profession2 + " " + prof2array;
 
-// IDs for mythic+ were provied by @matdemy on twitter and this post: http://us.battle.net/forums/en/bnet/topic/20752275890
+    // IDs for mythic+ were provied by @matdemy on twitter and this post: http://us.battle.net/forums/en/bnet/topic/20752275890
     var mythicPlus = "";
     for (i=0; i<toon.achievements.criteria.length; i++)
     {
