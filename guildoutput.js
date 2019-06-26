@@ -14,11 +14,9 @@
 //    You need to put your Client ID and client Secret below, inside the quotes
 //    Sign up and obtain them here: https://develop.battle.net/
 //   Step by step instructions: http://bruk.org/api
-
-
-
-
-
+//
+// ---------------------------------USAGE ---------------------------------
+//
 // formula usage =guildRoster(region, realm, guildname, outputMethod)
 // example: =guildRoster("us","bloodscalp","Heart Attack", 0)
 // outputMethod should be 0 or 1
@@ -27,11 +25,10 @@
 
 // enter your api key here:
 // if you have this as part of a combined spreadsheet you can comment this line out
+
 var clientID = "";
 
 var clientSecret = "";
-
-
 
 /* globals Utilities, UrlFetchApp, PropertiesService */
 /* exported guildRoster */
