@@ -2,7 +2,7 @@
   "name": "wowspreadsheet",
   "description": "World of Warcraft character tracking spreadsheet for Google Docs",
   "devDependencies": {
-    "eslint": "^3.4.0"
+    "eslint": "^4.18.2"
   },
   "scripts": {
     "test": "./node_modules/.bin/eslint ."
