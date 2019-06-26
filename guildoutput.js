@@ -105,9 +105,9 @@ function guildRoster(region,realmName,guildName,outputMethod)
     var rank = 0;
   
     if (outputMethod === 1)
-   {
+    {
         for (var i=0; i<guild.members.length; i++)
-       {
+        {
             membermatrix[i] = [guild.members[i].character.achievementPoints, guild.members[i].character.name, guild.members[i].rank];
         }
         membermatrix.sort(sortFunction);
@@ -120,7 +120,7 @@ function guildRoster(region,realmName,guildName,outputMethod)
         }
 
         for (i=0; i<guild.members.length; i++)
-       {
+        {
             rank=guild.members[i].rank;
             membermatrix[rank].push(guild.members[i].character.name);
         }

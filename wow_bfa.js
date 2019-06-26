@@ -199,9 +199,7 @@ function wow(region,toonName,realmName)
         audit_lookup["153708"] =     //agility
         audit_lookup["153709"] = 2; //Int
 
-
-        //Punch Cards
-
+    //Punch Cards
     audit_lookup["168633"] =
         audit_lookup["168632"] =
         audit_lookup["168435"] =
@@ -276,7 +274,7 @@ function wow(region,toonName,realmName)
     audit_lookup["3370"] = "(DK)Razorice";
 
 
-  //shoulder - Leaving Legion ones in incase they are still useful to have in BfA
+    //shoulder - Leaving Legion ones in incase they are still useful to have in BfA
     audit_lookup["5440"] = "Scavenger (cloth)";
     audit_lookup["5441"] = "Gemfinder";
     audit_lookup["5442"] = "Harvester (herbs/fish)";
@@ -288,8 +286,7 @@ function wow(region,toonName,realmName)
     audit_lookup["5888"] = "Netherdrift";
     audit_lookup["5899"] = "Builder (Engineer)";
 
-
-  //gloves
+    //gloves
     audit_lookup["5932"] = "Herb";
     audit_lookup["5933"] = "Mine";
     audit_lookup["5934"] = "Skin";
@@ -322,7 +319,7 @@ function wow(region,toonName,realmName)
     // Azerite Info
     var heartOfAzeroth = "-";
   
-  //thanks to github user bloodrash for this function
+    //thanks to github user bloodrash for this function
     function numberWithCommas(x)
     {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -367,17 +364,15 @@ function wow(region,toonName,realmName)
             if (item.itemLevel > CONST_AUDIT_ILVL)
             {
                 if (item.tooltipParams.gem0&&item.quality!=6) // don't check artifacts in case people are still using those!
-                { 
-
-                   //if statement set up in descending order for gem IDs
-
-                   if (item.tooltipParams.gem0 > 160000) //punch cards ..hopefully add something better in here soon(tm)
-                   {
-                     
-                   }
-
-                    else if (item.tooltipParams.gem0 > 154125) //rare 
-                   {
+                {
+                    //if statement set up in descending order for gem IDs
+                    if (item.tooltipParams.gem0 > 160000) //punch cards ..hopefully add something better in here soon(tm)
+                    {
+                        item.tooltipParams.gem0 = item.tooltipParams.gem0; //pretend to do something
+                    }
+                    
+                    else if (item.tooltipParams.gem0 > 154125) //rare
+                    {
                         gemStats[item.tooltipParams.gem0-154126].value = gemStats[item.tooltipParams.gem0-154126].value+40;
                     }
                     else if (item.tooltipParams.gem0 > 153714) // +move 
@@ -389,11 +384,11 @@ function wow(region,toonName,realmName)
                         gemStats[item.tooltipParams.gem0-153714+4].value = gemStats[item.tooltipParams.gem0-153714+4].value+5;                        
                     }
                     else if (item.tooltipParams.gem0 > 153709) //uncommon
-                   {
+                    {
                         gemStats[item.tooltipParams.gem0-153710].value = gemStats[item.tooltipParams.gem0-153710].value+30;
                     }
                     else if (item.tooltipParams.gem0 > 153706) //unique epic
-                   {
+                    {
                         gemStats[item.tooltipParams.gem0-153707+6].value = gemStats [item.tooltipParams.gem0-153707+6].value+40;
                     }
                     else
@@ -403,7 +398,6 @@ function wow(region,toonName,realmName)
 
                     if (item.itemLevel>CONST_EPICGEM_ILVL)
                     {
-                        if (audit_lookup[item.tooltipParams.gem0] != 2)  
                         {
                             gemAudit[2].bool = 1;
                             gemAudit[2].issue += " "+ slot;

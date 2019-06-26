@@ -2,3 +2,4 @@
 node_modules/
 # Ignore legacy spreadsheet file when running eslint
 wow.js
+wow_legion.js

@@ -163,7 +163,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         }
       
       
-      // whitelist/blacklist of individual names will override the rank Black/whitelisting  
+        // whitelist/blacklist of individual names will override the rank Black/whitelisting  
         if (BLACKLIST.indexOf(guild.members[i].character.name) > -1)
         {
             blackListed = true;
@@ -205,7 +205,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
     {
         for (i=0; i<NONGUILD.length; i++)
         {
-          // not sure how this got weirded out, but thanks to @mattsmorrison for noticing it!
+            // not sure how this got weirded out, but thanks to @mattsmorrison for noticing it!
             membermatrix[arrayPosition] = [NONGUILD[i][0], NONGUILD[i][1], 99, 0, -1,  -1, "NonGuild"];
             arrayPosition++;
         }
