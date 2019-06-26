@@ -67,7 +67,7 @@ var markLegendary = true;
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
 
-var current_version = 4.2;
+var current_version = 4.21;
 
 function wow(region,toonName,realmName)
 {
@@ -199,6 +199,47 @@ function wow(region,toonName,realmName)
         audit_lookup["153708"] =     //agility
         audit_lookup["153709"] = 2; //Int
 
+
+        //Punch Cards
+
+    audit_lookup["168633"] =
+        audit_lookup["168632"] =
+        audit_lookup["168435"] =
+        audit_lookup["167693"] =
+        audit_lookup["168631"] =
+        audit_lookup["168657"] =
+        audit_lookup["168648"] =
+        audit_lookup["168671"] =
+        audit_lookup["167689"] =
+        audit_lookup["168748"] =
+        audit_lookup["168749"] =
+        audit_lookup["168747"] =
+        audit_lookup["168744"] =
+        audit_lookup["168745"] =
+        audit_lookup["168746"] =
+        audit_lookup["168750"] =
+        audit_lookup["168751"] =
+        audit_lookup["168741"] =
+        audit_lookup["168743"] =
+        audit_lookup["168742"] =
+        audit_lookup["170509"] =
+        audit_lookup["170508"] =
+        audit_lookup["170507"] =
+        audit_lookup["170510"] =
+        audit_lookup["168752"] =
+        audit_lookup["167672"] =
+        audit_lookup["167677"] =
+        audit_lookup["168756"] =
+        audit_lookup["168913"] =
+        audit_lookup["168910"] =
+        audit_lookup["168785"] =
+        audit_lookup["168909"] =
+        audit_lookup["168912"] =
+        audit_lookup["167556"] =
+        audit_lookup["168800"] =
+        audit_lookup["168798"] =6;
+
+
     //ring
     audit_lookup["5942"] = "Pact +37C";
     audit_lookup["5943"] = "Pact +37H";
@@ -329,7 +370,13 @@ function wow(region,toonName,realmName)
                 { 
 
                    //if statement set up in descending order for gem IDs
-                    if (item.tooltipParams.gem0 > 154125) //rare 
+
+                   if (item.tooltipParams.gem0 > 160000) //punch cards ..hopefully add something better in here soon(tm)
+                   {
+                     
+                   }
+
+                    else if (item.tooltipParams.gem0 > 154125) //rare 
                    {
                         gemStats[item.tooltipParams.gem0-154126].value = gemStats[item.tooltipParams.gem0-154126].value+40;
                     }
@@ -951,16 +998,20 @@ function wow(region,toonName,realmName)
     var reps = [
         { "id":2164, "text":"" },//Champions of Azeroth
         { "id":2163, "text":"" },//Tortollan Seekers
+        { "id":2391, "text":"" },//Rustbolt Resistance
         // alliance factions
         { "id":2160, "text":"" },//Proudmoore Admiralty
         { "id":2161, "text":"" },//Order of Embers
         { "id":2162, "text":"" },//Storm's Wake
         { "id":2159, "text":"" },//7th Legion
+        { "id":2400, "text":"" },//Waveblade Ankoan
         // horde factions
         { "id":2103, "text":"" },//Zandalari Empire
         { "id":2156, "text":"" },//Talanji's Expedition
         { "id":2158, "text":"" },//Voldunai
         { "id":2157, "text":"" },//The Honorbound
+        { "id":2373, "text":"" },//Unshackled
+
     ];
 
     var repStanding = {

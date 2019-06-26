@@ -19,7 +19,8 @@
 
 
 
-// formula usage =guild(region, realm, guildname, outputMethod)
+// formula usage =guildRoster(region, realm, guildname, outputMethod)
+// example: =guildRoster("us","bloodscalp","Heart Attack", 0)
 // outputMethod should be 0 or 1
 // method 0 = output by rank
 // method 1 = output by achievement points, to find alts
@@ -31,8 +32,9 @@ var clientID = "";
 var clientSecret = "";
 
 
-/* globals UrlFetchApp */
-/* exported guildOut */
+
+/* globals Utilities, UrlFetchApp, PropertiesService */
+/* exported guildRoster */
 
 function sortFunction(a, b) 
 {
@@ -52,8 +54,6 @@ function guildRoster(region,realmName,guildName,outputMethod)
     var scriptProperties = PropertiesService.getScriptProperties();
     var token = scriptProperties.getProperty("STORED_TOKEN");
   
-
-  
     if (!guildName || !realmName )
     {
         return "\u2063";  // If there's nothing don't even bother calling the API
@@ -62,7 +62,7 @@ function guildRoster(region,realmName,guildName,outputMethod)
 //Getting rid of any sort of pesky no width white spaces we may run into
     region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
     realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
-  
+    region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
     if (outputMethod != 0 && outputMethod != 1)
     {
         return "Invalid outputMethod, please select 0 for rank output, or 1 for alt finder";
@@ -73,19 +73,8 @@ function guildRoster(region,realmName,guildName,outputMethod)
         return "\u2063";  // If there's nothing don't even bother calling the API
     }
 
-    var scriptProperties = PropertiesService.getScriptProperties();
-    var token = scriptProperties.getProperty("STORED_TOKEN");
-
-    //Getting rid of any sort of pesky no width white spaces we may run into
-    region = region.replace(/\s/g, "");
-    realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
-    region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
-
     var options={ muteHttpExceptions:true };
-
-
     var guildJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&access_token="+token+"", options);
-
 
     if (!token || guildJSON.toString().length === 0)
     {
@@ -113,11 +102,7 @@ function guildRoster(region,realmName,guildName,outputMethod)
     region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
     realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
   
-
-
     var guild = JSON.parse(guildJSON);
-
-
 
     var membermatrix = [ ]; 
     var rank = 0;
