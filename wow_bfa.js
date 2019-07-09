@@ -1,5 +1,5 @@
 /* ***********************************
- ***     Copyright (c) 2018 bruk
+ ***     Copyright (c) 2019 bruk
  *** This script is free software; you can redistribute it and/or modify
  *** it under the terms of the GNU General Public License as published by
  *** the Free Software Foundation; either version 3 of the License, or
@@ -67,7 +67,7 @@ var markLegendary = true;
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
 
-var current_version = 4.21;
+var current_version = 4.3;
 
 function wow(region,toonName,realmName)
 {
@@ -156,10 +156,11 @@ function wow(region,toonName,realmName)
     var totalGems = [0, 0, 0, 0];
 
     var gemAudit = [
-        { bool: 0, issue: " Old:" },
-        { bool: 0, issue: " Cheap:" },
-        { bool: 0, issue: " No Prime Stat Epic" },    // this was a list of non-epic gems, when they weren't unique
-        { bool: 0, issue: " Mixed Gems" }
+        { bool: 0, issue: "Old:" },
+        { bool: 0, issue: "Cheap:" },
+        { bool: 0, issue: "No Leviathan" },
+        { bool: 0, issue: "Missing Epic:" },
+        { bool: 0, issue: "Missing Trinket Punchcard" }
     ];
 
     var gemStats = [
@@ -199,55 +200,74 @@ function wow(region,toonName,realmName)
         audit_lookup["153708"] =     //agility
         audit_lookup["153709"] = 2; //Int
 
+    // NEW epic gems
+    audit_lookup["168639"] =      //crit
+        audit_lookup["168640"] =  //mastery
+        audit_lookup["168641"] =   //haste
+        audit_lookup["168642"] = 3;  //vers
+
+
+    // NEW unique epic gems
+    audit_lookup["168636"] =    //strength
+        audit_lookup["168637"] = //agility
+        audit_lookup["168638"] = 2; //int
+
+    // new rare gem (ugh.. thanks)
+    audit_lookup["169220"] = 1; //+movement
+
+
     //Punch Cards
-    audit_lookup["168633"] =
-        audit_lookup["168632"] =
-        audit_lookup["168435"] =
-        audit_lookup["167693"] =
-        audit_lookup["168631"] =
-        audit_lookup["168657"] =
-        audit_lookup["168648"] =
-        audit_lookup["168671"] =
+    audit_lookup["167556"] =
+        audit_lookup["167672"] =
+        audit_lookup["167677"] =
         audit_lookup["167689"] =
-        audit_lookup["168748"] =
-        audit_lookup["168749"] =
-        audit_lookup["168747"] =
+        audit_lookup["167693"] =
+        audit_lookup["168435"] =
+        audit_lookup["168631"] =
+        audit_lookup["168632"] =
+        audit_lookup["168633"] =
+        audit_lookup["168648"] =
+        audit_lookup["168657"] =
+        audit_lookup["168671"] =
+        audit_lookup["168741"] =
+        audit_lookup["168742"] =
+        audit_lookup["168743"] =
         audit_lookup["168744"] =
         audit_lookup["168745"] =
         audit_lookup["168746"] =
+        audit_lookup["168747"] =
+        audit_lookup["168748"] =
+        audit_lookup["168749"] =
         audit_lookup["168750"] =
         audit_lookup["168751"] =
-        audit_lookup["168741"] =
-        audit_lookup["168743"] =
-        audit_lookup["168742"] =
-        audit_lookup["170509"] =
-        audit_lookup["170508"] =
-        audit_lookup["170507"] =
-        audit_lookup["170510"] =
         audit_lookup["168752"] =
-        audit_lookup["167672"] =
-        audit_lookup["167677"] =
         audit_lookup["168756"] =
-        audit_lookup["168913"] =
-        audit_lookup["168910"] =
         audit_lookup["168785"] =
-        audit_lookup["168909"] =
-        audit_lookup["168912"] =
-        audit_lookup["167556"] =
+        audit_lookup["168798"] =
         audit_lookup["168800"] =
-        audit_lookup["168798"] =6;
+        audit_lookup["168909"] =
+        audit_lookup["168910"] =
+        audit_lookup["168912"] =
+        audit_lookup["168913"] =
+        audit_lookup["170507"] =
+        audit_lookup["170508"] =
+        audit_lookup["170509"] =
+        audit_lookup["170510"] = 6;
 
 
     //ring
-    audit_lookup["5942"] = "Pact +37C";
-    audit_lookup["5943"] = "Pact +37H";
-    audit_lookup["5944"] = "Pact +37M";
-    audit_lookup["5945"] = "Pact +37V";
-    audit_lookup["5938"] = "Seal +27C";
-    audit_lookup["5939"] = "Seal +27H";
-    audit_lookup["5940"] = "Seal +27M";
-    audit_lookup["5941"] = "Seal +27V";
-
+    audit_lookup["5942"] = "Pact +40C";
+    audit_lookup["5943"] = "Pact +40H";
+    audit_lookup["5944"] = "Pact +40M";
+    audit_lookup["5945"] = "Pact +40V";
+    audit_lookup["5938"] = "Seal +30C";
+    audit_lookup["5939"] = "Seal +30H";
+    audit_lookup["5940"] = "Seal +30M";
+    audit_lookup["5941"] = "Seal +30V";
+    audit_lookup["6108"] = "Acrd +60C";
+    audit_lookup["6109"] = "Acrd +60H";
+    audit_lookup["6110"] = "Acrd +60M";
+    audit_lookup["6111"] = "Acrd +60V";
 
     //weapons
     audit_lookup["5946"] = "Coastal Surge";
@@ -259,6 +279,10 @@ function wow(region,toonName,realmName)
     audit_lookup["5964"] = "Masterful Nav";
     audit_lookup["5965"] = "Deadly Nav";
     audit_lookup["5966"] = "Stalwart Nav";
+    audit_lookup["6148"] = "Force *";
+    audit_lookup["6112"] = "Machinist";
+    audit_lookup["6150"] = "Naga Hide";
+    audit_lookup["6149"] = "Ocean Resto";
 
     //scopes
     audit_lookup["5955"] = "Crow's Nest Scope";
@@ -359,48 +383,82 @@ function wow(region,toonName,realmName)
             if (item.quality === 5 && markLegendary)
             {
                 allItems[slot].ilvl = allItems[slot].ilvl + "+";  // * can be any character you want, use it for your conditional
+            }          
+
+            if (item.id == 167555) //some temporary punch card stuff, not sure how robust this'll be
+            {
+                if (!item.tooltipParams.gem2)
+                {
+                    gemAudit[4].bool = 1;
+                }
             }
 
-            if (item.itemLevel > CONST_AUDIT_ILVL)
+            else if (item.itemLevel > CONST_AUDIT_ILVL && item.id != 167555)
             {
                 if (item.tooltipParams.gem0&&item.quality!=6) // don't check artifacts in case people are still using those!
                 {
                     //if statement set up in descending order for gem IDs
-                    if (item.tooltipParams.gem0 > 160000) //punch cards ..hopefully add something better in here soon(tm)
+                    //new bfa gems
+                    if (item.tooltipParams.gem0 > 169219) //new rare
                     {
-                        item.tooltipParams.gem0 = item.tooltipParams.gem0; //pretend to do something
+                        gemStats[5].value = gemStats[5].value+5;
                     }
-                    
+
+                    //new epics, thanks for putting stats in a different order again!
+                    else if (item.tooltipParams.gem0 === 168639)
+                    {
+                        gemStats[0].value = gemStats[0].value+60;
+                    }
+                    else if (item.tooltipParams.gem0 === 168640) 
+                    {
+                        gemStats[3].value = gemStats[3].value+60;
+                    }
+                    else if (item.tooltipParams.gem0 === 168641) 
+                    {
+                        gemStats[1].value = gemStats[1].value+60;
+                    }
+                    else if (item.tooltipParams.gem0 === 168642) 
+                    {
+                        gemStats[2].value = gemStats[2].value+60;
+                    }
+                    else if (item.tooltipParams.gem0 > 168635) //NEW unique epic
+                    {
+                        gemStats[item.tooltipParams.gem0-168636+6].value = gemStats[item.tooltipParams.gem0-168636+6].value+120;
+                    }
+                    // older bfa gems
+
                     else if (item.tooltipParams.gem0 > 154125) //rare
                     {
                         gemStats[item.tooltipParams.gem0-154126].value = gemStats[item.tooltipParams.gem0-154126].value+40;
                     }
                     else if (item.tooltipParams.gem0 > 153714) // +move 
                     {
-                        gemStats[item.tooltipParams.gem0-153715+4].value = gemStats[item.tooltipParams.gem0-153715+4].value+3;                        
+                        gemStats[5].value = gemStats[5].value+3;                      
                     }
                     else if (item.tooltipParams.gem0 > 153713) // xp 
                     {
-                        gemStats[item.tooltipParams.gem0-153714+4].value = gemStats[item.tooltipParams.gem0-153714+4].value+5;                        
+                        gemStats[4].value = gemStats[4].value+5;                     
                     }
                     else if (item.tooltipParams.gem0 > 153709) //uncommon
                     {
                         gemStats[item.tooltipParams.gem0-153710].value = gemStats[item.tooltipParams.gem0-153710].value+30;
                     }
-                    else if (item.tooltipParams.gem0 > 153706) //unique epic
+                    else if (item.tooltipParams.gem0 > 153706) //unique epic (kraken)
                     {
-                        gemStats[item.tooltipParams.gem0-153707+6].value = gemStats [item.tooltipParams.gem0-153707+6].value+40;
+                        gemStats[item.tooltipParams.gem0-153707+6].value = gemStats[item.tooltipParams.gem0-153707+6].value+40;
                     }
                     else
                     {
                         gemStats[9].value = gemStats[9].value + 1;
                     }
 
-                    if (item.itemLevel>CONST_EPICGEM_ILVL)
+                    if (audit_lookup[item.tooltipParams.gem0] !=2 && audit_lookup[item.tooltipParams.gem0] != 3)
                     {
+                        if (item.itemLevel>CONST_EPICGEM_ILVL)
                         {
                             gemAudit[2].bool = 1;
-                            gemAudit[2].issue += " "+ slot;
+                            gemAudit[3].bool = 1;
+                            gemAudit[3].issue += " "+ slot;
                         }
                     }
 
@@ -409,7 +467,7 @@ function wow(region,toonName,realmName)
                         gemAudit[1].bool = 1;
                         gemAudit[1].issue += " " + slot;
                     }
-                    else if (audit_lookup[item.tooltipParams.gem0] != 1)
+                    else if (audit_lookup[item.tooltipParams.gem0] != 1 && audit_lookup[item.tooltipParams.gem0] !=2 && audit_lookup[item.tooltipParams.gem0] != 3)
                     {
                         gemAudit[0].bool = 1;
                         gemAudit[0].issue += " " + slot;
@@ -577,7 +635,7 @@ function wow(region,toonName,realmName)
         {
             if (gemStats[i].value > 0)
             {
-                auditInfo = auditInfo + " +" + gemStats[i].value + gemStats[i].stat + " ";
+                auditInfo = auditInfo + " +" + gemStats[i].value + gemStats[i].stat;
             }
         }
 
@@ -587,6 +645,10 @@ function wow(region,toonName,realmName)
     {
         if (gemAudit[i].bool > 0)
         {
+            if (auditInfo.length > 1) //make things a bit more legible
+            {
+                auditInfo = auditInfo + ", ";
+            }
             auditInfo = auditInfo + gemAudit[i].issue;
         }
     }
@@ -662,7 +724,7 @@ function wow(region,toonName,realmName)
     var CURRENT_XPAC = 7;
     var raidInstancesSortOrder = [];
     var raidDifficultySortOrder = ["Raid Finder", "Normal", "Heroic", "Mythic"];
-    for (i = 40; i <= 42; i++) // BfA raids start at 40, increase i <= when more are released
+    for (i = 40; i <= 43; i++) // BfA raids start at 40, increase i <= when more are released
     {
         raidInstancesSortOrder.push(toon.progression.raids[i].name);
     }
@@ -860,9 +922,13 @@ function wow(region,toonName,realmName)
 
     for (i=0; i < toon.quests.length; i++)
     {
-        if (worldBosses.indexOf(toon.quests[i]) > -1)
+        if (toon.quests[i] == 56057)
         {
-            worldBossKill = worldBossKill + "Weekly: \u2713 "; //unicode checkmark
+            worldBossKill = worldBossKill + "Soulbinder: \u2713 "; 
+        }
+        if (toon.quests[i] == 56056)
+        {
+            worldBossKill = worldBossKill + "Terror: \u2713 "; 
         }
         if (toon.quests[i] == 54895 || toon.quests[i] == 54896)
         {
@@ -871,6 +937,10 @@ function wow(region,toonName,realmName)
         if (toon.quests[i] == 52847 || toon.quests[i] == 52848)
         {
             worldBossKill = worldBossKill + "Tank: \u2713 "; 
+        }
+        if (worldBosses.indexOf(toon.quests[i]) > -1)
+        {
+            worldBossKill = worldBossKill + "Weekly: \u2713 "; //unicode checkmark
         }
         if (toon.quests[i] == 53414 || toon.quests[i] == 53416)
         {
