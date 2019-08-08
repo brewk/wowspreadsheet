@@ -33,6 +33,12 @@ var listMissing = false;
 
 var raiderIO = false;
 
+// Option to display selected Azerite Essences
+// this option uses new parts of the API, and because of that requires an additional call to it
+// folks who are runnning into 'Too Manay Requests' type errors may have troubles with this
+// You must add azTraits to the output array (which starts at line 1284) as well as manually add 3 columns to your sheet 
+ 
+var essencesOn = false; 
 
 /* Advanced User Feature: Warcraft Logs best performance average percentile output for normal/heroic/mythic (current tier only)
    you'll need a warcraftlogs API key, which you can find here:
@@ -67,7 +73,7 @@ var markLegendary = true;
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
 
-var current_version = 4.3;
+var current_version = 4.31;
 
 function wow(region,toonName,realmName)
 {
@@ -149,6 +155,31 @@ function wow(region,toonName,realmName)
         12:"Demon Hunter"
     };
     var toon_class = classes[toon.class];
+
+    // Azerite Essences
+    var azTraits = [ "-", "-", "-"];
+
+    if (toon.level == 120 && essencesOn == true)
+    {
+
+        var traitsJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/profile/wow/character/"+realmName.toLowerCase().replace("'", "").replace(" ", "-")+"/"+toonName.toLowerCase()+"/equipment?namespace=profile-"+region+"&locale=en_US&access_token="+token+"", options);
+        
+        var parsedTraits = JSON.parse(traitsJSON.toString());
+        
+        if (parsedTraits.equipped_items[1].slot.type === "NECK") //this will deal with those weirdo nudists who don't have helm/neck equipped
+        {
+            for (i=0; i<3; i++)
+            {
+                if (parsedTraits.equipped_items[1]) //this sort of catches weird bugs for now
+                {
+                    if (parsedTraits.equipped_items[1].azerite_details.selected_essences[i].rank) // if there's no rank there's no reason to continue
+                    {
+                        azTraits[i] = parsedTraits.equipped_items[1].azerite_details.selected_essences[i].essence.name + "(" + parsedTraits.equipped_items[1].azerite_details.selected_essences[i].rank + ")";
+                    }
+                }
+            }
+        }
+    }
 
     // Time to do some gear audits
     var auditInfo ="";
@@ -326,7 +357,7 @@ function wow(region,toonName,realmName)
     }
     
     realmName = realmName.replace("-",  "");
-    realmName = realmName.replace(" ", "-");
+    realmName = realmName.replace(/ /g, "-");
     realmName = realmName.replace("'", "");
 
     var armory = "https://worldofwarcraft.com/en-"+thumbReg+"/character/"+realmName+"/"+toonName;
@@ -1104,7 +1135,11 @@ function wow(region,toonName,realmName)
             }
         }
     }
-
+    //keep the array the proper size, so that if we haven't met a faction our columns are still nice (also reps are broken for dark iron and maghar, blizz plz fix)
+    while (reputations.length < 8) //adjust this int if more reputations are added
+    {
+        reputations.push(" ");
+    }
 
     // Preforming the outputs so they're easier to move around in the output array
     var heroicLockouts = displayInfo.dungeon.Heroic.lockout + "/" + displayInfo.dungeon.Heroic.instanceLength;
