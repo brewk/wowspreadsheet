@@ -172,9 +172,12 @@ function wow(region,toonName,realmName)
             {
                 if (parsedTraits.equipped_items[1]) //this sort of catches weird bugs for now
                 {
-                    if (parsedTraits.equipped_items[1].azerite_details.selected_essences[i].rank) // if there's no rank there's no reason to continue
+                    if (parsedTraits.equipped_items[1].azerite_details.selected_essences[i])
                     {
-                        azTraits[i] = parsedTraits.equipped_items[1].azerite_details.selected_essences[i].essence.name + "(" + parsedTraits.equipped_items[1].azerite_details.selected_essences[i].rank + ")";
+                        if (parsedTraits.equipped_items[1].azerite_details.selected_essences[i].rank) // if there's no rank there's no reason to continue
+                        {
+                            azTraits[i] = parsedTraits.equipped_items[1].azerite_details.selected_essences[i].essence.name + "(" + parsedTraits.equipped_items[1].azerite_details.selected_essences[i].rank + ")";
+                        }
                     }
                 }
             }
