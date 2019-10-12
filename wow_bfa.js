@@ -73,7 +73,7 @@ var markLegendary = true;
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
 
-var current_version = 4.31;
+var current_version = 4.32;
 
 function wow(region,toonName,realmName)
 {
