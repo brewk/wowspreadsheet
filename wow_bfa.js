@@ -73,7 +73,7 @@ var markLegendary = true;
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
 
-var current_version = 4.32;
+var current_version = 4.33;
 
 function wow(region,toonName,realmName)
 {
@@ -166,7 +166,7 @@ function wow(region,toonName,realmName)
         
         var parsedTraits = JSON.parse(traitsJSON.toString());
         
-        if (parsedTraits.equipped_items[1].slot.type === "NECK") //this will deal with those weirdo nudists who don't have helm/neck equipped
+        if (parsedTraits.equipped_items[1].slot.type === "NECK" && parsedTraits.equipped_items[1].azerite_details.selected_essences) //this will deal with those weirdo nudists who don't have helm/neck equipped
         {
             for (i=0; i<3; i++)
             {
@@ -387,7 +387,14 @@ function wow(region,toonName,realmName)
     {
         if (toon.items.neck.quality===6)
         {
-            heartOfAzeroth = toon.items.neck.azeriteItem.azeriteLevel + " (" + numberWithCommas(toon.items.neck.azeriteItem.azeriteExperience) + " / " + numberWithCommas(toon.items.neck.azeriteItem.azeriteExperienceRemaining) + ")";
+            if (parsedTraits)
+            {
+                heartOfAzeroth = parsedTraits.equipped_items[1].azerite_details.level.value + Math.round(parsedTraits.equipped_items[1].azerite_details.percentage_to_next_level* 100)/100;
+            }
+            else
+            {
+                heartOfAzeroth = toon.items.neck.azeriteItem.azeriteLevel;
+            }
         }
     }
 
@@ -800,6 +807,10 @@ function wow(region,toonName,realmName)
         else if (inputString.indexOf("defenses") !== -1)
         {
             info = inputString.split(" defenses (");
+        }
+        else if (inputString.indexOf("Corruption Reborn") !== -1)  //this is a bit of a fudge :D
+        {
+            info = inputString.split(" Corruption Reborn (");
         }
         else
         {
