@@ -387,7 +387,7 @@ function wow(region,toonName,realmName)
     {
         if (toon.items.neck.quality===6)
         {
-            if (parsedTraits)
+            if (toon.lvl == 120 && parsedTraits)
             {
                 heartOfAzeroth = parsedTraits.equipped_items[1].azerite_details.level.value + Math.round(parsedTraits.equipped_items[1].azerite_details.percentage_to_next_level* 100)/100;
             }
@@ -611,8 +611,8 @@ function wow(region,toonName,realmName)
     }
 
 
-    //hoppefully TEMPORARY fix to properly see legendary cape
-    if (parsedTraits)
+    //hoppefully TEMPORARY fix to properly see legendary cape and proper HoA ilvl
+    if (toon.lvl == 120 && parsedTraits)
     {
         allItems.neck.ilvl = parsedTraits.equipped_items[1].level.value; 
 
