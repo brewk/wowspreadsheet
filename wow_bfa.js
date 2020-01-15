@@ -611,6 +611,17 @@ function wow(region,toonName,realmName)
     }
 
 
+    //hoppefully TEMPORARY fix to properly see legendary cape
+    if (parsedTraits && parsedTraits.equipped_items[13].quality.type == "LEGENDARY")
+    {
+        allItems.back.ilvl = parsedTraits.equipped_items[13].level.value;
+        if (markLegendary)
+        {
+            allItems.back.ilvl = allItems.back.ilvl + "+";
+        }
+    }
+
+
     var bruksOCDswap = function (item1,item2)
     {
         if (allItems[item1].ilvl<allItems[item2].ilvl || allItems[item2].ilvl =="265+" ||  allItems[item2].ilvl =="240+" )
