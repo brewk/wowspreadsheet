@@ -612,12 +612,17 @@ function wow(region,toonName,realmName)
 
 
     //hoppefully TEMPORARY fix to properly see legendary cape
-    if (parsedTraits && parsedTraits.equipped_items[13].quality.type == "LEGENDARY")
+    if (parsedTraits)
     {
-        allItems.back.ilvl = parsedTraits.equipped_items[13].level.value;
-        if (markLegendary)
+        allItems.neck.ilvl = parsedTraits.equipped_items[1].level.value; 
+
+        if (parsedTraits.equipped_items[13].quality.type == "LEGENDARY")
         {
-            allItems.back.ilvl = allItems.back.ilvl + "+";
+            allItems.back.ilvl = parsedTraits.equipped_items[13].level.value;
+            if (markLegendary)
+            {
+                allItems.back.ilvl = allItems.back.ilvl + "+";
+            }
         }
     }
 
