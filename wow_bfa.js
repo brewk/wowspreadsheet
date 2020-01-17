@@ -616,12 +616,20 @@ function wow(region,toonName,realmName)
     {
         allItems.neck.ilvl = parsedTraits.equipped_items[1].level.value; 
 
-        if (parsedTraits.equipped_items[13].quality.type == "LEGENDARY")
+        // HACK: If the toon has a SHIRT equipped, the location in the array for the BACK changes
+        if (parsedTraits.equipped_items[13].slot.type === "BACK"){
+          back_slot = 13;
+        }
+        else if (parsedTraits.equipped_items[14].slot.type === "BACK"){
+          back_slot = 14;
+        }
+     
+        if (parsedTraits.equipped_items[back_slot].quality.type == "LEGENDARY")
         {
-            allItems.back.ilvl = parsedTraits.equipped_items[13].level.value;
+            allItems.back.ilvl = parsedTraits.equipped_items[back_slot].level.value;
             if (markLegendary)
             {
-                allItems.back.ilvl = allItems.back.ilvl + "+";
+                allItems.back.ilvl = allItems.back.ilvl + "+" + Math.max(1, Math.min(((allItems.back.ilvl-470)/2)+1, 15));
             }
         }
     }
