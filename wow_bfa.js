@@ -157,18 +157,18 @@ function wow(region,toonName,realmName)
     var toon_class = classes[toon.class];
 
     // Azerite Essences
-    var azTraits = [ "-", "-", "-"];
+    var azTraits = [ "-", "-", "-", "-"];
 
     if (toon.level == 120 && essencesOn == true)
     {
 
-        var traitsJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/profile/wow/character/"+realmName.toLowerCase().replace("'", "").replace(" ", "-")+"/"+toonName.toLowerCase()+"/equipment?namespace=profile-"+region+"&locale=en_US&access_token="+token+"", options);
-        
+        var traitsJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/profile/wow/character/"+realmName.toLowerCase().replace("'", "").replace(/\s/g, "-")+"/"+toonName.toLowerCase()+"/equipment?namespace=profile-"+region+"&locale=en_US&access_token="+token+"", options);       
+       
         var parsedTraits = JSON.parse(traitsJSON.toString());
         
         if (parsedTraits.equipped_items[1].slot.type === "NECK" && parsedTraits.equipped_items[1].azerite_details.selected_essences) //this will deal with those weirdo nudists who don't have helm/neck equipped
         {
-            for (i=0; i<3; i++)
+            for (i=0; i<4; i++)
             {
                 if (parsedTraits.equipped_items[1]) //this sort of catches weird bugs for now
                 {
@@ -615,13 +615,24 @@ function wow(region,toonName,realmName)
     if (toon.level == 120 && parsedTraits)
     {
         allItems.neck.ilvl = parsedTraits.equipped_items[1].level.value; 
+        var back_slot = 0;
 
-        if (parsedTraits.equipped_items[13].quality.type == "LEGENDARY")
+        // HACK: If the toon has a SHIRT equipped, the location in the array for the BACK changes
+        if (parsedTraits.equipped_items[13].slot.type === "BACK")
         {
-            allItems.back.ilvl = parsedTraits.equipped_items[13].level.value;
+            back_slot = 13;
+        }
+        else if (parsedTraits.equipped_items[14].slot.type === "BACK")
+        {
+            back_slot = 14;
+        }
+     
+        if (parsedTraits.equipped_items[back_slot].quality.type == "LEGENDARY")
+        {
+            allItems.back.ilvl = parsedTraits.equipped_items[back_slot].level.value;
             if (markLegendary)
             {
-                allItems.back.ilvl = allItems.back.ilvl + "+";
+                allItems.back.ilvl = allItems.back.ilvl + "+" + Math.max(1, Math.min(((allItems.back.ilvl-470)/2)+1, 15));
             }
         }
     }
@@ -1136,6 +1147,8 @@ function wow(region,toonName,realmName)
         { "id":2158, "text":"" },//Voldunai
         { "id":2157, "text":"" },//The Honorbound
         { "id":2373, "text":"" },//Unshackled
+        { "id":2415, "text":"" },//Rajani
+        { "id":2417, "text":"" },//Uldum
 
     ];
 
