@@ -1179,7 +1179,7 @@ function wow(region,toonName,realmName)
         }
     }
     //keep the array the proper size, so that if we haven't met a faction our columns are still nice (also reps are broken for dark iron and maghar, blizz plz fix)
-    while (reputations.length < 8) //adjust this int if more reputations are added
+    while (reputations.length < 10) //adjust this int if more reputations are added
     {
         reputations.push(" ");
     }
