@@ -73,7 +73,7 @@ var markLegendary = true;
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
 
-var current_version = 4.33;
+var current_version = 4.4;
 
 function wow(region,toonName,realmName)
 {
@@ -792,7 +792,7 @@ function wow(region,toonName,realmName)
     var CURRENT_XPAC = 7;
     var raidInstancesSortOrder = [];
     var raidDifficultySortOrder = ["Raid Finder", "Normal", "Heroic", "Mythic"];
-    for (i = 40; i <= 43; i++) // BfA raids start at 40, increase i <= when more are released
+    for (i = 40; i <= 44; i++) // BfA raids start at 40, increase i <= when more are released
     {
         raidInstancesSortOrder.push(toon.progression.raids[i].name);
     }
@@ -847,6 +847,13 @@ function wow(region,toonName,realmName)
         info = info[0].split(" ");
         var difficultyName = "";
         var nameForInstance = "";
+
+        //take care of blizzard's totally "Nomral" typo on hivemind
+        if (info[0] === "Nomral")
+        {
+            info[0] = "Normal";
+        }
+
         if (info[0] === "Raid")
         {
             difficultyName = info.shift() + " " +  info.shift(); // Raid Finder
