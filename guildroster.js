@@ -1,5 +1,6 @@
+
 /* ***********************************
- ***     Copyright (c) 2018 bruk
+ ***     Copyright (c) 2020 bruk
  *** This script is free software; you can redistribute it and/or modify
  *** it under the terms of the GNU General Public License as published by
  *** the Free Software Foundation; either version 3 of the License, or
@@ -33,17 +34,18 @@ var WHITELIST = [];
 
 var NONGUILD = [];
 
+
 // **************** RANK BLACKLIST / WHITE LIST ****************
 // If you want a certain rank of players to never or always be shown
 // enter their number in the brackets, seperated by commas. Guild Master rank is 0
 // Individuals listed in the above white/blacklist section will override rank white/blacklisting
 
-// BLACK LIST: Add number of the rank yo udon't want to show up
+// BLACK LIST: Add number of the rank you don't want to show up
 // Usage: var BLACKLIST = [3, 4, 8];
 
 var RANKBLACKLIST = [];
 
-// BLACK LIST: Add number of the rank yo udon't want to show up
+// WHITE LIST: Add number of the rank you want to always show up, even if it would be otherwise filtered out
 // Usage: var RANKWHITELIST = [2, 5, 7];
 
 var RANKWHITELIST = [];
@@ -51,83 +53,52 @@ var RANKWHITELIST = [];
 // ******************************************************
 
 
-/* globals Utilities, UrlFetchApp, PropertiesService, clientID, clientSecret*/
-/* exported guildOut vercheckGuild */
+/* globals, clientSecret, fixNames*/
+/* exported guildOut vercheckGuild*/
 
-var current_versionGuild = 1.1;
+var current_versionGuild = 1.2;
 
 function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel) 
 {
+  
+  
+    if (clientID === "")
+    {
+        return ["Missing client ID, please follow steps here:", "http://bruk.org/api"];
+    }
   
     if (!guildName || !realmName )
     {
         return "\u2063";  // If there's nothing don't even bother calling the API
     }
+  
 
-    var scriptProperties = PropertiesService.getScriptProperties();
-    var token = scriptProperties.getProperty("STORED_TOKEN");
+    var fix = fixNames(region,realmName,guildName);
+    var fetchURL = "https://"+fix.region+".api.blizzard.com/data/wow/guild/"+fix.realmName+"/"+fix.name+"/roster?namespace=profile-"+fix.region+"&locale=en_US&access_token=";
+  
 
-    //Getting rid of any sort of pesky no width white spaces we may run into
-    region = region.replace(/\s/g, "");
-    realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
-    region = region.toLowerCase(); // if we don't do this, it screws up the avatar display 9_9
-
-    var options={ muteHttpExceptions:true };
-
-
-    var guildJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&access_token="+token+"", options);
-
-
-    if (!token || guildJSON.toString().length === 0)
+    var guild = jsonFetch(fetchURL, fix.region);
+    if (guild.length < 100)
     {
-        var oauth_response = UrlFetchApp.fetch("https://"+region+".battle.net/oauth/token", {
-            "headers" : {
-                "Authorization": "Basic " + Utilities.base64Encode(clientID + ":" + clientSecret),
-                "Cache-Control": "max-age=0"
-            },
-            "payload" : { "grant_type": "client_credentials" }
-        });
-
-        token = JSON.parse(oauth_response.toString()).access_token;
-
-        
-        scriptProperties.setProperty("STORED_TOKEN", token);
-        guildJSON = UrlFetchApp.fetch("https://"+region+".api.blizzard.com/wow/guild/"+realmName+"/"+guildName+"?fields=members&?locale=en_US&access_token="+token+"", options);
-        if (!token)
-        {
-            return "Error getting an API token. Please visit https://develop.battle.net/ and sign up for an account";
-        }
+        return "API Error";
     }
-
-
-    //Getting rid of any sort of pesky no width white spaces we may run into
-    region = region.replace(/[\u200B-\u200D\uFEFF]/g, "");
-    realmName = realmName.replace(/[\u200B-\u200D\uFEFF]/g, "");
   
     if (maxRank<0 || maxRank>10)
     {
         return "Error loading API: try refreshing and verify values are typed correctly. Ensure your API key is entered into the script correctly. Errors can also come from loading 100+ characters at a time";
     }
-
-
-    var guild = JSON.parse(guildJSON);
+  
 
     if (!guild.members)
     {
         return "Error: verify your apikey is entered and values are entered correctly";
     }
 
+
     var membermatrix = [];
     var arrayPosition = 0;
-    var roleSort = ["Tank","Healer","Ranged","Melee","BlizzError"];//this is the order it is going to get sorted by. Swap thise around if you want it in another order
+    var roleSort = ["Warrior","Paladin","Death Knight", "Hunter", "Shaman", "Druid", "Rogue", "Monk", "Demon Hunter", "Mage", "Warlock", "Priest", "Error"];
 
-    
-    var roles = {
-        Tank: ["Blood","Protection","Guardian","Brewmaster","Vengeance"],
-        Healer: ["Restoration", "Holy", "Discipline", "Mistweaver"],
-        Ranged: ["Elemental","Beast Mastery","Marksmanship","Balance","Affliction","Demonology","Destruction","Arcane","Fire","Frost","Shadow"],
-        Melee: ["Retribution","Frost","Unholy","Arms","Fury","Survival","Enhancement","Feral","Windwalker","Outlaw","Assassination","Subtlety","Havoc"]
-    };//frost dks and frost mages needs its own check
     var classes = [//this is for detemening what playerclass the variable class refers to. Needed when we want to check if frost refers to DK or Mage.
         "Error",
         "Warrior",
@@ -176,27 +147,10 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
         if (((guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel) || whiteListed )&& !blackListed )
         {
             var playerRole = "BlizzError";
-            if (guild.members[i].character.spec)
-            {
-                for (var role in roles)
-                {
-                    if (guild.members[i].character.spec.name=="Frost")
-                    {
-                        playerRole = classes[guild.members[i].character.class]=="Mage" ? "Ranged": "Melee";
-                    }
-                    else if (roles[role].indexOf(guild.members[i].character.spec.name) != -1)
-                    {
-                        playerRole = role;
-                    }
-                }
-            }
+            playerRole = classes[guild.members[i].character.playable_class.id];
+                     
 
-            if (!guild.members[i].character.realm)
-            {
-                guild.members[i].character.realm = guild.members[i].character.guildRealm;
-            }
-
-            membermatrix[arrayPosition] = [guild.members[i].character.realm, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort.indexOf(playerRole), playerRole];
+            membermatrix[arrayPosition] = [guild.members[i].character.realm.slug, guild.members[i].character.name, guild.members[i].rank, guild.members[i].character.achievementPoints, guild.members[i].character.level,  roleSort.indexOf(playerRole), playerRole];
             arrayPosition++;
         }   // ...end of manual code for role
     }
@@ -241,7 +195,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
             });
             break;
 
-        case "Role":
+        case "Class":
             membermatrix.sort(function(a,b) 
             {
                 if (a[5] === -1)
@@ -263,7 +217,7 @@ function guildOut(region,realmName,guildName,maxRank,sortMethod,minLevel)
   
     for (i = 0 ; i < membermatrix.length ; i++)
     {
-        membermatrix[i].splice(2,4);
+        membermatrix[i].splice(3,5);
     }
 
     return membermatrix;
