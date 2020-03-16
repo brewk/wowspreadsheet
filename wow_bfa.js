@@ -627,19 +627,24 @@ function raidsDungeons(region,realmName,toonName)
         {
             if (raider.mythic_plus_weekly_highest_level_runs[0])
             {
-                mDungeonLockout = mDungeonLockout + " weekly highest M+: " + raider.mythic_plus_weekly_highest_level_runs[0].mythic_level;
+                mDungeonLockout = mDungeonLockout + "/11 weekly highest M+: " + raider.mythic_plus_weekly_highest_level_runs[0].mythic_level;
             }
             if (raider.mythic_plus_highest_level_runs[0])
             {
-                mDungeonProgress = mDungeonProgress + " highest BfA M+: " + raider.mythic_plus_highest_level_runs[0].mythic_level;
+                mDungeonProgress = mDungeonProgress + "/11 highest BfA M+: " + raider.mythic_plus_highest_level_runs[0].mythic_level;
             }
             if (raider.mythic_plus_scores)
             {
                 mDungeonProgress = mDungeonProgress + " Score: " + raider.mythic_plus_scores.all;
             }
         }
+        progressionOut.push(hDungeonLockout+"/11", hDungeonProgress+"/11 ("+hTotal+")", mDungeonLockout,  mDungeonProgress+" ("+mTotal+")");
     }
-    progressionOut.push(hDungeonLockout+"/11", hDungeonProgress+"/11 ("+hTotal+")", mDungeonLockout+"/11",  mDungeonProgress+"/11 ("+mTotal+")");
+    else
+    {
+        progressionOut.push(hDungeonLockout+"/11", hDungeonProgress+"/11 ("+hTotal+")", mDungeonLockout+"/11",  mDungeonProgress+"/11 ("+mTotal+")");
+    }
+
     return progressionOut;
 }
 
