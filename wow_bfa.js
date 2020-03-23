@@ -620,7 +620,7 @@ function raidsDungeons(region,realmName,toonName)
 
     if (raiderIO == true)
     {
-        var raiderJSON = UrlFetchApp.fetch("https://raider.io/api/v1/characters/profile?region="+region+"&realm="+realmName+"&name="+toonName+"&fields=mythic_plus_highest_level_runs,mythic_plus_scores,mythic_plus_weekly_highest_level_runs", options);
+        var raiderJSON = UrlFetchApp.fetch("https://raider.io/api/v1/characters/profile?region="+region+"&realm="+realmName+"&name="+toonName.toUpperCase()+"&fields=mythic_plus_highest_level_runs,mythic_plus_scores,mythic_plus_weekly_highest_level_runs", options);
         var raider = JSON.parse(raiderJSON.toString());
 
         if (!raider.statusCode)
