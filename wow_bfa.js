@@ -1034,10 +1034,10 @@ function equipment(region,realmName,toonName)
                     {
                         if (gear.equipped_items[i].azerite_details.selected_essences[j].rank) // if there's no rank there's no reason to continue
                         {
-                            var resistCheck = gear.equipped_items[i].azerite_details.selected_essences[j].passive_spell_tooltip.description.split(":  ");
-                            if (resistCheck[1] == "Corruption Resistance increased by 10.")
+                            var resistCheck = gear.equipped_items[i].azerite_details.selected_essences[j].passive_spell_tooltip.description.indexOf("Corruption Resistance increased by 10.");
+                            if (resistCheck > -1)
                             {
-                                totalStats[7] = 10;
+                                totalStats[7] += 10;
                             }
                             var shortName = function (str1)
                             {
