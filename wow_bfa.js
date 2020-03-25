@@ -337,7 +337,7 @@ function quest(region,realmName,toonName)
             worldBossKill = worldBossKill + "🐛Terror: \u2713 "; 
         }
 
-        if (quests.quests[i].id == 56057)
+        if (quests.quests[i].id == 58705)
         {
             worldBossKill = worldBossKill + "👑Empress: \u2713 "; 
         }
