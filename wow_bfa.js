@@ -191,8 +191,12 @@ function wow(region,toonName,realmName)
 function fixNames(reg,realm,toon)
 {
     reg = reg.replace(/\s/g, "").toLowerCase();
-    realm = realm.replace(/[\u200B-\u200D\uFEFF'-]/g, "").replace(/\s/g, "-").toLowerCase();
+    realm = realm.replace(/[\u200B-\u200D\uFEFF']/g, "").replace(/\s/g, "-").toLowerCase();
     toon = toon.toLowerCase().replace(/\s/g, "-");
+    if (realm == "arak-arahm" || realm =="azjol-nerub" ||realm == "король-лич")
+    {
+        realm = realm.replace("-", "");
+    }
 
     return {
         region: reg,

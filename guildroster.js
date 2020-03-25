@@ -53,7 +53,8 @@ var RANKWHITELIST = [];
 // ******************************************************
 
 
-/* globals, clientSecret, fixNames*/
+/*global clientID, jsonFetch, fixNames*/
+/*eslint no-undef: "error"*/
 /* exported guildOut vercheckGuild*/
 
 var current_versionGuild = 1.2;
