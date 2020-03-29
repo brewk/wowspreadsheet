@@ -63,6 +63,7 @@ var markLegendary = true;
 
 //display cloak's rank on output
 var showCloakRank = true;
+var showCoresAfterRank15 = true;
 
 //mark gear if it's corrupted
 var markCorruption = false;
@@ -885,6 +886,7 @@ function equipment(region,realmName,toonName)
     var averageIlvl = 0;
     var essences = [ "-", "-", "-", "-"];
     var cloakRank = "";
+    var maleficCoreCount = 0;
     
     var statsArray = [];
     var totalStats = [0, 0, 0, 0, 0, 0, 0, 0];
@@ -939,6 +941,10 @@ function equipment(region,realmName,toonName)
                     }
                     statsArray[sortOrder[gear.equipped_items[i].slot.type]] = statsArray[sortOrder[gear.equipped_items[i].slot.type]] + gear.equipped_items[i].stats[j].type.type.replace("_RATING", "") + " = " + gear.equipped_items[i].stats[j].value + "\n";
                     totalStats[statOrder[gear.equipped_items[i].stats[j].type.type]] =  totalStats[statOrder[gear.equipped_items[i].stats[j].type.type]] + gear.equipped_items[i].stats[j].value;
+                    if (gear.equipped_items[i].slot.type == "BACK" && gear.equipped_items[i].stats[j].type.type == "CORRUPTION_RESISTANCE")
+                    {
+                        maleficCoreCount = (gear.equipped_items[i].stats[j].value - 50)/3;
+                    }
                 }
             }
             if (gear.equipped_items[i].spells)
@@ -1076,7 +1082,14 @@ function equipment(region,realmName,toonName)
                 cloakRank = gear.equipped_items[i].name_description.display_string;
                 if (showCloakRank)
                 {
-                    testArray[sortOrder[gear.equipped_items[i].slot.type]] = testArray[sortOrder[gear.equipped_items[i].slot.type]] + gear.equipped_items[i].name_description.display_string.replace("Rank ", " r");
+                    if (showCoresAfterRank15 && cloakRank == "Rank 15")
+                    {
+                        testArray[sortOrder[gear.equipped_items[i].slot.type]] = testArray[sortOrder[gear.equipped_items[i].slot.type]] + maleficCoreCount + "/25";
+                    }
+                    else
+                    {
+                        testArray[sortOrder[gear.equipped_items[i].slot.type]] = testArray[sortOrder[gear.equipped_items[i].slot.type]] + gear.equipped_items[i].name_description.display_string.replace("Rank ", " r");
+                    }
                 }
             }
         }
