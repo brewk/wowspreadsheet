@@ -313,7 +313,7 @@ function professions(region,realmName,toonName)
                 proftemp = profIn.tiers[prof].tier.name.split(" ");
                 if (!prof_lookup[proftemp[0]])
                 {
-                    professionName = profIn.tiers[prof].tier.name;
+                    professionName = profIn.profession.name;
                     proftemp[0] = 0;
                 }
         
