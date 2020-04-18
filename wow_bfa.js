@@ -70,6 +70,7 @@ var markCorruption = false;
 
 // Everything below this, you shouldn't have to edit
 //***************************************************************
+/* eslint-env es6 */
 /* globals Utilities, UrlFetchApp, PropertiesService */
 /* exported wow, vercheck, warcraftLogs */
 /*eslint no-unused-vars: 0*/
@@ -95,9 +96,6 @@ function wow(region,toonName,realmName)
 
     var fix = fixNames(region,realmName,toonName);
     Utilities.sleep(Math.floor((Math.random() * 10000) + 1000)); // This is a random sleepy time so that we dont spam the api and get bonked with an error
-
-    var scriptProperties = PropertiesService.getScriptProperties();
-    var token = scriptProperties.getProperty("STORED_TOKEN");
 
     function wlogs ()
     {
@@ -178,7 +176,7 @@ function wow(region,toonName,realmName)
         equipment(fix.region,fix.realmName,fix.name),
         quest(fix.region,fix.realmName,fix.name),
         raidsDungeons(fix.region,fix.realmName,fix.name),
-        "Currently Not working", "Thanks Blizz",
+        professions(fix.region,fix.realmName,fix.name),
         avatar(fix.region,fix.realmName,fix.name),
         rep(fix.region,fix.realmName,fix.name),
     ];
@@ -267,6 +265,111 @@ function jsonFetch(URL, region)
 
     var parsedJson = JSON.parse(profileJSON.toString());
     return parsedJson;
+}
+
+
+function professions(region,realmName,toonName)
+{
+    if (!toonName || !realmName)
+    {
+        return " ";  // If there's nothing in the column, don't even bother calling the API
+    }
+  
+    var fetchURL = "https://"+region+".api.blizzard.com/profile/wow/character/"+realmName+"/"+toonName+"/professions?namespace=profile-"+region+"&locale=en_US&access_token=";
+    var profs = jsonFetch(fetchURL, region);
+    if (profs.length < 100)
+    {
+        return "API Error";
+    }
+  
+  
+    function getProf(profIn) 
+    {
+        if (profIn.profession && profIn.profession.name === "Archaeology")
+        {
+            return "Archaeology " + profIn.skill_points + "/" + profIn.max_skill_points;
+        }
+    
+        var prof_lookup = {};
+        var professionName = "-";
+    
+        prof_lookup.Kul = 7;
+        prof_lookup.Zandalari = 7;
+        prof_lookup.Legion = 6;
+        prof_lookup.Draenor = 5;
+        prof_lookup.Pandaria = 4;
+        prof_lookup.Cataclysm = 3;
+        prof_lookup.Northrend = 2;
+        prof_lookup.Outland = 1;
+        prof_lookup[0] = 0;
+        var proftemp = "0";    
+    
+        var profOut = ["-", "-", "-", "-", "-", "-", "-", "-"];
+      
+        if (profIn.tiers)
+        {
+            for (const prof in profIn.tiers) 
+            {          
+                proftemp = profIn.tiers[prof].tier.name.split(" ");
+                if (!prof_lookup[proftemp[0]])
+                {
+                    professionName = profIn.tiers[prof].tier.name;
+                    proftemp[0] = 0;
+                }
+        
+        
+                if (profIn.tiers[prof].skill_points >= profIn.tiers[prof].max_skill_points)
+                {
+                    profOut[prof_lookup[proftemp[0]]]= "\u2713";
+                }
+                else
+                {
+                    profOut[prof_lookup[proftemp[0]]]= profIn.tiers[prof].skill_points;
+                }
+            }
+        }
+        else
+        {
+            professionName = "none";
+            profOut = "";
+        }
+    
+        return professionName + " " + profOut;
+    }
+  
+  
+    var profListOut = [];
+  
+    if (!profs.primaries)
+    {
+        profs.primaries = [];
+    }
+  
+    if (!profs.secondaries)
+    {
+        profs.secondaries = [];
+    }
+   
+    //by default we only care about primaries 
+    var profList = [profs.primaries[0] || "none", profs.primaries[1] || "none"];
+  
+    // var profList = [profs.primaries[0] || "none", profs.primaries[1] || "none",  profs.secondaries[0] || "none", profs.secondaries[1] || "none", profs.secondaries[2] || "none"];
+  
+    for (const prof in profList) 
+    {
+    
+        if (prof !== "none")
+        {
+            profListOut[prof] = getProf(profList[prof]);
+        }
+    
+        else
+        {
+            profListOut[prof] = "none";
+        }
+    
+    } 
+    return profListOut;
 }
 
 
