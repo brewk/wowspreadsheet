@@ -14,6 +14,7 @@
 //    You need to put your Client ID and client Secret below, inside the quotes
 //    Sign up and obtain them here: https://develop.battle.net/
 //   Step by step instructions: http://bruk.org/api
+
 var clientID = "";
 
 var clientSecret = "";
