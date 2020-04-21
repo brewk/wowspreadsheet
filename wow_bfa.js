@@ -78,7 +78,7 @@ var markCorruption = false;
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
 
-var current_version = 4.5;
+var current_version = 4.51;
 
 var options={ muteHttpExceptions:true };
 
