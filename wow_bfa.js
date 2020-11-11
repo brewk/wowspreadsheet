@@ -63,12 +63,14 @@ var markLegendary = true;
 
 //display cloak's rank on output
 var showCloakRank = true;
+var showCoresAfterRank15 = true;
 
 //mark gear if it's corrupted
 var markCorruption = false;
 
 // Everything below this, you shouldn't have to edit
 //***************************************************************
+/* eslint-env es6 */
 /* globals Utilities, UrlFetchApp, PropertiesService */
 /* exported wow, vercheck, warcraftLogs */
 /*eslint no-unused-vars: 0*/
@@ -76,7 +78,7 @@ var markCorruption = false;
 
 var warcraftLogs = ["No WarcaftLog API key", ":(", ":("];
 
-var current_version = 4.5;
+var current_version = 4.51;
 
 var options={ muteHttpExceptions:true };
 
@@ -94,9 +96,6 @@ function wow(region,toonName,realmName)
 
     var fix = fixNames(region,realmName,toonName);
     Utilities.sleep(Math.floor((Math.random() * 10000) + 1000)); // This is a random sleepy time so that we dont spam the api and get bonked with an error
-
-    var scriptProperties = PropertiesService.getScriptProperties();
-    var token = scriptProperties.getProperty("STORED_TOKEN");
 
     function wlogs ()
     {
@@ -177,7 +176,7 @@ function wow(region,toonName,realmName)
         equipment(fix.region,fix.realmName,fix.name),
         quest(fix.region,fix.realmName,fix.name),
         raidsDungeons(fix.region,fix.realmName,fix.name),
-        "Currently Not working", "Thanks Blizz",
+        professions(fix.region,fix.realmName,fix.name),
         avatar(fix.region,fix.realmName,fix.name),
         rep(fix.region,fix.realmName,fix.name),
     ];
@@ -269,6 +268,108 @@ function jsonFetch(URL, region)
 }
 
 
+function professions(region,realmName,toonName)
+{
+    if (!toonName || !realmName)
+    {
+        return " ";  // If there's nothing in the column, don't even bother calling the API
+    }
+  
+    var fetchURL = "https://"+region+".api.blizzard.com/profile/wow/character/"+realmName+"/"+toonName+"/professions?namespace=profile-"+region+"&locale=en_US&access_token=";
+    var profs = jsonFetch(fetchURL, region);
+    if (profs.length < 100)
+    {
+        return "API Error";
+    }
+  
+  
+    function getProf(profIn) 
+    {
+        if (profIn.profession && profIn.profession.name === "Archaeology")
+        {
+            return "Archaeology " + profIn.skill_points + "/" + profIn.max_skill_points;
+        }
+      
+        if (!profIn.profession)
+        {
+            return "none";
+        }
+
+        var prof_lookup = {};
+        var professionName = profIn.profession.name;
+
+        var profid_lookup = {};
+
+
+        profid_lookup[2437] = profid_lookup[2525] = profid_lookup[2478] = profid_lookup[2549] = profid_lookup[2541] = profid_lookup[2565] = profid_lookup[2533] = profid_lookup[2499] = profid_lookup[2486] = profid_lookup[2585] = profid_lookup[2557] = profid_lookup[2517] = profid_lookup[2507] = 7;
+        profid_lookup[2454] = profid_lookup[2526] = profid_lookup[2479] = profid_lookup[2550] = profid_lookup[2542] = profid_lookup[2566] = profid_lookup[2534] = profid_lookup[2500] = profid_lookup[2487] = profid_lookup[2586] = profid_lookup[2558] = profid_lookup[2518] = profid_lookup[2508] = 6;
+        profid_lookup[2472] = profid_lookup[2527] = profid_lookup[2480] = profid_lookup[2551] = profid_lookup[2543] = profid_lookup[2567] = profid_lookup[2535] = profid_lookup[2501] = profid_lookup[2488] = profid_lookup[2587] = profid_lookup[2559] = profid_lookup[2519] = profid_lookup[2509] = 5;
+        profid_lookup[2473] = profid_lookup[2528] = profid_lookup[2481] = profid_lookup[2552] = profid_lookup[2544] = profid_lookup[2568] = profid_lookup[2536] = profid_lookup[2502] = profid_lookup[2489] = profid_lookup[2588] = profid_lookup[2560] = profid_lookup[2520] = profid_lookup[2510] = 4;
+        profid_lookup[2474] = profid_lookup[2529] = profid_lookup[2482] = profid_lookup[2553] = profid_lookup[2545] = profid_lookup[2569] = profid_lookup[2537] = profid_lookup[2503] = profid_lookup[2491] = profid_lookup[2589] = profid_lookup[2561] = profid_lookup[2521] = profid_lookup[2511] = 3;
+        profid_lookup[2475] = profid_lookup[2530] = profid_lookup[2483] = profid_lookup[2554] = profid_lookup[2546] = profid_lookup[2570] = profid_lookup[2538] = profid_lookup[2504] = profid_lookup[2492] = profid_lookup[2590] = profid_lookup[2562] = profid_lookup[2522] = profid_lookup[2512] = 2;
+        profid_lookup[2476] = profid_lookup[2531] = profid_lookup[2484] = profid_lookup[2555] = profid_lookup[2547] = profid_lookup[2571] = profid_lookup[2539] = profid_lookup[2505] = profid_lookup[2493] = profid_lookup[2591] = profid_lookup[2563] = profid_lookup[2523] = profid_lookup[2513] = 1;
+        profid_lookup[2477] = profid_lookup[2532] = profid_lookup[2485] = profid_lookup[2556] = profid_lookup[2548] = profid_lookup[2572] = profid_lookup[2540] = profid_lookup[2506] = profid_lookup[2494] = profid_lookup[2592] = profid_lookup[2564] = profid_lookup[2524] = profid_lookup[2514] = 0;
+
+        var profOut = ["Va-", "Bc-", "Lk-", "Ca-", "Pa-", "Wa-", "Lg-", "Ba-"];
+
+        if (profIn.tiers)
+        {
+            for (const prof in profIn.tiers) 
+            {       
+                if (profIn.tiers[prof].skill_points >= profIn.tiers[prof].max_skill_points)
+                {
+                    profOut[profid_lookup[profIn.tiers[prof].tier.id]]= "\u2713";
+                }
+                else
+                {
+                    profOut[profid_lookup[profIn.tiers[prof].tier.id]]= profIn.tiers[prof].skill_points;
+                }
+            }
+        }
+        else  //just in case
+        {
+            professionName = "none";
+            profOut = "";
+        }
+    
+        return professionName + " " + profOut;
+    }
+  
+  
+    var profListOut = [];
+  
+    if (!profs.primaries)
+    {
+        profs.primaries = [];
+    }
+  
+    if (!profs.secondaries)
+    {
+        profs.secondaries = [];
+    }
+   
+    //by default we only care about primaries 
+    var profList = [profs.primaries[0] || "none", profs.primaries[1] || "none"];
+  
+    //var profList = [profs.primaries[0] || "none", profs.primaries[1] || "none",  profs.secondaries[0] || "none", profs.secondaries[1] || "none", profs.secondaries[2] || "none"];
+  
+    for (const prof in profList) 
+    {
+    
+        if (prof !== "none")
+        {
+            profListOut[prof] = getProf(profList[prof]);
+        }
+    
+        else
+        {
+            profListOut[prof] = "none";
+        }
+    
+    } 
+    return profListOut;
+}
+
 function quest(region,realmName,toonName)
 {
   
@@ -316,6 +417,12 @@ function quest(region,realmName,toonName)
     var worldBossKill = "";
     var warfront = "";
     var islandExpeditions = "";
+
+
+    if (!quests.quests)
+    {
+        return "Api broken";
+    }
 
     for (var i=0; i < quests.quests.length; i++)
     {
@@ -885,6 +992,7 @@ function equipment(region,realmName,toonName)
     var averageIlvl = 0;
     var essences = [ "-", "-", "-", "-"];
     var cloakRank = "";
+    var maleficCoreCount = 0;
     
     var statsArray = [];
     var totalStats = [0, 0, 0, 0, 0, 0, 0, 0];
@@ -939,6 +1047,10 @@ function equipment(region,realmName,toonName)
                     }
                     statsArray[sortOrder[gear.equipped_items[i].slot.type]] = statsArray[sortOrder[gear.equipped_items[i].slot.type]] + gear.equipped_items[i].stats[j].type.type.replace("_RATING", "") + " = " + gear.equipped_items[i].stats[j].value + "\n";
                     totalStats[statOrder[gear.equipped_items[i].stats[j].type.type]] =  totalStats[statOrder[gear.equipped_items[i].stats[j].type.type]] + gear.equipped_items[i].stats[j].value;
+                    if (gear.equipped_items[i].slot.type == "BACK" && gear.equipped_items[i].stats[j].type.type == "CORRUPTION_RESISTANCE")
+                    {
+                        maleficCoreCount = (gear.equipped_items[i].stats[j].value - 50)/3;
+                    }
                 }
             }
             if (gear.equipped_items[i].spells)
@@ -1028,6 +1140,7 @@ function equipment(region,realmName,toonName)
           
             if (gear.equipped_items[i].azerite_details.level.value>= 35 && gear.equipped_items[i].azerite_details.selected_essences)
             {
+                var corruptionResistanceApplied = false;
                 for (j=0; j<gear.equipped_items[i].azerite_details.selected_essences.length; j++)
                 {
                     if (gear.equipped_items[i].azerite_details.selected_essences)
@@ -1035,9 +1148,10 @@ function equipment(region,realmName,toonName)
                         if (gear.equipped_items[i].azerite_details.selected_essences[j].rank) // if there's no rank there's no reason to continue
                         {
                             var resistCheck = gear.equipped_items[i].azerite_details.selected_essences[j].passive_spell_tooltip.description.indexOf("Corruption Resistance increased by 10.");
-                            if (resistCheck > -1)
+                            if (!corruptionResistanceApplied && resistCheck > -1)
                             {
                                 totalStats[7] += 10;
+                                corruptionResistanceApplied = true;
                             }
                             var shortName = function (str1)
                             {
@@ -1076,7 +1190,14 @@ function equipment(region,realmName,toonName)
                 cloakRank = gear.equipped_items[i].name_description.display_string;
                 if (showCloakRank)
                 {
-                    testArray[sortOrder[gear.equipped_items[i].slot.type]] = testArray[sortOrder[gear.equipped_items[i].slot.type]] + gear.equipped_items[i].name_description.display_string.replace("Rank ", " r");
+                    if (showCoresAfterRank15 && cloakRank == "Rank 15")
+                    {
+                        testArray[sortOrder[gear.equipped_items[i].slot.type]] = testArray[sortOrder[gear.equipped_items[i].slot.type]] + maleficCoreCount + "/25";
+                    }
+                    else
+                    {
+                        testArray[sortOrder[gear.equipped_items[i].slot.type]] = testArray[sortOrder[gear.equipped_items[i].slot.type]] + gear.equipped_items[i].name_description.display_string.replace("Rank ", " r");
+                    }
                 }
             }
         }
