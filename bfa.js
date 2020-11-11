@@ -12,7 +12,7 @@
 function appWowBfa(par) {
   const objectName = 'appWowBfa';
   const strApiError = 'Error: invalid data received from API';
-  const currentVersionBfa = 2.3;
+  const currentVersionBfa = 2.31;
   const mySettings = par.settings || appSettings();
   const myUtils = par.utils || appUtils();
   const myBlizzData = par.blizzData || appBlizzData();
@@ -847,7 +847,7 @@ function appWowBfa(par) {
     } catch (e) {
       return myUtils.initializedArray(4, e.message);
     }
-    if (!media.avatar_url) {
+    if (!media.assets) {
       if (media.code && media.detail) {
         return myUtils.initializedArray(4, `Blizz message: ${media.detail} (${media.code})`);
       }
@@ -855,9 +855,9 @@ function appWowBfa(par) {
     }
 
     return [
-      media.avatar_url,
-      media.bust_url,
-      media.render_url,
+      media.assets[0].value,  //avatar
+      media.assets[1].value,  //bust
+      media.assets[2].value,  //render
       `https://worldofwarcraft.com/en-${region}/character/${region}/${realmName}/${toonName}`,
     ];
   }
