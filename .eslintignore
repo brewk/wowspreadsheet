@@ -1,7 +1,4 @@
 # Ignore anything downloaded with npm when running eslint
 node_modules/
 # Ignore legacy spreadsheet file when running eslint
-wow.js
-wow_legion.js
-guildoutput.js
-mounts.js
+
