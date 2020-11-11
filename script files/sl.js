@@ -694,7 +694,7 @@ function appWowSl(par) {
       }
 
       // adjust ilvl for 2h weapons
-      if (item.slot.type === 'MAIN_HAND' && item.inventory_type.name !== 'One-Hand') {
+      if (item.slot.type === 'MAIN_HAND' && (item.inventory_type.name !== 'One-Hand' && item.item_subclass.name !== 'Wand')) {
         averageIlvl += item.level.value;
       }
     }
