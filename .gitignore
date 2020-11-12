@@ -1,2 +1,3 @@
 # Ignore anything in Git downloaded with npm
 node_modules/
+.clasp.json
