@@ -249,7 +249,7 @@ function appWowBfa(par) {
       const currentXpacDungeonIndex = dungeons.expansions.findIndex((el) => el.expansion.id === currentXpacId);
 
 
-      if (currentXpacDungeonIndex > 0) {
+      if (currentXpacDungeonIndex >= 0) {
         // get list of all dungeons for the current x-pac
         const currentXpacDungeons = dungeons.expansions[currentXpacDungeonIndex].instances || [];
         // loop through all the found dungeons
@@ -915,7 +915,7 @@ function appWowBfa(par) {
       { id: 2415, position: 8 }, // Rajani
       { id: 2417, position: 9 }, // Uldum
     ];
-    const maxPosition = Math.max(...reps.map((el) => el.position)); // get max position for array length
+    const maxPosition = Math.max(...reps.map((el) => el.position))+1; // get max position for array length
 
     // get API data
     let reputations;
