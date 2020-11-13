@@ -226,11 +226,12 @@ function appWowBfa(par) {
       }
     }
 
-    let progressionOut = []; // output variable
-
-    // dungeon part
+    // helpers and ouput
+    const lastWeeklyReset = myUtils.getWowWeeklyResetTimestamp(region);
     const lastDailyReset = myUtils.getWowDailyResetTimestamp(region);
-
+    let progressionOut = []; // output variable
+    
+    // dungeon part
     const dungeonLockouts = []; // dungeon lockout infos
     const dungeonProgress = []; // dungeon progress infos
     const dungeonTotals = []; // dungeon totals infos
@@ -241,13 +242,9 @@ function appWowBfa(par) {
       dungeonTotals[el] = 0;
     });
 
-    // find index of the expansion array entry for the current x-pac id
-
-
-
     if (dungeons.expansions) {
+      // find index of the expansion array entry for the current x-pac id
       const currentXpacDungeonIndex = dungeons.expansions.findIndex((el) => el.expansion.id === currentXpacId);
-
 
       if (currentXpacDungeonIndex >= 0) {
         // get list of all dungeons for the current x-pac
@@ -266,52 +263,51 @@ function appWowBfa(par) {
               dungeonLockouts[currentXpacDungeons[i].modes[j].difficulty.type] += 1;
           }
         }
-      }
 
+        // add RaiderIO data
+        if (raider) {
+          let mythicLockoutString = `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount}`;
+          let mythicProgressString = `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} (${dungeonTotals.MYTHIC})`;
+          // add highest weekly, key and score info
+          if (raider.mythic_plus_weekly_highest_level_runs[0]) {
+            mythicLockoutString = `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount} weekly highest M+: ${raider.mythic_plus_weekly_highest_level_runs[0].mythic_level}`;
+          }
+          if (raider.mythic_plus_highest_level_runs[0]) {
+            mythicProgressString = `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} highest season M+: ${raider.mythic_plus_highest_level_runs[0].mythic_level}`;
+          }
+          if (raider.mythic_plus_scores) {
+            mythicProgressString = `${mythicProgressString} Score: ${raider.mythic_plus_scores.all}`;
+          }
+          // attach dungeon info to output
+          progressionOut.push(
+            `${dungeonLockouts.HEROIC}/${currentXpacDungeonCount}`,
+            `${dungeonProgress.HEROIC}/${currentXpacDungeonCount} (${dungeonTotals.HEROIC})`,
+            mythicLockoutString,
+            mythicProgressString
+          );
+        } else {
+          // attach dungeon info to output
+          progressionOut.push(
+            `${dungeonLockouts.HEROIC}/${currentXpacDungeonCount}`,
+            `${dungeonProgress.HEROIC}/${currentXpacDungeonCount} (${dungeonTotals.HEROIC})`,
+            `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount}`,
+            `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} (${dungeonTotals.MYTHIC})`
+          );
+        }
 
-      // add RaiderIO data
-      if (raider) {
-        let mythicLockoutString = `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount}`;
-        let mythicProgressString = `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} (${dungeonTotals.MYTHIC})`;
-        // add highest weekly, key and score info
-        if (raider.mythic_plus_weekly_highest_level_runs[0]) {
-          mythicLockoutString = `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount} weekly highest M+: ${raider.mythic_plus_weekly_highest_level_runs[0].mythic_level}`;
-        }
-        if (raider.mythic_plus_highest_level_runs[0]) {
-          mythicProgressString = `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} highest season M+: ${raider.mythic_plus_highest_level_runs[0].mythic_level}`;
-        }
-        if (raider.mythic_plus_scores) {
-          mythicProgressString = `${mythicProgressString} Score: ${raider.mythic_plus_scores.all}`;
-        }
-        // attach dungeon info to output
-        progressionOut.push(
-          `${dungeonLockouts.HEROIC}/${currentXpacDungeonCount}`,
-          `${dungeonProgress.HEROIC}/${currentXpacDungeonCount} (${dungeonTotals.HEROIC})`,
-          mythicLockoutString,
-          mythicProgressString
-        );
       } else {
-        // attach dungeon info to output
-        progressionOut.push(
-          `${dungeonLockouts.HEROIC}/${currentXpacDungeonCount}`,
-          `${dungeonProgress.HEROIC}/${currentXpacDungeonCount} (${dungeonTotals.HEROIC})`,
-          `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount}`,
-          `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} (${dungeonTotals.MYTHIC})`
-        );
+        // not played any dungeon in this xpac
+        progressionOut = [...progressionOut, ...myUtils.initializedArray(dungeonOutputLength, 'N/A')];  
       }
 
     } else {
+      // never played any dungeon at all
       progressionOut = [...progressionOut, ...myUtils.initializedArray(dungeonOutputLength, 'N/A')];
     }
 
     // raid part
-    const lastWeeklyReset = myUtils.getWowWeeklyResetTimestamp(region);
-
-    // find index of the expansion array entry for the current x-pac id
-
-
-
     if (progression.expansions) {
+      // find index of the expansion array entry for the current x-pac id
       const currentXpacRaidIndex = progression.expansions.findIndex((el) => el.expansion.id === currentXpacId);
       if (currentXpacRaidIndex < 0) {
         // no raids played in current xpac
@@ -358,9 +354,9 @@ function appWowBfa(par) {
       }
 
     } else {
+      // never played any raid at all
       progressionOut = [...progressionOut, ...myUtils.initializedArray(outputLength - dungeonOutputLength, 'N/A')];
     }
-    
 
     return progressionOut;
   }
