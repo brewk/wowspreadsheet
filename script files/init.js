@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-/* globals appUtils, appSettings, appWowGuildRoster, appWowBfa, appWowSl, appBlizzData */
+/* globals appUtils, appSettings, appWowGuildRoster, appWowSl, appBlizzData */
 
 /**
  * function to build global environment
@@ -37,11 +37,6 @@ function buildEnv() {
         nonGuild: [],
         rankBlacklist: [],
         rankWhitelist: [],
-      });
-      this.WowBfa = appWowBfa({
-        settings: this.Settings,
-        utils: this.Utils,
-        blizzData: this.BlizzData,
       });
       this.WowSl = appWowSl({
         settings: this.Settings,
