@@ -29,6 +29,7 @@ function appBlizzData(par = {}) {
       { name: 'guildRoster', enabled: true, type: 'data', endpoint: 'guild/{REALM}/{NAME}/roster' },
       { name: 'charProfileStatus', enabled: false, type: 'profile', endpoint: 'character/{REALM}/{NAME}/status' },
       { name: 'charProfile', enabled: true, type: 'profile', endpoint: 'character/{REALM}/{NAME}' },
+      { name: 'charCharacterSoulbinds', enabled: true, type: 'profile', endpoint: 'character/{REALM}/{NAME}/soulbinds' },   
       {
         name: 'charCharacterMedia',
         enabled: true,

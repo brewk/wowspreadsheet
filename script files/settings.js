@@ -22,9 +22,6 @@ function appSettings(par = {}) {
     const wowEpicGemIlvl = par.epicGemIlvl || 419;
     const wowAuditIlvl = par.auditIlvl || 309;
     const markLegendary = par.markLegendary || true;
-    const markCorruption = par.markCorruption || true;
-    const showCloakRank = par.showCloakRank || false;
-    const showCoresAfterRank15 = par.showCoresAfterRank15 || true;
   
     /**
      * function to retrieve Blizz client id from cache, script properties or provided value
@@ -165,9 +162,6 @@ function appSettings(par = {}) {
       wowEpicGemIlvl,
       wowAuditIlvl,
       markLegendary,
-      markCorruption,
-      showCloakRank,
-      showCoresAfterRank15,
       useRaiderIoData,
       getBlizzClientId,
       getBlizzClientSecret,
