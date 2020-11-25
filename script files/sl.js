@@ -726,6 +726,56 @@ function appWowSl(par) {
     ];
     return profileArray;
   }
+                           
+  /**
+   * function to get covenant and soulbind spreadsheet data for a toon
+   * @param {string} region region of target toon
+   * @param {string} realm realm of target toon
+   * @param {string} toonName name of target toon
+   * @return {array} toon covenant and soulbind data for spreadsheet
+   */
+  function soulbinds(region, realmName, toonName) {
+    if (!toonName || !realmName) {
+      return ' '; // If there's nothing in the column, don't even bother calling the API
+    }
+
+    // get API data
+    // Renown level / Covenant / Soulbind / 8 selected traits  
+    let soulArray = ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'];
+    try {
+      soulbinds = myBlizzData.getCharData(region, realmName, toonName, 'charCharacterSoulbinds');
+    } catch (e) {
+      return myUtils.initializedArray(4, e.message);
+    }
+    if (!soulbinds.chosen_covenant) {
+      if (soulbinds.code && soulbinds.detail) {
+        return myUtils.initializedArray(4, `Blizz message: ${soulbinds.detail} (${soulbinds.code})`);
+      }
+      return myUtils.initializedArray(4, strApiError);
+    }
+      
+    soulArray[0] = soulbinds.renown_level;
+    soulArray[1] = soulbinds.chosen_covenant.name;
+      
+      
+    if(soulbinds.soulbinds)
+    {
+        soulArray[2] = soulbinds.soulbinds[0].soulbind.name;
+      
+        for (let i = 0; i < soulbinds.soulbinds[0].traits.length; i++) {
+        
+            if(soulbinds.soulbinds[0].traits[i].trait)
+            {
+              soulArray[i+3] = soulbinds.soulbinds[0].traits[i].trait.name;
+            }
+            else
+            {    
+              soulArray[i+3] = `[${soulbinds.soulbinds[0].traits[i].conduit_socket.socket.rank}] ${soulbinds.soulbinds[0].traits[i].conduit_socket.socket.conduit.name}`;
+          }
+        }
+    }
+    return soulArray;
+  }
 
   /**
    * function to get avatar spreadsheet data for a toon
@@ -921,6 +971,7 @@ function appWowSl(par) {
     equipment,
     profile,
     avatar,
+    soulbinds,
     rep,
     professions,
     verCheck,
