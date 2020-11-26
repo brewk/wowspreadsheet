@@ -29,11 +29,10 @@ function appWowSl(par) {
     if (!toonName || !realmName) {
       return ' '; // If there's nothing in the column, don't even bother calling the API
     }
-    
-    
-    return ["Placeholder1", "Placeholder2", "Placeholder3", "Placeholder4", "Placeholder5"];
 
-   /* // get API data
+    return ['Placeholder1', 'Placeholder2', 'Placeholder3', 'Placeholder4', 'Placeholder5'];
+
+    /* // get API data
     let quests;
     try {
       quests = myBlizzData.getCharData(region, realmName, toonName, 'charQuestsCompleted');
@@ -208,142 +207,143 @@ function appWowSl(par) {
       }
     }
 
-   // helpers and ouput
-   const lastWeeklyReset = myUtils.getWowWeeklyResetTimestamp(region);
-   const lastDailyReset = myUtils.getWowDailyResetTimestamp(region);
-   let progressionOut = []; // output variable
-   
-   // dungeon part
-   const dungeonLockouts = []; // dungeon lockout infos
-   const dungeonProgress = []; // dungeon progress infos
-   const dungeonTotals = []; // dungeon totals infos
-   // initalize dungeon info arrays with 0 per difficulty
-   raidModes.forEach((el) => {
-     dungeonLockouts[el] = 0;
-     dungeonProgress[el] = 0;
-     dungeonTotals[el] = 0;
-   });
+    // helpers and ouput
+    const lastWeeklyReset = myUtils.getWowWeeklyResetTimestamp(region);
+    const lastDailyReset = myUtils.getWowDailyResetTimestamp(region);
+    let progressionOut = []; // output variable
 
-   if (dungeons.expansions) {
-     // find index of the expansion array entry for the current x-pac id
-     const currentXpacDungeonIndex = dungeons.expansions.findIndex((el) => el.expansion.id === currentXpacId);
+    // dungeon part
+    const dungeonLockouts = []; // dungeon lockout infos
+    const dungeonProgress = []; // dungeon progress infos
+    const dungeonTotals = []; // dungeon totals infos
+    // initalize dungeon info arrays with 0 per difficulty
+    raidModes.forEach((el) => {
+      dungeonLockouts[el] = 0;
+      dungeonProgress[el] = 0;
+      dungeonTotals[el] = 0;
+    });
 
-     if (currentXpacDungeonIndex >= 0) {
-       // get list of all dungeons for the current x-pac
-       const currentXpacDungeons = dungeons.expansions[currentXpacDungeonIndex].instances || [];
-       // loop through all the found dungeons
-       for (let i = 0; i < currentXpacDungeons.length; i++) {
-         // loop through all found difficulty modes
-         for (let j = 0; j < currentXpacDungeons[i].modes.length; j++) {
-           // update existing data for progress, totals and lockouts
-           dungeonProgress[currentXpacDungeons[i].modes[j].difficulty.type] += 1;
-           dungeonTotals[currentXpacDungeons[i].modes[j].difficulty.type] +=
-             currentXpacDungeons[i].modes[j].progress.encounters[0].completed_count;
-           const timestampCheck =
-             currentXpacDungeons[i].modes[j].difficulty.type === 'MYTHIC' ? lastWeeklyReset : lastDailyReset;
-           if (currentXpacDungeons[i].modes[j].progress.encounters[0].last_kill_timestamp > timestampCheck)
-             dungeonLockouts[currentXpacDungeons[i].modes[j].difficulty.type] += 1;
-         }
-       }
+    if (dungeons.expansions) {
+      // find index of the expansion array entry for the current x-pac id
+      const currentXpacDungeonIndex = dungeons.expansions.findIndex((el) => el.expansion.id === currentXpacId);
 
-       // add RaiderIO data
-       if (raider) {
-         let mythicLockoutString = `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount}`;
-         let mythicProgressString = `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} (${dungeonTotals.MYTHIC})`;
-         // add highest weekly, key and score info
-         if (raider.mythic_plus_weekly_highest_level_runs[0]) {
-           mythicLockoutString = `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount} weekly highest M+: ${raider.mythic_plus_weekly_highest_level_runs[0].mythic_level}`;
-         }
-         if (raider.mythic_plus_highest_level_runs[0]) {
-           mythicProgressString = `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} highest season M+: ${raider.mythic_plus_highest_level_runs[0].mythic_level}`;
-         }
-         if (raider.mythic_plus_scores) {
-           mythicProgressString = `${mythicProgressString} Score: ${raider.mythic_plus_scores.all}`;
-         }
-         // attach dungeon info to output
-         progressionOut.push(
-           `${dungeonLockouts.HEROIC}/${currentXpacDungeonCount}`,
-           `${dungeonProgress.HEROIC}/${currentXpacDungeonCount} (${dungeonTotals.HEROIC})`,
-           mythicLockoutString,
-           mythicProgressString
-         );
-       } else {
-         // attach dungeon info to output
-         progressionOut.push(
-           `${dungeonLockouts.HEROIC}/${currentXpacDungeonCount}`,
-           `${dungeonProgress.HEROIC}/${currentXpacDungeonCount} (${dungeonTotals.HEROIC})`,
-           `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount}`,
-           `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} (${dungeonTotals.MYTHIC})`
-         );
-       }
+      if (currentXpacDungeonIndex >= 0) {
+        // get list of all dungeons for the current x-pac
+        const currentXpacDungeons = dungeons.expansions[currentXpacDungeonIndex].instances || [];
+        // loop through all the found dungeons
+        for (let i = 0; i < currentXpacDungeons.length; i++) {
+          // loop through all found difficulty modes
+          for (let j = 0; j < currentXpacDungeons[i].modes.length; j++) {
+            // update existing data for progress, totals and lockouts
+            dungeonProgress[currentXpacDungeons[i].modes[j].difficulty.type] += 1;
+            dungeonTotals[currentXpacDungeons[i].modes[j].difficulty.type] +=
+              currentXpacDungeons[i].modes[j].progress.encounters[0].completed_count;
+            const timestampCheck =
+              currentXpacDungeons[i].modes[j].difficulty.type === 'MYTHIC' ? lastWeeklyReset : lastDailyReset;
+            if (currentXpacDungeons[i].modes[j].progress.encounters[0].last_kill_timestamp > timestampCheck)
+              dungeonLockouts[currentXpacDungeons[i].modes[j].difficulty.type] += 1;
+          }
+        }
 
-     } else {
-       // not played any dungeon in this xpac
-       progressionOut = [...progressionOut, ...myUtils.initializedArray(dungeonOutputLength, 'N/A')];  
-     }
+        // add RaiderIO data
+        if (raider) {
+          let mythicLockoutString = `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount}`;
+          let mythicProgressString = `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} (${dungeonTotals.MYTHIC})`;
+          // add highest weekly, key and score info
+          if (raider.mythic_plus_weekly_highest_level_runs[0]) {
+            mythicLockoutString = `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount} weekly highest M+: ${raider.mythic_plus_weekly_highest_level_runs[0].mythic_level}`;
+          }
+          if (raider.mythic_plus_highest_level_runs[0]) {
+            mythicProgressString = `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} highest season M+: ${raider.mythic_plus_highest_level_runs[0].mythic_level}`;
+          }
+          if (raider.mythic_plus_scores) {
+            mythicProgressString = `${mythicProgressString} Score: ${raider.mythic_plus_scores.all}`;
+          }
+          // attach dungeon info to output
+          progressionOut.push(
+            `${dungeonLockouts.HEROIC}/${currentXpacDungeonCount}`,
+            `${dungeonProgress.HEROIC}/${currentXpacDungeonCount} (${dungeonTotals.HEROIC})`,
+            mythicLockoutString,
+            mythicProgressString
+          );
+        } else {
+          // attach dungeon info to output
+          progressionOut.push(
+            `${dungeonLockouts.HEROIC}/${currentXpacDungeonCount}`,
+            `${dungeonProgress.HEROIC}/${currentXpacDungeonCount} (${dungeonTotals.HEROIC})`,
+            `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount}`,
+            `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} (${dungeonTotals.MYTHIC})`
+          );
+        }
+      } else {
+        // not played any dungeon in this xpac
+        progressionOut = [...progressionOut, ...myUtils.initializedArray(dungeonOutputLength, 'N/A')];
+      }
+    } else {
+      // never played any dungeon at all
+      progressionOut = [...progressionOut, ...myUtils.initializedArray(dungeonOutputLength, 'N/A')];
+    }
 
-   } else {
-     // never played any dungeon at all
-     progressionOut = [...progressionOut, ...myUtils.initializedArray(dungeonOutputLength, 'N/A')];
-   }
+    // raid part
+    if (progression.expansions) {
+      // find index of the expansion array entry for the current x-pac id
+      const currentXpacRaidIndex = progression.expansions.findIndex((el) => el.expansion.id === currentXpacId);
+      if (currentXpacRaidIndex < 0) {
+        // no raids played in current xpac
+        progressionOut = [...progressionOut, ...myUtils.initializedArray(outputLength - dungeonOutputLength, 'N/A')];
+      } else {
+        let o = dungeonOutputLength; // index of output array
+        // get list of all raids for the current x-pac
+        const currentXpacRaids = progression.expansions[currentXpacRaidIndex].instances || [];
+        // loop through raid info list
+        for (let i = 0; i < raidList.length; i++) {
+          // by default zero everything out
+          progressionOut = [...progressionOut, ...myUtils.initializedArray(8, `${0}/${raidList[i].bosses}`)];
 
-   // raid part
-   if (progression.expansions) {
-     // find index of the expansion array entry for the current x-pac id
-     const currentXpacRaidIndex = progression.expansions.findIndex((el) => el.expansion.id === currentXpacId);
-     if (currentXpacRaidIndex < 0) {
-       // no raids played in current xpac
-       progressionOut = [...progressionOut, ...myUtils.initializedArray(outputLength - dungeonOutputLength, 'N/A')];
-     } else {
-       let o = dungeonOutputLength; // index of output array
-       // get list of all raids for the current x-pac
-       const currentXpacRaids = progression.expansions[currentXpacRaidIndex].instances || [];
-       // loop through raid info list
-       for (let i = 0; i < raidList.length; i++) {
-         // by default zero everything out
-         progressionOut = [...progressionOut, ...myUtils.initializedArray(8, `${0}/${raidList[i].bosses}`)];
+          const thisRaid = currentXpacRaids.find((el) => el.instance.id === raidList[i].id);
+          // if raid has been played
+          if (thisRaid && thisRaid.modes) {
+            // check all difficulty modes
+            for (let j = 0; j < raidModes.length; j++) {
+              const modeIndex = thisRaid.modes.findIndex((el) => el.difficulty.type === raidModes[j]);
+              // if mode has been played
+              if (
+                modeIndex > -1 &&
+                thisRaid.modes[modeIndex].progress &&
+                thisRaid.modes[modeIndex].progress.encounters
+              ) {
+                const progressCompletedCount = thisRaid.modes[modeIndex].progress.completed_count;
+                let progressWeeks = 0;
+                let progressTotalKills = 0;
+                let progressLockoutKills = 0;
+                // calculate data
+                for (let k = 0; k < thisRaid.modes[modeIndex].progress.encounters.length; k++) {
+                  progressTotalKills += thisRaid.modes[modeIndex].progress.encounters[k].completed_count;
+                  if (thisRaid.modes[modeIndex].progress.encounters[k].completed_count > progressWeeks)
+                    progressWeeks = thisRaid.modes[modeIndex].progress.encounters[k].completed_count;
+                  if (thisRaid.modes[modeIndex].progress.encounters[k].last_kill_timestamp > lastWeeklyReset)
+                    progressLockoutKills += 1;
+                }
+                // overwrite placeholder zeros with actual data
+                progressionOut[o + j] = `${progressLockoutKills}/${raidList[i].bosses}`; // lockout infos
+                progressionOut[
+                  o + j + raidModes.length
+                ] = `${progressCompletedCount}/${raidList[i].bosses} [${progressWeeks}] (${progressTotalKills})`; // progress infos
+              }
+            }
+          }
+          o += 2 * raidModes.length; // next raid instance block
+        }
+      }
+    } else {
+      // never played any raid at all
+      progressionOut = [...progressionOut, ...myUtils.initializedArray(outputLength - dungeonOutputLength, 'N/A')];
+    }
 
-         const thisRaid = currentXpacRaids.find((el) => el.instance.id === raidList[i].id);
-         // if raid has been played
-         if (thisRaid && thisRaid.modes) {
-           // check all difficulty modes
-           for (let j = 0; j < raidModes.length; j++) {
-             const modeIndex = thisRaid.modes.findIndex((el) => el.difficulty.type === raidModes[j]);
-             // if mode has been played
-             if (modeIndex > -1 && thisRaid.modes[modeIndex].progress && thisRaid.modes[modeIndex].progress.encounters) {
-               const progressCompletedCount = thisRaid.modes[modeIndex].progress.completed_count;
-               let progressWeeks = 0;
-               let progressTotalKills = 0;
-               let progressLockoutKills = 0;
-               // calculate data
-               for (let k = 0; k < thisRaid.modes[modeIndex].progress.encounters.length; k++) {
-                 progressTotalKills += thisRaid.modes[modeIndex].progress.encounters[k].completed_count;
-                 if (thisRaid.modes[modeIndex].progress.encounters[k].completed_count > progressWeeks)
-                   progressWeeks = thisRaid.modes[modeIndex].progress.encounters[k].completed_count;
-                 if (thisRaid.modes[modeIndex].progress.encounters[k].last_kill_timestamp > lastWeeklyReset)
-                   progressLockoutKills += 1;
-               }
-               // overwrite placeholder zeros with actual data
-               progressionOut[o + j] = `${progressLockoutKills}/${raidList[i].bosses}`; // lockout infos
-               progressionOut[
-                 o + j + raidModes.length
-               ] = `${progressCompletedCount}/${raidList[i].bosses} [${progressWeeks}] (${progressTotalKills})`; // progress infos
-             }
-           }
-         }
-         o += 2 * raidModes.length; // next raid instance block
-       }
-     }
+    progressionOut = ['Torghast???', ...progressionOut];
 
-   } else {
-     // never played any raid at all
-     progressionOut = [...progressionOut, ...myUtils.initializedArray(outputLength - dungeonOutputLength, 'N/A')];
-   }
-
-   progressionOut = ["Torghast???", ...progressionOut]
-
-   return progressionOut;
- }
+    return progressionOut;
+  }
 
   /**
    * function to get equipment spreadsheet data for a toon
@@ -410,7 +410,7 @@ function appWowSl(par) {
     enchantOrder.FEET = 6;
     enchantOrder.FINGER_1 = 7;
     enchantOrder.FINGER_2 = 8;
-    
+
     // stat order
     const statOrder = [];
     statOrder.STAMINA = 0;
@@ -447,7 +447,17 @@ function appWowSl(par) {
       { value: 0, stat: 'N/A', shortStat: 'OLD GEMS' },
     ];
 
-    const enchantableItems = ['MAIN_HAND', 'OFF_HAND', 'BACK', 'CHEST', 'WRIST', 'HANDS', 'FEET', 'FINGER_1', 'FINGER_2']; // slots available for enchants
+    const enchantableItems = [
+      'MAIN_HAND',
+      'OFF_HAND',
+      'BACK',
+      'CHEST',
+      'WRIST',
+      'HANDS',
+      'FEET',
+      'FINGER_1',
+      'FINGER_2',
+    ]; // slots available for enchants
 
     // helper variables
     const uniqueStatsCount = Object.values(statOrder).filter((el, i, self) => {
@@ -600,7 +610,11 @@ function appWowSl(par) {
       }
 
       // adjust ilvl for 2h weapons
-      if (item.slot.type === 'MAIN_HAND' && (item.inventory_type.name !== 'One-Hand' && item.item_subclass.name !== 'Wand')) {
+      if (
+        item.slot.type === 'MAIN_HAND' &&
+        item.inventory_type.name !== 'One-Hand' &&
+        item.item_subclass.name !== 'Wand'
+      ) {
         averageIlvl += item.level.value;
       }
     }
@@ -649,19 +663,12 @@ function appWowSl(par) {
 
     // report empty sockets if needed
     if (slotsWithEmptySockets.length > 0) {
-      gemInfo += `${gemInfo.length > 0 ? ', ' : ''}${slotsWithEmptySockets.length
-        } Empty Sockets (${slotsWithEmptySockets})`;
+      gemInfo += `${gemInfo.length > 0 ? ', ' : ''}${
+        slotsWithEmptySockets.length
+      } Empty Sockets (${slotsWithEmptySockets})`;
     }
 
-    return myUtils.flatten([
-      averageIlvl,
-      slotData,
-      enchants,
-      gemInfo,
-      totalStats,
-      itemInfos,
-      bonusStats,
-    ]);
+    return myUtils.flatten([averageIlvl, slotData, enchants, gemInfo, totalStats, itemInfos, bonusStats]);
   }
 
   /**
@@ -726,7 +733,7 @@ function appWowSl(par) {
     ];
     return profileArray;
   }
-                           
+
   /**
    * function to get covenant and soulbind spreadsheet data for a toon
    * @param {string} region region of target toon
@@ -739,40 +746,66 @@ function appWowSl(par) {
       return ' '; // If there's nothing in the column, don't even bother calling the API
     }
 
+    // Renown level / Covenant / Soulbind / 8 selected traits
+    const soulArrayDesc = [
+      'RenownLevel',
+      'Covenant',
+      'Soulbind',
+      'Trait1',
+      'Trait2',
+      'Trait3',
+      'Trait4',
+      'Trait5',
+      'Trait6',
+      'Trait7',
+      'Trait8',
+    ];
+    const soulIndex = {};
+    soulArrayDesc.forEach((el, i) => {
+      soulIndex[el] = i;
+    });
+    let soulArray = myUtils.initializedArray(soulArrayDesc.length, '-');
+
     // get API data
-    // Renown level / Covenant / Soulbind / 8 selected traits  
-    let soulArray = ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'];
     try {
       soulbinds = myBlizzData.getCharData(region, realmName, toonName, 'charCharacterSoulbinds');
     } catch (e) {
-      return myUtils.initializedArray(4, e.message);
+      return myUtils.initializedArray(soulArray.length, e.message);
     }
     if (!soulbinds.chosen_covenant) {
       if (soulbinds.code && soulbinds.detail) {
-        return myUtils.initializedArray(4, `Blizz message: ${soulbinds.detail} (${soulbinds.code})`);
+        if (soulbinds.code === 403) {
+          return `Blizz message: ${soulbinds.detail} (${soulbinds.code}) - most probably this means character does not yet have it`;
+        } else {
+          return myUtils.initializedArray(soulArray.length, `Blizz message: ${soulbinds.detail} (${soulbinds.code})`);
+        }
       }
-      return myUtils.initializedArray(4, strApiError);
+      return myUtils.initializedArray(soulArray.length, strApiError);
     }
-      
-    soulArray[0] = soulbinds.renown_level;
-    soulArray[1] = soulbinds.chosen_covenant.name;
-      
-      
-    if(soulbinds.soulbinds)
-    {
-        soulArray[2] = soulbinds.soulbinds[0].soulbind.name;
-      
-        for (let i = 0; i < soulbinds.soulbinds[0].traits.length; i++) {
-        
-            if(soulbinds.soulbinds[0].traits[i].trait)
-            {
-              soulArray[i+3] = soulbinds.soulbinds[0].traits[i].trait.name;
+
+    soulArray[soulIndex.RenownLevel] = soulbinds.renown_level;
+    soulArray[soulIndex.Covenant] = soulbinds.chosen_covenant.name;
+
+    // find active soulbind
+    if (soulbinds.soulbinds && soulbinds.soulbinds.length > 0) {
+      const activeSoulbind = soulbinds.soulbinds.find((el) => el.is_active === true);
+      if (activeSoulbind) {
+        soulArray[soulIndex.Soulbind] = activeSoulbind.soulbind.name;
+
+        if (activeSoulbind.traits && activeSoulbind.traits.length > 0) {
+          // get traits of active soulbind
+          for (let i = 0; i < activeSoulbind.traits.length; i++) {
+            const currentTrait = activeSoulbind.traits[i];
+            if (currentTrait.trait) {
+              soulArray[soulIndex[`Trait${i + 1}`]] = currentTrait.trait.name;
+            } else {
+              soulArray[soulIndex[`Trait${i + 1}`]] = currentTrait.conduit_socket.socket
+                ? `[${currentTrait.conduit_socket.socket.rank}] ${currentTrait.conduit_socket.socket.conduit.name}`
+                : `[empty slot]`;
             }
-            else
-            {    
-              soulArray[i+3] = `[${soulbinds.soulbinds[0].traits[i].conduit_socket.socket.rank}] ${soulbinds.soulbinds[0].traits[i].conduit_socket.socket.conduit.name}`;
           }
         }
+      }
     }
     return soulArray;
   }
@@ -804,9 +837,9 @@ function appWowSl(par) {
     }
 
     return [
-      media.assets[0].value,  //avatar
-      media.assets[1].value,  //bust
-      media.assets[2].value,  //render
+      media.assets[0].value, //avatar
+      media.assets[1].value, //bust
+      media.assets[2].value, //render
       `https://worldofwarcraft.com/en-${region}/character/${region}/${realmName}/${toonName}`,
     ];
   }
@@ -832,7 +865,7 @@ function appWowSl(par) {
       { id: 2465, position: 4 }, // The Wild Hunt
       { id: 2432, position: 5 }, // Ve'nari
     ];
-    const maxPosition = Math.max(...reps.map((el) => el.position))+1; // get max position for array length
+    const maxPosition = Math.max(...reps.map((el) => el.position)) + 1; // get max position for array length
 
     // get API data
     let reputations;

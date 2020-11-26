@@ -17,9 +17,6 @@ function buildEnv() {
         epicGemIlvl: 120,
         auditIlvl: 100,
         markLegendary: true,
-        markCorruption: true,
-        showCloakRank: true,
-        showCoresAfterRank15: true,
       });
       this.Utils = appUtils({
         settings: this.Settings,
