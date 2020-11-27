@@ -150,8 +150,8 @@ function appWowSl(par) {
     }
 
     // Due to changes in the API this now has to be updated everytime a raid is added
-    const currentXpacId = 396; // Battle for Azeroth
-    const currentXpacDungeonCount = 11; // dungeon count for current x-pac
+    const currentXpacId = 499; // Shadowlands
+    const currentXpacDungeonCount = 8; // dungeon count for current x-pac
     // raid info list
     const raidList = [
       {
