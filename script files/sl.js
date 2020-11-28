@@ -474,6 +474,7 @@ function appWowSl(par) {
     const totalStats = myUtils.initializedArray(uniqueStatsCount, 0); // keep track of amount for all stats
     const itemInfos = []; // details of item (name, slot, stats etc.)
     const bonusStats = myUtils.initializedArray(gemStats.length, 0); // stats gained from item enhancements
+    itemInfos[15] = ""; //init this to blank for folks with out offhands to maintain array size
 
     // loop through all items
     for (let i = 0; i < gear.equipped_items.length; i++) {
