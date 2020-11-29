@@ -15,8 +15,9 @@ function appWowSl(par) {
   const currentVersionSl = 0.9;
   const mySettings = par.settings || appSettings();
   const myUtils = par.utils || appUtils();
+  const myRaiderIO = par.raiderIO || appWowRaiderIO();
   const myBlizzData = par.blizzData || appBlizzData();
-  const useRaiderIo = mySettings.useRaiderIo || false;
+  const useRaiderIo = mySettings.useRaiderIoData || false;
 
   /**
    * function to get quest spreadsheet data for a toon
@@ -151,16 +152,20 @@ function appWowSl(par) {
 
     // Due to changes in the API this now has to be updated everytime a raid is added
     const currentXpacId = 499; // Shadowlands
-    const currentXpacDungeonCount = 8; // dungeon count for current x-pac
     // raid info list
-    const raidList = [
-      {
-        name: 'Castle Nathria',
-        id: 1190,
-        bosses: 10,
-      },
-    ];
+    const raidList = myUtils.getLookupData('raidsLookup');
+    // const raidList = [
+    //   {
+    //     number: 1,
+    //     name: 'Castle Nathria',
+    //     id: 1190,
+    //     bosses: 10,
+    //   },
+    // ];
     const raidModes = ['LFR', 'NORMAL', 'HEROIC', 'MYTHIC']; // raid difficulty modes
+    const dungeonList = myUtils.getLookupData('dungeonsLookup');
+    dungeonList.sort((a, b) => a.order - b.order);
+    const currentXpacDungeonCount = dungeonList.length; // dungeon count for current x-pac
     const dungeonOutputLength = 4; // array offset for dungeon/mythic dungeons HC (2) and mythic (2) dungeon infos
     const outputLength = raidList.length * (raidModes.length * 2) + dungeonOutputLength; // for each raid 2 times the difficulty count (progress and lockout for each difficulty) plus dungeon infos
 
@@ -192,27 +197,14 @@ function appWowSl(par) {
       return myUtils.initializedArray(outputLength, strApiError);
     }
 
-    // get RaiderIO API data
-    let raider;
-    if (useRaiderIo) {
-      const fetchUrl = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${realmName}&name=${toonName.toUpperCase()}&fields=mythic_plus_highest_level_runs,mythic_plus_scores,mythic_plus_weekly_highest_level_runs`;
-      try {
-        raider = myUtils.jsonFetch(fetchUrl, region);
-      } catch (e) {
-        Logger.log('Error getting RaiderIO data, skipping', e.message);
-      }
-      if (!raider.name) {
-        Logger.log('Error in RaiderIO data structure, skipping', raider);
-        raider = null;
-      }
-    }
-
     // helpers and ouput
     const lastWeeklyReset = myUtils.getWowWeeklyResetTimestamp(region);
     const lastDailyReset = myUtils.getWowDailyResetTimestamp(region);
     let progressionOut = []; // output variable
 
     // dungeon part
+    const dungeonMythicIds = []; // list of mythic lockout dungeon ids
+    let dungeonMythicIdShorts = []; // list of mythic lockout dungeon names
     const dungeonLockouts = []; // dungeon lockout infos
     const dungeonProgress = []; // dungeon progress infos
     const dungeonTotals = []; // dungeon totals infos
@@ -242,39 +234,30 @@ function appWowSl(par) {
               currentXpacDungeons[i].modes[j].difficulty.type === 'MYTHIC' ? lastWeeklyReset : lastDailyReset;
             if (currentXpacDungeons[i].modes[j].progress.encounters[0].last_kill_timestamp > timestampCheck)
               dungeonLockouts[currentXpacDungeons[i].modes[j].difficulty.type] += 1;
+            if (currentXpacDungeons[i].modes[j].difficulty.type === 'MYTHIC') {
+              dungeonMythicIds.push(currentXpacDungeons[i].instance.id);
+            }
           }
         }
 
-        // add RaiderIO data
-        if (raider) {
-          let mythicLockoutString = `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount}`;
-          let mythicProgressString = `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} (${dungeonTotals.MYTHIC})`;
-          // add highest weekly, key and score info
-          if (raider.mythic_plus_weekly_highest_level_runs[0]) {
-            mythicLockoutString = `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount} weekly highest M+: ${raider.mythic_plus_weekly_highest_level_runs[0].mythic_level}`;
+        // generate list of mythic lockout dungeon names
+        dungeonList.forEach((el) => {
+          if (dungeonMythicIds.indexOf(el.id) > -1) {
+            dungeonMythicIdShorts.push(el.short);
           }
-          if (raider.mythic_plus_highest_level_runs[0]) {
-            mythicProgressString = `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} highest season M+: ${raider.mythic_plus_highest_level_runs[0].mythic_level}`;
-          }
-          if (raider.mythic_plus_scores) {
-            mythicProgressString = `${mythicProgressString} Score: ${raider.mythic_plus_scores.all}`;
-          }
-          // attach dungeon info to output
-          progressionOut.push(
-            `${dungeonLockouts.HEROIC}/${currentXpacDungeonCount}`,
-            `${dungeonProgress.HEROIC}/${currentXpacDungeonCount} (${dungeonTotals.HEROIC})`,
-            mythicLockoutString,
-            mythicProgressString
-          );
-        } else {
-          // attach dungeon info to output
-          progressionOut.push(
-            `${dungeonLockouts.HEROIC}/${currentXpacDungeonCount}`,
-            `${dungeonProgress.HEROIC}/${currentXpacDungeonCount} (${dungeonTotals.HEROIC})`,
-            `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount}`,
-            `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} (${dungeonTotals.MYTHIC})`
-          );
+        });
+        // if all dungeons have been done, show shorter info
+        if (dungeonMythicIdShorts.length === currentXpacDungeonCount) {
+          dungeonMythicIdShorts = ['All done!'];
         }
+
+        // attach dungeon info to output
+        progressionOut.push(
+          `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount} [${dungeonMythicIdShorts.join('|')}]`,
+          `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} (${dungeonTotals.MYTHIC})`,
+          `${dungeonLockouts.HEROIC}/${currentXpacDungeonCount}`,
+          `${dungeonProgress.HEROIC}/${currentXpacDungeonCount} (${dungeonTotals.HEROIC})`
+        );
       } else {
         // not played any dungeon in this xpac
         progressionOut = [...progressionOut, ...myUtils.initializedArray(dungeonOutputLength, 'N/A')];
@@ -283,6 +266,9 @@ function appWowSl(par) {
       // never played any dungeon at all
       progressionOut = [...progressionOut, ...myUtils.initializedArray(dungeonOutputLength, 'N/A')];
     }
+
+    // torghast things?
+    progressionOut.push('Torghast???');
 
     // raid part
     if (progression.expansions) {
@@ -340,8 +326,6 @@ function appWowSl(par) {
       progressionOut = [...progressionOut, ...myUtils.initializedArray(outputLength - dungeonOutputLength, 'N/A')];
     }
 
-    progressionOut = ['Torghast???', ...progressionOut];
-
     return progressionOut;
   }
 
@@ -372,7 +356,7 @@ function appWowSl(par) {
     }
 
     // get audit lookup info from config sheet
-    const auditLookup = mySettings.getAuditLookupData();
+    const auditLookup = myUtils.getLookupData('auditLookup');
     const headerRow = auditLookup.shift();
     // create easy to use index (like auditLookup[alIndex.shortName])
     const alIndex = {};
@@ -761,6 +745,7 @@ function appWowSl(par) {
       'Trait7',
       'Trait8',
     ];
+    // create easy to use index (like soulArray[soulIndex.RenownLevel])
     const soulIndex = {};
     soulArrayDesc.forEach((el, i) => {
       soulIndex[el] = i;
@@ -798,9 +783,9 @@ function appWowSl(par) {
           for (let i = 0; i < activeSoulbind.traits.length; i++) {
             const currentTrait = activeSoulbind.traits[i];
             if (currentTrait.trait) {
-              soulArray[soulIndex[`Trait${i + 1}`]] = currentTrait.trait.name;
+              soulArray[soulIndex[`Trait${currentTrait.tier + 1}`]] = currentTrait.trait.name;
             } else {
-              soulArray[soulIndex[`Trait${i + 1}`]] = currentTrait.conduit_socket.socket
+              soulArray[soulIndex[`Trait${currentTrait.tier + 1}`]] = currentTrait.conduit_socket.socket
                 ? `[${currentTrait.conduit_socket.socket.rank}] ${currentTrait.conduit_socket.socket.conduit.name}`
                 : `[empty slot]`;
             }
@@ -858,14 +843,15 @@ function appWowSl(par) {
     }
 
     // list of factions to track including sort order
-    const reps = [
-      { id: 2407, position: 0 }, // Ascended
-      { id: 2439, position: 1 }, // Avowed
-      { id: 2413, position: 2 }, // Court of Harvesters
-      { id: 2410, position: 3 }, // Undying Army
-      { id: 2465, position: 4 }, // The Wild Hunt
-      { id: 2432, position: 5 }, // Ve'nari
-    ];
+    const reps = myUtils.getLookupData('repsLookup');
+    // const reps = [
+    //   { id: 2407, position: 0, header: 'The Ascended' }, // Ascended
+    //   { id: 2439, position: 1, header: 'The Avowed' }, // Avowed
+    //   { id: 2413, position: 2, header: 'Court of Harvesters' }, // Court of Harvesters
+    //   { id: 2410, position: 3, header: 'The Undying Army' }, // Undying Army
+    //   { id: 2465, position: 4, header: 'The Wild Hunt' }, // The Wild Hunt
+    //   { id: 2432, position: 5, header: `Ve'nari` }, // Ve'nari
+    // ];
     const maxPosition = Math.max(...reps.map((el) => el.position)) + 1; // get max position for array length
 
     // get API data

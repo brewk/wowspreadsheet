@@ -2,8 +2,6 @@
  * @OnlyCurrentDoc
  */
 
-/* globals appSettings */
-
 /**
  * The appUtils object
  * @param {Object} par The main parameter object.
@@ -11,7 +9,6 @@
  */
 function appUtils(par = {}) {
   const objectName = 'appUtils';
-  const mySettings = par.settings || appSettings();
   // const cache = CacheService.getScriptCache();
 
   /**
@@ -115,6 +112,17 @@ function appUtils(par = {}) {
     const unzipped = Utilities.unzip(blob);
     const resultString = unzipped[0].getAs('application/octet-stream').getDataAsString();
     return resultString;
+  }
+
+  /**
+   * function to retrieve lookup data stored in according named sections within the spreadsheet
+   * @param {string} section the region used for Blizz API calls (us/eu)
+   * @return {any} JSON parsed return object of lookup data.
+   */
+  function getLookupData(section) {
+    const compressedData = SpreadsheetApp.getActiveSpreadsheet().getRangeByName(section).getValues();
+    const data = unzippedStringArray(compressedData);
+    return JSON.parse(data);
   }
 
   /**
@@ -238,6 +246,7 @@ function appUtils(par = {}) {
     initializedArray,
     zippedStringArray,
     unzippedStringArray,
+    getLookupData,
     shortEssenceName,
     getWowDailyResetTimestamp,
     getWowWeeklyResetTimestamp,
