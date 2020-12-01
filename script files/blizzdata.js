@@ -215,6 +215,7 @@ function appBlizzData(par = {}) {
    */
   function getRaidIlvl() {
     const raids = myUtils.getLookupData('raidsLookup');
+    raids.sort((a, b) => b.number - a.number);
     return [raids[0].mythicIlvl, raids[0].ilvlMod];
   }
 
