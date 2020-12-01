@@ -15,11 +15,6 @@ function appWowGuildRoster(par) {
   const mySettings = par.settings || appSettings();
   const myUtils = par.utils || appUtils();
   const myBlizzData = par.blizzData || appBlizzData();
-  const blacklist = par.blacklist || [];
-  const whitelist = par.whitelist || [];
-  const nonGuild = par.nonGuild || [];
-  const rankBlacklist = par.rankBlacklist || [];
-  const rankWhitelist = par.rankWhitelist || [];
 
   /**
    * function to fetch guild members and create a list based on provided filters (including global white-/blacklist)
@@ -52,53 +47,44 @@ function appWowGuildRoster(par) {
       return 'Error: invalid data received from API';
     }
 
-    // lowercase everything
-    blacklist.map((el) => el.toLowerCase());
-    whitelist.map((el) => el.toLowerCase());
-
+    const guildRosterSettings = mySettings.getGuildRosterSettingsFromSheet();
     // parse guild member list and prepare output
     const membermatrix = [];
-    let arrayPosition = 0;
 
     for (let i = 0; i < guild.members.length; i++) {
+      const member = guild.members[i];
       let whiteListed = false;
       let blackListed = false;
 
       // check for rank black-/whitelisting
-      if (rankBlacklist.indexOf(guild.members[i].rank) > -1) {
+      if (guildRosterSettings.rankBlacklist.indexOf(member.rank) > -1) {
         blackListed = true;
-      } else if (rankWhitelist.indexOf(guild.members[i].rank) > -1 && guild.members[i].character.level >= minLevel) {
+      } else if (guildRosterSettings.rankWhitelist.indexOf(member.rank) > -1 && member.character.level >= minLevel) {
         whiteListed = true;
       }
 
       // whitelist/blacklist of individual names will override the rank Black/whitelisting
-      if (blacklist.indexOf(guild.members[i].character.name.toLowerCase()) > -1) {
+      if (guildRosterSettings.memberBlacklist.indexOf(member.character.name.toLowerCase()) > -1) {
         blackListed = true;
-      } else if (whitelist.indexOf(guild.members[i].character.name.toLowerCase()) > -1) {
+      } else if (guildRosterSettings.memberWhitelist.indexOf(member.character.name.toLowerCase()) > -1) {
         whiteListed = true;
       }
 
       // add member if all criterias are passed
       if (
-        ((guild.members[i].rank <= maxRank && guild.members[i].character.level >= minLevel) || whiteListed) &&
+        ((member.rank <= maxRank && member.character.level >= minLevel) || whiteListed) &&
         !blackListed
       ) {
-        membermatrix[arrayPosition] = [
-          guild.members[i].character.realm.slug,
-          guild.members[i].character.name,
-          guild.members[i].rank,
-        ];
-        arrayPosition += 1;
+        membermatrix.push([
+          member.character.realm.slug,
+          member.character.name,
+          member.rank,
+        ]);
       }
     }
 
-    // add manual non-guild entries to the roster
-    for (let i = 0; i < nonGuild.length; i++) {
-      membermatrix[arrayPosition] = [nonGuild[i][0], nonGuild[i][1], 99];
-      arrayPosition += 1;
-    }
-
-    return membermatrix;
+    // return member list together with non-guild members from settings page
+    return [...membermatrix, ...guildRosterSettings.nonGuildMembers];
   }
 
   /**
