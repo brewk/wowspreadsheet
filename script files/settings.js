@@ -11,68 +11,251 @@
  */
 function appSettings(par = {}) {
   const objectName = 'appSettings';
-  const strBlizzClientId = 'BlizzClientId';
-  const strBlizzClientSecret = 'BlizzClientSecret';
+  const strAppSettings = 'AppSettings';
   const strStoredToken = 'BlizzAccessToken';
   const strWarcraftLogsKey = 'WarcraftLogsKey';
   const myUtils = par.utils || appUtils();
   const cache = CacheService.getScriptCache();
-  const blizzClientId = par.blizzClientId || null;
-  const blizzClientSecret = par.blizzClientSecret || null;
-  const warcraftLogsKey = par.warcraftLogsKey || null;
-  const useRaiderIoData = par.useRaiderIoData || false;
-  const wowEpicGemIlvl = par.epicGemIlvl || 419;
-  const wowAuditIlvl = par.auditIlvl || 309;
-  const markLegendary = par.markLegendary || true;
 
   /**
-   * function to retrieve Blizz client id from cache, script properties or provided value
-   * @return {string} Blizz client id
+   * function to retreive a current app settings value
+   * @param {string} varName the name of the app setting value to retreive
+   * @return {any} the requested app setting value
    */
-  function getBlizzClientId() {
-    // return it from cache if possible
-    let clientId = cache.get(strBlizzClientId);
-    if (clientId != null && (blizzClientId === null || clientId === blizzClientId)) {
-      return clientId;
+  function getAppSetting(varName) {
+    const value = cache.get(varName);
+    if (value) {
+      return value;
     }
-    // else return it from script properties and populate cache if possible
-    clientId = PropertiesService.getScriptProperties().getProperty(strBlizzClientId);
-    if (clientId != null && (blizzClientId === null || clientId === blizzClientId)) {
-      cache.put(strBlizzClientId, clientId);
-      return clientId;
+
+    let appSettingsJson = getAppSettingsJson();
+    const appSettings = JSON.parse(appSettingsJson);
+    if (Object.keys(appSettings).indexOf(varName) < 0) {
+      const appSettingsLookup = myUtils.getLookupData('appSettingsLookup');
+      const newSetting = appSettingsLookup.find((el) => el.varName === varName);
+      if (!newSetting) {
+        throw new Error(`App setting ${varName} not found!`);
+      }
+      appSettings[varName] = newSetting.default;
+      appSettingsJson = JSON.stringify(appSettings);
+      PropertiesService.getScriptProperties().setProperty(strAppSettings, appSettingsJson);
+      cache.put(strAppSettings, appSettingsJson);
     }
-    // else fall back to provided value (initial setup) and populate cache and script properties
-    if (blizzClientId != null) {
-      PropertiesService.getScriptProperties().setProperty(strBlizzClientId, blizzClientId);
-      cache.put(strBlizzClientId, blizzClientId);
-      return blizzClientId;
-    }
-    return '';
+    cache.put(varName, appSettings[varName]);
+    return appSettings[varName];
   }
 
   /**
-   * function to retrieve Blizz client secret from cache, script properties or provided value
-   * @return {string} Blizz client secret
+   * helper function to handle stored app settings (JSON string in script properties)
+   * @return {string} JSON string representation of app settings
    */
-  function getBlizzClientSecret() {
-    // return it from cache if possible
-    let clientSecret = cache.get(strBlizzClientSecret);
-    if (clientSecret != null && (blizzClientSecret === null || clientSecret === blizzClientSecret)) {
-      return clientSecret;
+  function getAppSettingsJson() {
+    // try to get cache value and return if it already exists
+    let appSettingsJson = cache.get(strAppSettings);
+    if (appSettingsJson) {
+      return appSettingsJson;
     }
-    // else return it from script properties and populate cache if possible
-    clientSecret = PropertiesService.getScriptProperties().getProperty(strBlizzClientSecret);
-    if (clientSecret != null && (blizzClientSecret === null || clientSecret === blizzClientSecret)) {
-      cache.put(strBlizzClientSecret, clientSecret);
-      return clientSecret;
+
+    // try to get properties value and return it if it exists (also put it in cache)
+    appSettingsJson = PropertiesService.getScriptProperties().getProperty(strAppSettings);
+    if (appSettingsJson) {
+      cache.put(strAppSettings, appSettingsJson);
+      return appSettingsJson;
     }
-    // else fall back to provided value (initial setup) and populate cache and script properties
-    if (blizzClientSecret != null) {
-      PropertiesService.getScriptProperties().setProperty(strBlizzClientSecret, blizzClientSecret);
-      cache.put(strBlizzClientSecret, blizzClientSecret);
-      return blizzClientSecret;
+
+    // no existing settings found, build them from scratch using remote lookup settings infos (store it in properties and cache)
+    const appSettings = {};
+    const appSettingsLookup = myUtils.getLookupData('appSettingsLookup');
+    appSettingsLookup.forEach((el) => (appSettings[el.varName] = el.default));
+    appSettingsJson = JSON.stringify(appSettings);
+    PropertiesService.getScriptProperties().setProperty(strAppSettings, appSettingsJson);
+    cache.put(strAppSettings, appSettingsJson);
+    return appSettingsJson;
+  }
+
+  /**
+   * function to retrieve current app settings to show on settings sheet
+   * @return {array} settings output array to show on settings sheet
+   */
+  function getAppSettingsForSheet() {
+    // get settings infos from remote lookup sheet and sort by id
+    const appSettingsLookup = myUtils.getLookupData('appSettingsLookup');
+    appSettingsLookup.sort((a, b) => a.id - b.id);
+    // header row to show
+    const output = [['ID', 'Name', 'Description', 'CurrentValue']];
+
+    // loop over settings infos
+    for (let i = 0; i < appSettingsLookup.length; i++) {
+      const setting = appSettingsLookup[i];
+      // get setting that is currently in use
+      const currentValue = getAppSetting(setting.varName);
+
+      // hide sensitive settings if they are not the default value
+      if (setting.isSensitive && setting.default != currentValue) {
+        setting.default = 'HIDDEN';
+      } else {
+        // use current value
+        setting.default = currentValue;
+      }
+
+      // add row to output
+      output.push([setting.id, setting.name, setting.description, setting.default]);
     }
-    return '';
+
+    return output;
+  }
+
+  /**
+   * function to retrieve app settings from settings page
+   * @return {string} output message indicating the status of the action
+   */
+  function saveAppSettingsFromSheet() {
+    // read all values from data region around named range (starting point in settings sheet)
+    const appSettingsData = SpreadsheetApp.getActiveSpreadsheet()
+      .getRangeByName('appSettings')
+      .getDataRegion()
+      .getValues();
+
+    // strip header and generate index from it
+    const header = appSettingsData.shift(); //remove header
+    const index = {};
+    header.forEach((el, i) => (index[el] = i));
+    // get settings infos from remote lookup sheet
+    const appSettingsLookup = myUtils.getLookupData('appSettingsLookup');
+
+    // check if number of settings on sheet and on remote lookup sheet match, otherwhise ask for refresh first
+    if (appSettingsData.length !== appSettingsLookup.length) {
+      return 'Settings mismatch, please refresh sheet and try again';
+    }
+
+    // prepare output and create helper variables
+    const appSettings = {};
+    const validBoolTrues = ['true', 'on', '1'];
+    const validBoolFalses = ['false', 'off', '0'];
+    const validationErrors = [];
+    const changedSettings = [];
+
+    // loop over all settings data from sheet
+    for (let i = 0; i < appSettingsData.length; i++) {
+      const setting = appSettingsData[i];
+      // check if this setting also exists on remote sheet, otherwhise ask for refresh first
+      const lookup = appSettingsLookup.find((el) => el.id === parseInt(setting[0]));
+      if (!lookup) {
+        return 'Settings mismatch, please refresh sheet and try again';
+      }
+
+      // read new value and check if it is not empty
+      let newValue = setting[index.NewValue];
+      if (!newValue || newValue.toString().length === 0) {
+        // setting is empty, so instead the existing value will be used
+        newValue = getAppSetting(lookup.varName);
+      } else {
+        // new value detected, mark as changed
+        changedSettings.push(lookup.varName);
+      }
+
+      // input validation
+      switch (lookup.type) {
+        case 'bool':
+          if (typeof newValue === 'boolean') {
+            appSettings[lookup.varName] = newValue;
+          } else {
+            if (validBoolTrues.indexOf(newValue.toLowerCase()) >= 0) {
+              appSettings[lookup.varName] = true;
+            } else if (validBoolFalses.indexOf(newValue.toLowerCase()) >= 0) {
+              appSettings[lookup.varName] = false;
+            } else {
+              validationErrors.push(`Invalid bool value for ${lookup.name}`);
+              continue;
+            }
+          }
+          break;
+        case 'number':
+          const value = parseFloat(newValue);
+          if (isNaN(value)) {
+            validationErrors.push(`Expected a number value for ${lookup.name}`);
+            continue;
+          }
+          appSettings[lookup.varName] = value;
+          break;
+
+        default:
+          appSettings[lookup.varName] = newValue.trim();
+          break;
+      }
+    }
+
+    // has anything changed at all?
+    if (changedSettings.length === 0) {
+      return '<- change this cell after providing new values';
+    }
+
+    // all validation checks passed?
+    if (validationErrors.length > 0) {
+      return `Could not store settings because of error(s): ${validationErrors.join(' | ')}`;
+    }
+
+    // everything ok, save new values and provide feedback
+    const appSettingsJson = JSON.stringify(appSettings);
+    PropertiesService.getScriptProperties().setProperty(strAppSettings, appSettingsJson);
+    changedSettings.forEach((el) => cache.remove(el));
+    cache.put(strAppSettings, appSettingsJson);
+    return 'SAVED! Please delete all new values!';
+  }
+
+  /**
+   * function to retrieve guild roster settings from settings page
+   * @return {object} settings object containing all guild roster settings
+   */
+  function getGuildRosterSettingsFromSheet() {
+    // read values from named range (settings sheet)
+    const sheetData = SpreadsheetApp.getActiveSpreadsheet().getRangeByName('guildRosterSettings').getValues();
+
+    // prepare output structure
+    const settings = {};
+    settings.rankBlacklist = [];
+    settings.rankWhitelist = [];
+    settings.memberBlacklist = [];
+    settings.memberWhitelist = [];
+    settings.nonGuildMembers = [];
+
+    // loop over settings rows
+    for (let i = 0; i < sheetData.length; i++) {
+      const row = sheetData[i];
+
+      // check for empty row and stop processing if no more values are detected
+      const nonEmptyIndex = row.findIndex((el) => el !== null && el.toString().length > 0);
+      if (nonEmptyIndex == -1) {
+        // row with all empty values, stopping...
+        break;
+      }
+
+      // parse all found settings
+
+      const rankBlacklist = parseInt(row[0]);
+      if (!isNaN(rankBlacklist)) {
+        settings.rankBlacklist.push(rankBlacklist);
+      }
+
+      const rankWhitelist = parseInt(row[1]);
+      if (!isNaN(rankWhitelist)) {
+        settings.rankWhitelist.push(rankWhitelist);
+      }
+
+      if (row[2] !== null && row[2].toString().length > 0) {
+        settings.memberBlacklist.push(row[2].toLowerCase());
+      }
+
+      if (row[3] !== null && row[3].toString().length > 0) {
+        settings.memberWhitelist.push(row[3].toLowerCase());
+      }
+
+      if (row[4] !== null && row[4].toString().length > 0 && row[5] !== null && row[5].toString().length > 0) {
+        settings.nonGuildMembers.push([row[4].toLowerCase(), row[5].toLowerCase(), 99]);
+      }
+    }
+
+    return settings;
   }
 
   /**
@@ -99,8 +282,8 @@ function appSettings(par = {}) {
     }
 
     // if no longer valid or missing, refresh token from Blizz API
-    const clientId = getBlizzClientId();
-    const clientSecret = getBlizzClientSecret();
+    const clientId = getAppSetting('BlizzClientId');
+    const clientSecret = getAppSetting('BlizzClientSecret');
     if (clientId === '' || clientSecret === '') {
       throw new Error('Error missing client id or client secret');
     }
@@ -113,6 +296,7 @@ function appSettings(par = {}) {
       payload: { grant_type: 'client_credentials' },
     });
     if (tokenResponse.getResponseCode() === 200) {
+      // success, store new token and use it
       const token = JSON.parse(tokenResponse.getContentText()).access_token;
       const expiry = new Date();
       expiry.setHours(expiry.getHours() + 24);
@@ -121,44 +305,17 @@ function appSettings(par = {}) {
       cache.put(strStoredToken, tokenString);
       return token;
     }
-    Logger.log('Error getting Blizzard access token', tokenResponse);
-    throw new Error('Error getting an API token. Please visit https://develop.battle.net/ and sign up for an account');
-  }
 
-  /**
-   * function to retrieve WCL API key from cache, script properties or provided value
-   * @return {string} WCL API key
-   */
-  function getWarcraftLogsKey() {
-    // return it from cache if possible
-    let key = cache.get(strWarcraftLogsKey);
-    if (key != null && (warcraftLogsKey === null || key === warcraftLogsKey)) {
-      return key;
-    }
-    // else return it from script properties and populate cache if possible
-    key = PropertiesService.getScriptProperties().getProperty(strWarcraftLogsKey);
-    if (key != null && (warcraftLogsKey === null || key === warcraftLogsKey)) {
-      cache.put(strWarcraftLogsKey, key);
-      return key;
-    }
-    // else fall back to provided value (initial setup) and populate cache and script properties
-    if (warcraftLogsKey != null) {
-      PropertiesService.getScriptProperties().setProperty(strWarcraftLogsKey, warcraftLogsKey);
-      cache.put(strWarcraftLogsKey, warcraftLogsKey);
-      return warcraftLogsKey;
-    }
-    return '';
+    console.error('Error getting Blizzard access token', tokenResponse);
+    throw new Error('Error getting an API token. Please visit https://develop.battle.net/ and sign up for an account');
   }
 
   return Object.freeze({
     objectName,
-    wowEpicGemIlvl,
-    wowAuditIlvl,
-    markLegendary,
-    useRaiderIoData,
-    getBlizzClientId,
-    getBlizzClientSecret,
+    getAppSetting,
+    getAppSettingsForSheet,
+    saveAppSettingsFromSheet,
+    getGuildRosterSettingsFromSheet,
     getBlizzAccessToken,
-    getWarcraftLogsKey,
   });
 }

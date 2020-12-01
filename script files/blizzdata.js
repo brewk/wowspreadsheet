@@ -94,7 +94,7 @@ function appBlizzData(par = {}) {
     try {
       token = mySettings.getBlizzAccessToken(region);
     } catch (e) {
-      Logger.log('Error missing token', e);
+      console.error('Error missing token', e);
       throw e;
     }
     // passing the token via header instead of url parameter to avoid
@@ -122,7 +122,7 @@ function appBlizzData(par = {}) {
           // 'successful' 403 containing blizz infos
           return responseData;
         }
-        Logger.log('Error getting API data (403)', url, response);
+        console.error('Error getting API data (403)', url, response);
         throw new Error('Error getting API data (403)');
       }
       case 404: {
@@ -130,11 +130,11 @@ function appBlizzData(par = {}) {
           // 'successful' 404 containing blizz infos
           return responseData;
         }
-        Logger.log('Error getting API data (404)', url, response);
+        console.error('Error getting API data (404)', url, response);
         throw new Error('Error getting API data (404)');
       }
       default:
-        Logger.log('Error getting API data', url, response);
+        console.error('Error getting API data', url, response);
         throw new Error('Error getting API data');
     }
   }

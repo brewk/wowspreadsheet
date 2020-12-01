@@ -15,9 +15,7 @@ function appWowSl(par) {
   const currentVersionSl = 0.9;
   const mySettings = par.settings || appSettings();
   const myUtils = par.utils || appUtils();
-  const myRaiderIO = par.raiderIO || appWowRaiderIO();
   const myBlizzData = par.blizzData || appBlizzData();
-  const useRaiderIo = mySettings.useRaiderIoData || false;
 
   /**
    * function to get quest spreadsheet data for a toon
@@ -500,13 +498,13 @@ function appWowSl(par) {
 
       // handle legendary items
       if (item.quality.type === 'LEGENDARY') {
-        if (mySettings.markLegendary) {
+        if (mySettings.getAppSetting('MarkLegendary')) {
           slotData[slotIndex] += `+`;
         }
       }
 
       // enchant checks
-      if (enchantableItems.indexOf(item.slot.type) > -1 && item.level.value >= mySettings.wowAuditIlvl) {
+      if (enchantableItems.indexOf(item.slot.type) > -1 && item.level.value >= mySettings.getAppSetting('AuditIlvl')) {
         // initialize defaults
         const enchantIndex = enchantOrder[item.slot.type];
         enchants[enchantIndex] = 'None';
@@ -547,7 +545,7 @@ function appWowSl(par) {
           gemAudit[4].bool = 1;
         }
         // check if item is valid for gem check
-      } else if (item.level.value > mySettings.wowAuditIlvl && item.sockets) {
+      } else if (item.level.value > mySettings.getAppSetting('AuditIlvl') && item.sockets) {
         // loop through all sockets
         for (let j = 0; j < item.sockets.length; j++) {
           if (item.sockets[j].socket_type.type === 'PRISMATIC' && item.quality.type !== 'ARTIFACT') {
@@ -576,7 +574,7 @@ function appWowSl(par) {
 
               if (gemAuditIndex < 2) {
                 // not epic
-                if (item.level.value > mySettings.wowEpicGemIlvl) {
+                if (item.level.value > mySettings.getAppSetting('EpicGemIlvl')) {
                   // iLvl high enough to force epic gem
                   gemAudit[2].bool = 1;
                   gemAudit[3].bool = 1;
