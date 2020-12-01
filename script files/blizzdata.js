@@ -207,12 +207,24 @@ function appBlizzData(par = {}) {
     }
     return output;
   }
+  
+  /**
+   * function to retrieve mythic ilvl for current raid and offset for color scaling
+   * @param {number} count # of headers to return, starting from the most current raid
+   * @return {array} [ilvl, mod#]
+   */
+  function getRaidIlvl() {
+    const raids = myUtils.getLookupData('raidsLookup');
+    return [raids[0].mythicIlvl, raids[0].ilvlMod];
+  }
+
 
   return Object.freeze({
     objectName,
     getGuildRoster,
     getCharData,
     getReputationHeaders,
-    getRaidHeaders
+    getRaidHeaders,
+    getRaidIlvl
   });
 }
