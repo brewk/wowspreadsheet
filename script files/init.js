@@ -2,7 +2,7 @@
  * @OnlyCurrentDoc
  */
 
-/* globals appUtils, appSettings, appWowGuildRoster, appWowSl, appBlizzData */
+/* globals appUtils, appSettings, appWowRaiderIO, appWowGuildRoster, appWowSl, appBlizzData */
 
 /**
  * function to build global environment
@@ -13,12 +13,6 @@ function buildEnv() {
     this.Utils = appUtils({});
     this.Settings = appSettings({
       utils: this.Utils,
-      blizzClientId: '',
-      blizzClientSecret: '',
-      useRaiderIoData: true,
-      epicGemIlvl: 120,
-      auditIlvl: 100,
-      markLegendary: true,
     });
     this.RaiderIO = appWowRaiderIO({
       settings: this.Settings,
@@ -45,6 +39,7 @@ function buildEnv() {
       raiderIO: this.RaiderIO,
     });
   } catch (error) {
+    console.error(error);
     return false;
   }
   return true;
@@ -58,7 +53,7 @@ function buildEnv() {
  */
 function appCall(objDotFunc, ...args) {
   if (buildEnv()) {
-    Logger.log(objDotFunc, args);
+    console.info(objDotFunc, args);
     const arr = objDotFunc.split('.'); // a string to array with "." as separator
     const obj = arr[0]; // getting object name
     const func = arr[1]; // getting function name
