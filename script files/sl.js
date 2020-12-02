@@ -230,10 +230,11 @@ function appWowSl(par) {
               currentXpacDungeons[i].modes[j].progress.encounters[0].completed_count;
             const timestampCheck =
               currentXpacDungeons[i].modes[j].difficulty.type === 'MYTHIC' ? lastWeeklyReset : lastDailyReset;
-            if (currentXpacDungeons[i].modes[j].progress.encounters[0].last_kill_timestamp > timestampCheck)
+            if (currentXpacDungeons[i].modes[j].progress.encounters[0].last_kill_timestamp > timestampCheck) {
               dungeonLockouts[currentXpacDungeons[i].modes[j].difficulty.type] += 1;
-            if (currentXpacDungeons[i].modes[j].difficulty.type === 'MYTHIC') {
-              dungeonMythicIds.push(currentXpacDungeons[i].instance.id);
+              if (currentXpacDungeons[i].modes[j].difficulty.type === 'MYTHIC') {
+                dungeonMythicIds.push(currentXpacDungeons[i].instance.id);
+              }
             }
           }
         }
@@ -456,7 +457,7 @@ function appWowSl(par) {
     const totalStats = myUtils.initializedArray(uniqueStatsCount, 0); // keep track of amount for all stats
     const itemInfos = []; // details of item (name, slot, stats etc.)
     const bonusStats = myUtils.initializedArray(gemStats.length, 0); // stats gained from item enhancements
-    itemInfos[15] = ""; //init this to blank for folks with out offhands to maintain array size
+    itemInfos[15] = ''; //init this to blank for folks with out offhands to maintain array size
 
     // loop through all items
     for (let i = 0; i < gear.equipped_items.length; i++) {
@@ -515,14 +516,13 @@ function appWowSl(par) {
           // ignore non-weapon offhands
           enchants[enchantIndex] = '';
         } else if (item.enchantments) {
-          for(let k = 0; k < item.enchantments.length; k++)
-          {
-              if(item.enchantments[k].enchantment_slot.type === 'PERMANENT') //only accept non-temporary enchants
-              {	 	
-                  let auditLookupItem = auditLookup.find((el) => el[alIndex.effectId] === item.enchantments[k].enchantment_id); // search for enchant in lookup table
-                  if (!auditLookupItem && item.enchantments[k].source_item) {
+          item.enchantments.forEach((enchant) => {
+            if (enchant.enchantment_slot.type === 'PERMANENT') {
+               //only accept non-temporary enchants
+               let auditLookupItem = auditLookup.find((el) => el[alIndex.effectId] === enchant.enchantment_id); // search for enchant in lookup table
+                  if (!auditLookupItem && enchant.source_item) {
                     // if not found try to find it by source item id
-                    auditLookupItem = auditLookup.find((el) => el[alIndex.id] === item.enchantments[k].source_item.id);
+                    auditLookupItem = auditLookup.find((el) => el[alIndex.id] === enchant.source_item.id);
                   }
                   if (auditLookupItem) {
                     enchants[enchantIndex] = auditLookupItem[alIndex.shortName]; // add enchant short name to the list
@@ -538,8 +538,8 @@ function appWowSl(par) {
                   } else {
                     enchants[enchantIndex] = 'Old';
                   }
-              }
-          }
+            }
+          });
         }
       }
 
