@@ -516,14 +516,13 @@ function appWowSl(par) {
           // ignore non-weapon offhands
           enchants[enchantIndex] = '';
         } else if (item.enchantments) {
-          for(let k = 0; k < item.enchantments.length; k++)
-          {
-              if(item.enchantments[k].enchantment_slot.type === 'PERMANENT') //only accept non-temporary enchants
-              {	 	
-                  let auditLookupItem = auditLookup.find((el) => el[alIndex.effectId] === item.enchantments[k].enchantment_id); // search for enchant in lookup table
-                  if (!auditLookupItem && item.enchantments[k].source_item) {
+          item.enchantments.forEach((enchant) => {
+            if (enchant.enchantment_slot.type === 'PERMANENT') {
+               //only accept non-temporary enchants
+               let auditLookupItem = auditLookup.find((el) => el[alIndex.effectId] === enchant.enchantment_id); // search for enchant in lookup table
+                  if (!auditLookupItem && enchant.source_item) {
                     // if not found try to find it by source item id
-                    auditLookupItem = auditLookup.find((el) => el[alIndex.id] === item.enchantments[k].source_item.id);
+                    auditLookupItem = auditLookup.find((el) => el[alIndex.id] === enchant.source_item.id);
                   }
                   if (auditLookupItem) {
                     enchants[enchantIndex] = auditLookupItem[alIndex.shortName]; // add enchant short name to the list
@@ -539,8 +538,8 @@ function appWowSl(par) {
                   } else {
                     enchants[enchantIndex] = 'Old';
                   }
-              }
-          }
+            }
+          });
         }
       }
 
