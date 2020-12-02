@@ -15,7 +15,7 @@ function appWowRaiderIO(par) {
   const mySettings = par.settings || appSettings();
   const myUtils = par.utils || appUtils();
   const cache = CacheService.getScriptCache();
-  const useRaiderIo = mySettings.getAppSetting('UseRaiderIoData') || false;
+  const useRaiderIo = mySettings.useRaiderIoData || false;
   const strRaiderIOSheetName = 'Mythic+';
   const strRaiderIOSheetCache = 'rioSheetCache';
   const strRaiderIoNotEnabledError = 'RaiderIO data not enabled in settings';

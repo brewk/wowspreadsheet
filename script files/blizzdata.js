@@ -94,7 +94,7 @@ function appBlizzData(par = {}) {
     try {
       token = mySettings.getBlizzAccessToken(region);
     } catch (e) {
-      console.error('Error missing token', e);
+      Logger.log('Error missing token', e);
       throw e;
     }
     // passing the token via header instead of url parameter to avoid
@@ -122,7 +122,7 @@ function appBlizzData(par = {}) {
           // 'successful' 403 containing blizz infos
           return responseData;
         }
-        console.error('Error getting API data (403)', url, response);
+        Logger.log('Error getting API data (403)', url, response);
         throw new Error('Error getting API data (403)');
       }
       case 404: {
@@ -130,11 +130,11 @@ function appBlizzData(par = {}) {
           // 'successful' 404 containing blizz infos
           return responseData;
         }
-        console.error('Error getting API data (404)', url, response);
+        Logger.log('Error getting API data (404)', url, response);
         throw new Error('Error getting API data (404)');
       }
       default:
-        console.error('Error getting API data', url, response);
+        Logger.log('Error getting API data', url, response);
         throw new Error('Error getting API data');
     }
   }
@@ -215,7 +215,6 @@ function appBlizzData(par = {}) {
    */
   function getRaidIlvl() {
     const raids = myUtils.getLookupData('raidsLookup');
-    raids.sort((a, b) => b.number - a.number);
     return [raids[0].mythicIlvl, raids[0].ilvlMod];
   }
 

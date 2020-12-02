@@ -213,7 +213,7 @@ function appUtils(par = {}) {
         if (responseData.code && responseData.detail) {
           throw new Error(`${responseData.code} (${responseData.type}): ${responseData.detail}`);
         } else {
-          console.error('Error getting API data (403)', requestUrl, response);
+          Logger.log('Error getting API data (403)', requestUrl, response);
           throw new Error('Error getting API data (403)');
         }
       }
@@ -221,12 +221,12 @@ function appUtils(par = {}) {
         if (responseData.code && responseData.detail) {
           throw new Error(`${responseData.code} (${responseData.type}): ${responseData.detail}`);
         } else {
-          console.error('Error getting API data (404)', requestUrl, response);
+          Logger.log('Error getting API data (404)', requestUrl, response);
           throw new Error('Error getting API data (404)');
         }
       }
       default:
-        console.error('Error getting API data', requestUrl, response);
+        Logger.log('Error getting API data', requestUrl, response);
         throw new Error('Error getting API data');
     }
   }
