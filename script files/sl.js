@@ -515,24 +515,30 @@ function appWowSl(par) {
           // ignore non-weapon offhands
           enchants[enchantIndex] = '';
         } else if (item.enchantments) {
-          let auditLookupItem = auditLookup.find((el) => el[alIndex.effectId] === item.enchantments[0].enchantment_id); // search for enchant in lookup table
-          if (!auditLookupItem && item.enchantments[0].source_item) {
-            // if not found try to find it by source item id
-            auditLookupItem = auditLookup.find((el) => el[alIndex.id] === item.enchantments[0].source_item.id);
-          }
-          if (auditLookupItem) {
-            enchants[enchantIndex] = auditLookupItem[alIndex.shortName]; // add enchant short name to the list
+          for(let k = 0; k < item.enchantments.length; k++)
+          {
+              if(item.enchantments[k].enchantment_slot.type === 'PERMANENT') //only accept non-temporary enchants
+              {	 	
+                  let auditLookupItem = auditLookup.find((el) => el[alIndex.effectId] === item.enchantments[k].enchantment_id); // search for enchant in lookup table
+                  if (!auditLookupItem && item.enchantments[k].source_item) {
+                    // if not found try to find it by source item id
+                    auditLookupItem = auditLookup.find((el) => el[alIndex.id] === item.enchantments[k].source_item.id);
+                  }
+                  if (auditLookupItem) {
+                    enchants[enchantIndex] = auditLookupItem[alIndex.shortName]; // add enchant short name to the list
 
-            // this bit adds our stats to the stat boost array for the inspect/compare sheet
-            if (auditLookupItem[alIndex.stat] && auditLookupItem[alIndex.value]) {
-              const bonusStatIndex = gemStats.findIndex((el) => el.stat === auditLookupItem[alIndex.stat]);
-              const value = parseInt(auditLookupItem[alIndex.value], 10);
-              if (value && bonusStatIndex > -1) {
-                bonusStats[bonusStatIndex] += value;
+                    // this bit adds our stats to the stat boost array for the inspect/compare sheet
+                    if (auditLookupItem[alIndex.stat] && auditLookupItem[alIndex.value]) {
+                      const bonusStatIndex = gemStats.findIndex((el) => el.stat === auditLookupItem[alIndex.stat]);
+                      const value = parseInt(auditLookupItem[alIndex.value], 10);
+                      if (value && bonusStatIndex > -1) {
+                        bonusStats[bonusStatIndex] += value;
+                      }
+                    }
+                  } else {
+                    enchants[enchantIndex] = 'Old';
+                  }
               }
-            }
-          } else {
-            enchants[enchantIndex] = 'Old';
           }
         }
       }
