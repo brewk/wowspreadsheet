@@ -230,10 +230,11 @@ function appWowSl(par) {
               currentXpacDungeons[i].modes[j].progress.encounters[0].completed_count;
             const timestampCheck =
               currentXpacDungeons[i].modes[j].difficulty.type === 'MYTHIC' ? lastWeeklyReset : lastDailyReset;
-            if (currentXpacDungeons[i].modes[j].progress.encounters[0].last_kill_timestamp > timestampCheck)
+            if (currentXpacDungeons[i].modes[j].progress.encounters[0].last_kill_timestamp > timestampCheck) {
               dungeonLockouts[currentXpacDungeons[i].modes[j].difficulty.type] += 1;
-            if (currentXpacDungeons[i].modes[j].difficulty.type === 'MYTHIC') {
-              dungeonMythicIds.push(currentXpacDungeons[i].instance.id);
+              if (currentXpacDungeons[i].modes[j].difficulty.type === 'MYTHIC') {
+                dungeonMythicIds.push(currentXpacDungeons[i].instance.id);
+              }
             }
           }
         }
@@ -456,7 +457,7 @@ function appWowSl(par) {
     const totalStats = myUtils.initializedArray(uniqueStatsCount, 0); // keep track of amount for all stats
     const itemInfos = []; // details of item (name, slot, stats etc.)
     const bonusStats = myUtils.initializedArray(gemStats.length, 0); // stats gained from item enhancements
-    itemInfos[15] = ""; //init this to blank for folks with out offhands to maintain array size
+    itemInfos[15] = ''; //init this to blank for folks with out offhands to maintain array size
 
     // loop through all items
     for (let i = 0; i < gear.equipped_items.length; i++) {
