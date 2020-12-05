@@ -82,7 +82,7 @@ function appSettings(par = {}) {
     const appSettingsLookup = myUtils.getLookupData('appSettingsLookup');
     appSettingsLookup.sort((a, b) => a.id - b.id);
     // header row to show
-    const output = [['ID', 'Name', 'Description', 'CurrentValue']];
+    const output = [];
 
     // loop over settings infos
     for (let i = 0; i < appSettingsLookup.length; i++) {
@@ -99,7 +99,7 @@ function appSettings(par = {}) {
       }
 
       // add row to output
-      output.push([setting.id, setting.name, setting.description, setting.default]);
+      output.push([`(${setting.id}) ${setting.name}`, setting.description, setting.default]);
     }
 
     return output;
@@ -110,23 +110,24 @@ function appSettings(par = {}) {
    * @return {string} output message indicating the status of the action
    */
   function saveAppSettingsFromSheet() {
+    // get settings infos from remote lookup sheet
+    const appSettingsLookup = myUtils.getLookupData('appSettingsLookup');
+    if (!appSettingsLookup || appSettingsLookup.length < 1 ) {
+      return 'Invalid settings lookup data';
+    }
+
     // read all values from data region around named range (starting point in settings sheet)
     const appSettingsData = SpreadsheetApp.getActiveSpreadsheet()
       .getRangeByName('appSettings')
-      .getDataRegion()
+      .offset(0, 0, appSettingsLookup.length, 4) // 4 matches getAppSettingsForSheet output length + 1 for new values
       .getValues();
 
-    // strip header and generate index from it
-    const header = appSettingsData.shift(); //remove header
+    // helper index
     const index = {};
-    header.forEach((el, i) => (index[el] = i));
-    // get settings infos from remote lookup sheet
-    const appSettingsLookup = myUtils.getLookupData('appSettingsLookup');
-
-    // check if number of settings on sheet and on remote lookup sheet match, otherwhise ask for refresh first
-    if (appSettingsData.length !== appSettingsLookup.length) {
-      return 'Settings mismatch, please refresh sheet and try again';
-    }
+    index.Name = 0;
+    index.Description = 1;
+    index.CurrentValue = 2;
+    index.NewValue = 3;
 
     // prepare output and create helper variables
     const appSettings = {};
@@ -134,16 +135,23 @@ function appSettings(par = {}) {
     const validBoolFalses = ['false', 'off', '0'];
     const validationErrors = [];
     const changedSettings = [];
-
+    
     // loop over all settings data from sheet
     for (let i = 0; i < appSettingsData.length; i++) {
       const setting = appSettingsData[i];
+      let id;
+      try {
+        id = parseInt(setting[index.Name].match(/(\d+)/gi)[0], 10);        
+      } catch (e) {
+        return 'Invalid settings structure, missing ID info.';
+      }
+  
       // check if this setting also exists on remote sheet, otherwhise ask for refresh first
-      const lookup = appSettingsLookup.find((el) => el.id === parseInt(setting[0]));
+      const lookup = appSettingsLookup.find((el) => el.id === id);
       if (!lookup) {
         return 'Settings mismatch, please refresh sheet and try again';
       }
-
+  
       // read new value and check if it is not empty
       let newValue = setting[index.NewValue];
       if (!newValue || newValue.toString().length === 0) {
@@ -153,7 +161,7 @@ function appSettings(par = {}) {
         // new value detected, mark as changed
         changedSettings.push(lookup.varName);
       }
-
+  
       // input validation
       switch (lookup.type) {
         case 'bool':
@@ -178,7 +186,7 @@ function appSettings(par = {}) {
           }
           appSettings[lookup.varName] = value;
           break;
-
+  
         default:
           appSettings[lookup.varName] = newValue.trim();
           break;
@@ -232,12 +240,12 @@ function appSettings(par = {}) {
 
       // parse all found settings
 
-      const rankBlacklist = parseInt(row[0]);
+      const rankBlacklist = parseInt(row[0], 10);
       if (!isNaN(rankBlacklist)) {
         settings.rankBlacklist.push(rankBlacklist);
       }
 
-      const rankWhitelist = parseInt(row[1]);
+      const rankWhitelist = parseInt(row[1], 10);
       if (!isNaN(rankWhitelist)) {
         settings.rankWhitelist.push(rankWhitelist);
       }
