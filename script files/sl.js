@@ -518,26 +518,26 @@ function appWowSl(par) {
         } else if (item.enchantments) {
           item.enchantments.forEach((enchant) => {
             if (enchant.enchantment_slot.type === 'PERMANENT') {
-               //only accept non-temporary enchants
-               let auditLookupItem = auditLookup.find((el) => el[alIndex.effectId] === enchant.enchantment_id); // search for enchant in lookup table
-                  if (!auditLookupItem && enchant.source_item) {
-                    // if not found try to find it by source item id
-                    auditLookupItem = auditLookup.find((el) => el[alIndex.id] === enchant.source_item.id);
-                  }
-                  if (auditLookupItem) {
-                    enchants[enchantIndex] = auditLookupItem[alIndex.shortName]; // add enchant short name to the list
+              //only accept non-temporary enchants
+              let auditLookupItem = auditLookup.find((el) => el[alIndex.effectId] === enchant.enchantment_id); // search for enchant in lookup table
+              if (!auditLookupItem && enchant.source_item) {
+                // if not found try to find it by source item id
+                auditLookupItem = auditLookup.find((el) => el[alIndex.id] === enchant.source_item.id);
+              }
+              if (auditLookupItem) {
+                enchants[enchantIndex] = auditLookupItem[alIndex.shortName]; // add enchant short name to the list
 
-                    // this bit adds our stats to the stat boost array for the inspect/compare sheet
-                    if (auditLookupItem[alIndex.stat] && auditLookupItem[alIndex.value]) {
-                      const bonusStatIndex = gemStats.findIndex((el) => el.stat === auditLookupItem[alIndex.stat]);
-                      const value = parseInt(auditLookupItem[alIndex.value], 10);
-                      if (value && bonusStatIndex > -1) {
-                        bonusStats[bonusStatIndex] += value;
-                      }
-                    }
-                  } else {
-                    enchants[enchantIndex] = 'Old';
+                // this bit adds our stats to the stat boost array for the inspect/compare sheet
+                if (auditLookupItem[alIndex.stat] && auditLookupItem[alIndex.value]) {
+                  const bonusStatIndex = gemStats.findIndex((el) => el.stat === auditLookupItem[alIndex.stat]);
+                  const value = parseInt(auditLookupItem[alIndex.value], 10);
+                  if (value && bonusStatIndex > -1) {
+                    bonusStats[bonusStatIndex] += value;
                   }
+                }
+              } else {
+                enchants[enchantIndex] = 'Old';
+              }
             }
           });
         }
@@ -567,7 +567,9 @@ function appWowSl(par) {
                 // add gem stat value to the list
                 const gemStatIndex = gemStats.findIndex((el) => el.stat === auditLookupItem[alIndex.stat]);
                 const value = parseInt(auditLookupItem[alIndex.value], 10);
-                gemStats[gemStatIndex].value += value;
+                if ((gemStatIndex) => 0 && value >= 0) {
+                  gemStats[gemStatIndex].value += value;
+                }
               } else {
                 // unknown gem, add it to the last entry 'old'
                 gemStats[gemStats.length - 1].value += 1;
@@ -585,7 +587,7 @@ function appWowSl(par) {
                   gemAudit[2].bool = 1;
                   gemAudit[3].bool = 1;
                   gemAudit[3].issue += ` ${item.slot.type}`;
-                } else {
+                } else if (!auditLookupItem || auditLookupItem[alIndex.quality].toUpperCase() !== 'RARE') {
                   // cheap, old or unkown
                   gemAudit[gemAuditIndex].bool = 1;
                   gemAudit[gemAuditIndex].issue += ` ${item.slot.type}`;
