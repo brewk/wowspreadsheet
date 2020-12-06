@@ -71,6 +71,7 @@ function onOpen() {
   const entries = [
     { name: 'Refresh All', functionName: 'refreshAll' },
     { name: 'Refresh Gear', functionName: 'refreshGear' },
+    { name: 'Refresh Soulbind', functionName: 'refreshSoulbind' },
     { name: 'Refresh Progression', functionName: 'refreshProg' },
     { name: 'Refresh Professions', functionName: 'refreshProf' },
     { name: 'Refresh Reputation', functionName: 'refreshRep' },
@@ -83,7 +84,16 @@ function onOpen() {
  * @param {string} cell the cell to update in A1 notation
  */
 function refreshCell(cell) {
-  SpreadsheetApp.getActiveSpreadsheet().getRange(cell).setValue(new Date().toTimeString());
+  let range = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Master Sheet').getRange(cell);
+  if (!range.isPartOfMerge()) {
+    range.setValue(new Date().toTimeString());
+  } else {
+    const mergedRanges = range.getMergedRanges();
+    mergedRanges.forEach((mergedCell) => {
+      mergedCell.setValue(new Date().toTimeString());
+    });
+  }
+  
 }
 
 /**
@@ -97,28 +107,35 @@ function refreshAll() {
  * function used by custom menu to force a refresh
  */
 function refreshGear() {
-  refreshCell('AI4');
+  refreshCell('AG3');
+}
+
+/**
+ * function used by custom menu to force a refresh
+ */
+function refreshSoulbind() {
+  refreshCell('AP3');
 }
 
 /**
  * function used by custom menu to force a refresh
  */
 function refreshProg() {
-  refreshCell('AY4');
+  refreshCell('BR3');
 }
 
 /**
  * function used by custom menu to force a refresh
  */
 function refreshProf() {
-  refreshCell('CQ4');
+  refreshCell('CF3');
 }
 
 /**
  * function used by custom menu to force a refresh
  */
 function refreshRep() {
-  refreshCell('CS4');
+  refreshCell('CI3');
 }
 
 /**
@@ -129,12 +146,4 @@ function refreshRep() {
 function compress(data) {
   const myUtils = appUtils({});
   return myUtils.zippedStringArray(JSON.stringify(data));
-}
-
-/**
- * function used to debug stuff
- */
-function debug() {
-  buildEnv();
-  this.BlizzData.getCharData('eu', 'eredar', 'dakof', 'charProfile');
 }

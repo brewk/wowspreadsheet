@@ -559,7 +559,7 @@ function appWowSl(par) {
 
             if (!item.sockets[j].item) {
               // empty socket
-              slotsWithEmptySockets.push(` ${item.slot.type}`);
+              slotsWithEmptySockets.push(item.slot.type);
             } else {
               const gem = item.sockets[j].item; // current gem
               const auditLookupItem = auditLookup.find((el) => el[alIndex.id] === gem.id); // search for current gem in lookup table
@@ -654,7 +654,7 @@ function appWowSl(par) {
     if (slotsWithEmptySockets.length > 0) {
       gemInfo += `${gemInfo.length > 0 ? ', ' : ''}${
         slotsWithEmptySockets.length
-      } Empty Sockets (${slotsWithEmptySockets})`;
+      } Empty Sockets (${slotsWithEmptySockets.join(', ')})`;
     }
 
     return myUtils.flatten([averageIlvl, slotData, enchants, gemInfo, totalStats, itemInfos, bonusStats]);
