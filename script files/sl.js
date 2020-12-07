@@ -268,6 +268,8 @@ function appWowSl(par) {
 
     // torghast things?
     progressionOut.push('Torghast???');
+    
+    progressionOut.push('Vault Placeholder');
 
     // raid part
     if (progression.expansions) {
