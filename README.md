@@ -2,7 +2,7 @@
 # wowspreadsheet
 World of Warcraft character tracking spreadsheet for Google Docs
 
- ![spreadsheet](http://bruk.org/wow/images/v1.gif "Spreadsheet")
+ ![spreadsheet](https://bruk.org/wow/images/v2.png "Spreadsheet")
  
 [Home Page](http://bruk.org/wow/)
  
@@ -13,16 +13,12 @@ World of Warcraft character tracking spreadsheet for Google Docs
  <li>lock outs and progression for all raids, heroic and mythic dungeons</li>
  <li>weeks active for raids</li>
  <li>primary profession levels</li>
+ <li>reputations</li>
  </ul>
  
  Main code is within wow.js, you can copy this into a googlespreadsheets script, or copy a template from here:
- ### [Template](http://docs.google.com/spreadsheets/d/1bSLd9wcOqDxbdxK7JDmzi3hAedbNk2VjuQ0CdAAW13E/edit#gid=1114934197)
+ ### [Template](https://docs.google.com/spreadsheets/u/2/d/1y1__KqE5XpPQLFxQKhPM8v1d5WffpbqPXsb9LhPzGYg/template/preview?usp=drive_web&ouid=%7BuserId%7D )
  
-
-Other sheets
-----
-The other files contain code for the other sheets.
-### [Check the Wiki](https://github.com/brewk/wowspreadsheet/wiki/Other-Spreadsheets-and-Tools) for details!
 
 Contributing
 ---
