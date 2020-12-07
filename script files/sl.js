@@ -394,6 +394,13 @@ function appWowSl(par) {
     enchantOrder.FINGER_1 = 7;
     enchantOrder.FINGER_2 = 8;
 
+    // Some slots are optional depending on your primeStat
+    let primeStat = "";
+    const optionalSlots = [];
+    optionalSlots.HANDS = "STRENGTH";
+    optionalSlots.WRIST = "INTELLECT";
+    optionalSlots.FEET = "AGILITY";
+    
     // stat order
     const statOrder = [];
     statOrder.STAMINA = 0;
@@ -485,7 +492,10 @@ function appWowSl(par) {
             // negation occurs when gear has multiple primaries and only one is active
             const statType = item.stats[j].type.type;
             const statIndex = statOrder[statType];
-
+            //if we don't know what the primeStat is record it as soon as we find it
+            if (!primeStat && (item.stats[j].type.type === "AGILITY" || item.stats[j].type.type === "INTELLECT" || item.stats[j].type.type === "STRENGTH")) {
+              primeStat = item.stats[j].type.type;              
+            }
             itemInfos[slotIndex] += `${statType.replace('_RATING', '')} = ${item.stats[j].value}\n`; // add stat line to item info
             totalStats[statIndex] += item.stats[j].value;
           }
@@ -504,8 +514,8 @@ function appWowSl(par) {
         }
       }
 
-      // enchant checks
-      if (enchantableItems.indexOf(item.slot.type) > -1 && item.level.value >= mySettings.getAppSetting('AuditIlvl')) {
+      // enchant checks - check if enchantable slot, meets ilvl requirements, check primeStat to see if it's required or optional (do not mark optionals as 'none')
+      if (enchantableItems.indexOf(item.slot.type) > -1 && item.level.value >= mySettings.getAppSetting('AuditIlvl') && (optionalSlots[item.slot.type] == primeStat || !optionalSlots[item.slot.type])) {
         // initialize defaults
         const enchantIndex = enchantOrder[item.slot.type];
         enchants[enchantIndex] = 'None';
