@@ -112,7 +112,7 @@ function appSettings(par = {}) {
   function saveAppSettingsFromSheet() {
     // get settings infos from remote lookup sheet
     const appSettingsLookup = myUtils.getLookupData('appSettingsLookup');
-    if (!appSettingsLookup || appSettingsLookup.length < 1 ) {
+    if (!appSettingsLookup || appSettingsLookup.length < 1) {
       return 'Invalid settings lookup data';
     }
 
@@ -135,33 +135,33 @@ function appSettings(par = {}) {
     const validBoolFalses = ['false', 'off', '0'];
     const validationErrors = [];
     const changedSettings = [];
-    
+
     // loop over all settings data from sheet
     for (let i = 0; i < appSettingsData.length; i++) {
       const setting = appSettingsData[i];
       let id;
       try {
-        id = parseInt(setting[index.Name].match(/(\d+)/gi)[0], 10);        
+        id = parseInt(setting[index.Name].match(/(\d+)/gi)[0], 10);
       } catch (e) {
         return 'Invalid settings structure, missing ID info.';
       }
-  
+
       // check if this setting also exists on remote sheet, otherwhise ask for refresh first
       const lookup = appSettingsLookup.find((el) => el.id === id);
       if (!lookup) {
         return 'Settings mismatch, please refresh sheet and try again';
       }
-  
+
       // read new value and check if it is not empty
       let newValue = setting[index.NewValue];
-      if (!newValue || newValue.toString().length === 0) {
+      if (newValue === null || newValue.toString().length === 0) {
         // setting is empty, so instead the existing value will be used
         newValue = getAppSetting(lookup.varName);
       } else {
         // new value detected, mark as changed
         changedSettings.push(lookup.varName);
       }
-  
+
       // input validation
       switch (lookup.type) {
         case 'bool': {
@@ -187,9 +187,9 @@ function appSettings(par = {}) {
             continue;
           }
           currentAppSettings[lookup.varName] = value;
-          break;          
+          break;
         }
-  
+
         default: {
           currentAppSettings[lookup.varName] = newValue.trim();
           break;
