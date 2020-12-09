@@ -9,6 +9,7 @@
  * @param {Object} par The main parameter object.
  * @return {Object} The WowSl Object.
  */
+// eslint-disable-next-line no-unused-vars
 function appWowSl(par) {
   const objectName = 'appWowSl';
   const strApiError = 'Error: invalid data received from API';
@@ -304,10 +305,12 @@ function appWowSl(par) {
                 // calculate data
                 for (let k = 0; k < thisRaid.modes[modeIndex].progress.encounters.length; k++) {
                   progressTotalKills += thisRaid.modes[modeIndex].progress.encounters[k].completed_count;
-                  if (thisRaid.modes[modeIndex].progress.encounters[k].completed_count > progressWeeks)
+                  if (thisRaid.modes[modeIndex].progress.encounters[k].completed_count > progressWeeks) {
                     progressWeeks = thisRaid.modes[modeIndex].progress.encounters[k].completed_count;
-                  if (thisRaid.modes[modeIndex].progress.encounters[k].last_kill_timestamp > lastWeeklyReset)
+                  }
+                  if (thisRaid.modes[modeIndex].progress.encounters[k].last_kill_timestamp > lastWeeklyReset) {
                     progressLockoutKills += 1;
+                  }
                 }
                 // overwrite placeholder zeros with actual data
                 progressionOut[o + j] = `${progressLockoutKills}/${raidList[i].bosses}`; // lockout infos
@@ -395,12 +398,12 @@ function appWowSl(par) {
     enchantOrder.FINGER_2 = 8;
 
     // Some slots are optional depending on your primeStat
-    let primeStat = "";
+    let primeStat = '';
     const optionalSlots = [];
-    optionalSlots.HANDS = "STRENGTH";
-    optionalSlots.WRIST = "INTELLECT";
-    optionalSlots.FEET = "AGILITY";
-    
+    optionalSlots.HANDS = 'STRENGTH';
+    optionalSlots.WRIST = 'INTELLECT';
+    optionalSlots.FEET = 'AGILITY';
+
     // stat order
     const statOrder = [];
     statOrder.STAMINA = 0;
@@ -493,8 +496,13 @@ function appWowSl(par) {
             const statType = item.stats[j].type.type;
             const statIndex = statOrder[statType];
             //if we don't know what the primeStat is record it as soon as we find it
-            if (!primeStat && (item.stats[j].type.type === "AGILITY" || item.stats[j].type.type === "INTELLECT" || item.stats[j].type.type === "STRENGTH")) {
-              primeStat = item.stats[j].type.type;              
+            if (
+              !primeStat &&
+              (item.stats[j].type.type === 'AGILITY' ||
+                item.stats[j].type.type === 'INTELLECT' ||
+                item.stats[j].type.type === 'STRENGTH')
+            ) {
+              primeStat = item.stats[j].type.type;
             }
             itemInfos[slotIndex] += `${statType.replace('_RATING', '')} = ${item.stats[j].value}\n`; // add stat line to item info
             totalStats[statIndex] += item.stats[j].value;
@@ -510,12 +518,16 @@ function appWowSl(par) {
       // handle legendary items
       if (item.quality.type === 'LEGENDARY') {
         if (mySettings.getAppSetting('MarkLegendary')) {
-          slotData[slotIndex] += `+`;
+          slotData[slotIndex] += '+';
         }
       }
 
       // enchant checks - check if enchantable slot, meets ilvl requirements, check primeStat to see if it's required or optional (do not mark optionals as 'none')
-      if (enchantableItems.indexOf(item.slot.type) > -1 && item.level.value >= mySettings.getAppSetting('AuditIlvl') && (optionalSlots[item.slot.type] == primeStat || !optionalSlots[item.slot.type])) {
+      if (
+        enchantableItems.indexOf(item.slot.type) > -1 &&
+        item.level.value >= mySettings.getAppSetting('AuditIlvl') &&
+        (optionalSlots[item.slot.type] == primeStat || !optionalSlots[item.slot.type])
+      ) {
         // initialize defaults
         const enchantIndex = enchantOrder[item.slot.type];
         enchants[enchantIndex] = 'None';
@@ -577,7 +589,7 @@ function appWowSl(par) {
                 // add gem stat value to the list
                 const gemStatIndex = gemStats.findIndex((el) => el.stat === auditLookupItem[alIndex.stat]);
                 const value = parseInt(auditLookupItem[alIndex.value], 10);
-                if ((gemStatIndex) => 0 && value >= 0) {
+                if (gemStatIndex >= 0 && value >= 0) {
                   gemStats[gemStatIndex].value += value;
                 }
               } else {
@@ -769,28 +781,29 @@ function appWowSl(par) {
     let soulArray = myUtils.initializedArray(soulArrayDesc.length, '-');
 
     // get API data
+    let data;
     try {
-      soulbinds = myBlizzData.getCharData(region, realmName, toonName, 'charCharacterSoulbinds');
+      data = myBlizzData.getCharData(region, realmName, toonName, 'charCharacterSoulbinds');
     } catch (e) {
       return myUtils.initializedArray(soulArray.length, e.message);
     }
-    if (!soulbinds.chosen_covenant) {
-      if (soulbinds.code && soulbinds.detail) {
-        if (soulbinds.code === 403) {
-          return `Blizz message: ${soulbinds.detail} (${soulbinds.code}) - most probably this means character does not yet have it`;
+    if (!data.chosen_covenant) {
+      if (data.code && data.detail) {
+        if (data.code === 403) {
+          return `Blizz message: ${data.detail} (${data.code}) - most probably this means character does not yet have it`;
         } else {
-          return myUtils.initializedArray(soulArray.length, `Blizz message: ${soulbinds.detail} (${soulbinds.code})`);
+          return myUtils.initializedArray(soulArray.length, `Blizz message: ${data.detail} (${data.code})`);
         }
       }
       return myUtils.initializedArray(soulArray.length, strApiError);
     }
 
-    soulArray[soulIndex.RenownLevel] = soulbinds.renown_level;
-    soulArray[soulIndex.Covenant] = soulbinds.chosen_covenant.name;
+    soulArray[soulIndex.RenownLevel] = data.renown_level;
+    soulArray[soulIndex.Covenant] = data.chosen_covenant.name;
 
     // find active soulbind
-    if (soulbinds.soulbinds && soulbinds.soulbinds.length > 0) {
-      const activeSoulbind = soulbinds.soulbinds.find((el) => el.is_active === true);
+    if (data.soulbinds && data.soulbinds.length > 0) {
+      const activeSoulbind = data.soulbinds.find((el) => el.is_active === true);
       if (activeSoulbind) {
         soulArray[soulIndex.Soulbind] = activeSoulbind.soulbind.name;
 
@@ -803,7 +816,7 @@ function appWowSl(par) {
             } else {
               soulArray[soulIndex[`Trait${currentTrait.tier + 1}`]] = currentTrait.conduit_socket.socket
                 ? `[${currentTrait.conduit_socket.socket.rank}] ${currentTrait.conduit_socket.socket.conduit.name}`
-                : `[empty slot]`;
+                : '[empty slot]';
             }
           }
         }

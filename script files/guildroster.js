@@ -2,18 +2,18 @@
  * @OnlyCurrentDoc
  */
 
-/* globals appSettings, appUtils, appBlizzData */
+/* globals appSettings, appBlizzData */
 
 /**
  * The appWowGuildRoster object
  * @param {Object} par The main parameter object.
  * @return {Object} The WowGuildRoster Object.
  */
+// eslint-disable-next-line no-unused-vars
 function appWowGuildRoster(par) {
   const objectName = 'appWowGuildRoster';
   const currentVersionGuild = 2.1;
   const mySettings = par.settings || appSettings();
-  const myUtils = par.utils || appUtils();
   const myBlizzData = par.blizzData || appBlizzData();
 
   /**

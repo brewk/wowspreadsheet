@@ -7,6 +7,7 @@
  * @param {Object} par The main parameter object.
  * @return {Object} The Utils Object.
  */
+// eslint-disable-next-line no-unused-vars
 function appUtils(par = {}) {
   const objectName = 'appUtils';
   // const cache = CacheService.getScriptCache();
@@ -32,13 +33,7 @@ function appUtils(par = {}) {
     }
 
     // return either as array or as object
-    return asArray
-      ? [lReg, lRealm, lToon]
-      : {
-          region: lReg,
-          realm: lRealm,
-          name: lToon,
-        };
+    return asArray ? [lReg, lRealm, lToon] : { region: lReg, realm: lRealm, name: lToon };
   }
 
   /**
@@ -153,7 +148,7 @@ function appUtils(par = {}) {
     // helper to calculate daily reset timestamp
     const now = new Date().getTime();
     let reset;
-    if (region.toLowerCase === 'eu') {
+    if (region.toLowerCase() === 'eu') {
       reset = new Date().setUTCHours(7, 0, 0, 0);
     } else {
       reset = new Date().setUTCHours(15, 0, 0, 0);
@@ -174,7 +169,7 @@ function appUtils(par = {}) {
     const now = new Date().getTime();
     const utcWeekday = new Date().getUTCDay();
     let reset;
-    if (region.toLowerCase === 'eu') {
+    if (region.toLowerCase() === 'eu') {
       reset = new Date().setUTCHours(7, 0, 0, 0);
       reset += (3 - utcWeekday) * 24 * 60 * 60 * 1000; // offset from Wednesday (= 3)
     } else {
