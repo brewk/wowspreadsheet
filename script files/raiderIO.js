@@ -9,15 +9,13 @@
  * @param {Object} par The main parameter object.
  * @return {Object} The WowRaiderIO Object.
  */
+// eslint-disable-next-line no-unused-vars
 function appWowRaiderIO(par) {
   const objectName = 'appWowRaiderIO';
   const currentVersionRaiderIO = 1.0;
   const mySettings = par.settings || appSettings();
   const myUtils = par.utils || appUtils();
-  const cache = CacheService.getScriptCache();
   const useRaiderIo = mySettings.getAppSetting('UseRaiderIoData') || false;
-  const strRaiderIOSheetName = 'Mythic+';
-  const strRaiderIOSheetCache = 'rioSheetCache';
   const strRaiderIoNotEnabledError = 'RaiderIO data not enabled in settings';
   const strApiError = 'Error: invalid data received from API';
 
@@ -57,7 +55,13 @@ function appWowRaiderIO(par) {
    */
   function parseRunData(data) {
     // default value
-    const runInfo = { mythicLevel: 0, dungeon: '-', affixes: ['-', '-', '-', '-'], numKeystoneUpgrades: 0, score: 0 };
+    const runInfo = {
+      mythicLevel: 0,
+      dungeon: '-',
+      affixes: ['-', '-', '-', '-'],
+      numKeystoneUpgrades: 0,
+      score: 0,
+    };
 
     if (data && data[0]) {
       const run = data[0];
@@ -66,7 +70,7 @@ function appWowRaiderIO(par) {
       runInfo.numKeystoneUpgrades = run.num_keystone_upgrades;
       runInfo.score = run.score;
 
-      for (i = 0; i < run.affixes.length; i++) {
+      for (let i = 0; i < run.affixes.length; i++) {
         var affix = run.affixes[i].name;
         runInfo.affixes[i] = affix.substring(0, 3).toUpperCase();
       }

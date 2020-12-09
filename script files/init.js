@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /**
  * @OnlyCurrentDoc
  */
@@ -11,9 +12,7 @@ function buildEnv() {
   // build environment
   try {
     this.Utils = appUtils({});
-    this.Settings = appSettings({
-      utils: this.Utils,
-    });
+    this.Settings = appSettings({ utils: this.Utils });
     this.RaiderIO = appWowRaiderIO({
       settings: this.Settings,
       utils: this.Utils,

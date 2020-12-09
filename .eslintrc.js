@@ -1,23 +1,31 @@
 // Documentation:
 //   http://eslint.org/docs/rules/
 module.exports = {
-    "env": {
-        "browser": true
+    "parserOptions":{
+        "ecmaVersion": 2017
     },
+    "env": {
+        "googleappsscript/googleappsscript": true
+    },
+    "plugins":[
+        "googleappsscript"
+    ],
     "extends": "eslint:recommended",
     "rules": {
         // Braces should be on their own lines
         "brace-style": [
             "error",
-            "allman"
+            "1tbs",
+            {"allowSingleLine": true}
         ],
         // Indent code with 4 spaces
         "indent": [
             "error",
-            4,
+            2,
             {
                 "SwitchCase": 1,
-                "MemberExpression": 1
+                "MemberExpression": 1,
+                "ObjectExpression": "first"
             }
         ],
         // Objects with more than 3 properties should be on multiple lines
@@ -25,7 +33,7 @@ module.exports = {
             "error",
             {
                 "multiline": true,
-                "minProperties": 4
+                "minProperties": 5
             }
         ],
         // Objects should have spaces around curly braces for readability
@@ -36,13 +44,14 @@ module.exports = {
         // Use double quotes for strings
         "quotes": [
             "error",
-            "double"
+            "single"
         ],
         // Always include optional semicolons
         "semi": [
             "error",
             "always"
         ],
+        "no-console": "off",
         "default-case":            2, // Switch statements should always have a default case
         "keyword-spacing":         2, // Ensure spaces are around keywords
         "no-array-constructor":    2, // Do not allow Array(), use [] notation instead

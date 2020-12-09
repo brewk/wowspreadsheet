@@ -9,11 +9,11 @@
  * @param {Object} par The main parameter object.
  * @return {Object} The Settings Object.
  */
+// eslint-disable-next-line no-unused-vars
 function appSettings(par = {}) {
   const objectName = 'appSettings';
   const strAppSettings = 'AppSettings';
   const strStoredToken = 'BlizzAccessToken';
-  const strWarcraftLogsKey = 'WarcraftLogsKey';
   const myUtils = par.utils || appUtils();
   const cache = CacheService.getScriptCache();
 
@@ -29,20 +29,20 @@ function appSettings(par = {}) {
     }
 
     let appSettingsJson = getAppSettingsJson();
-    const appSettings = JSON.parse(appSettingsJson);
-    if (Object.keys(appSettings).indexOf(varName) < 0) {
+    const currentAppSettings = JSON.parse(appSettingsJson);
+    if (Object.keys(currentAppSettings).indexOf(varName) < 0) {
       const appSettingsLookup = myUtils.getLookupData('appSettingsLookup');
       const newSetting = appSettingsLookup.find((el) => el.varName === varName);
       if (!newSetting) {
         throw new Error(`App setting ${varName} not found!`);
       }
-      appSettings[varName] = newSetting.default;
-      appSettingsJson = JSON.stringify(appSettings);
+      currentAppSettings[varName] = newSetting.default;
+      appSettingsJson = JSON.stringify(currentAppSettings);
       PropertiesService.getScriptProperties().setProperty(strAppSettings, appSettingsJson);
       cache.put(strAppSettings, appSettingsJson);
     }
-    cache.put(varName, appSettings[varName]);
-    return appSettings[varName];
+    cache.put(varName, currentAppSettings[varName]);
+    return currentAppSettings[varName];
   }
 
   /**
@@ -64,10 +64,10 @@ function appSettings(par = {}) {
     }
 
     // no existing settings found, build them from scratch using remote lookup settings infos (store it in properties and cache)
-    const appSettings = {};
+    const currentAppSettings = {};
     const appSettingsLookup = myUtils.getLookupData('appSettingsLookup');
-    appSettingsLookup.forEach((el) => (appSettings[el.varName] = el.default));
-    appSettingsJson = JSON.stringify(appSettings);
+    appSettingsLookup.forEach((el) => (currentAppSettings[el.varName] = el.default));
+    appSettingsJson = JSON.stringify(currentAppSettings);
     PropertiesService.getScriptProperties().setProperty(strAppSettings, appSettingsJson);
     cache.put(strAppSettings, appSettingsJson);
     return appSettingsJson;
@@ -130,7 +130,7 @@ function appSettings(par = {}) {
     index.NewValue = 3;
 
     // prepare output and create helper variables
-    const appSettings = {};
+    const currentAppSettings = {};
     const validBoolTrues = ['true', 'on', '1'];
     const validBoolFalses = ['false', 'off', '0'];
     const validationErrors = [];
@@ -164,32 +164,36 @@ function appSettings(par = {}) {
   
       // input validation
       switch (lookup.type) {
-        case 'bool':
+        case 'bool': {
           if (typeof newValue === 'boolean') {
-            appSettings[lookup.varName] = newValue;
+            currentAppSettings[lookup.varName] = newValue;
           } else {
             if (validBoolTrues.indexOf(newValue.toLowerCase()) >= 0) {
-              appSettings[lookup.varName] = true;
+              currentAppSettings[lookup.varName] = true;
             } else if (validBoolFalses.indexOf(newValue.toLowerCase()) >= 0) {
-              appSettings[lookup.varName] = false;
+              currentAppSettings[lookup.varName] = false;
             } else {
               validationErrors.push(`Invalid bool value for ${lookup.name}`);
               continue;
             }
           }
           break;
-        case 'number':
+        }
+
+        case 'number': {
           const value = parseFloat(newValue);
           if (isNaN(value)) {
             validationErrors.push(`Expected a number value for ${lookup.name}`);
             continue;
           }
-          appSettings[lookup.varName] = value;
-          break;
+          currentAppSettings[lookup.varName] = value;
+          break;          
+        }
   
-        default:
-          appSettings[lookup.varName] = newValue.trim();
+        default: {
+          currentAppSettings[lookup.varName] = newValue.trim();
           break;
+        }
       }
     }
 
@@ -204,7 +208,7 @@ function appSettings(par = {}) {
     }
 
     // everything ok, save new values and provide feedback
-    const appSettingsJson = JSON.stringify(appSettings);
+    const appSettingsJson = JSON.stringify(currentAppSettings);
     PropertiesService.getScriptProperties().setProperty(strAppSettings, appSettingsJson);
     changedSettings.forEach((el) => cache.remove(el));
     cache.put(strAppSettings, appSettingsJson);

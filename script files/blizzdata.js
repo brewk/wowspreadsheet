@@ -9,11 +9,11 @@
  * @param {Object} par The main parameter object.
  * @return {Object} The BlizzCache Object.
  */
+// eslint-disable-next-line no-unused-vars
 function appBlizzData(par = {}) {
   const objectName = 'appBlizzData';
   const mySettings = par.settings || appSettings();
   const myUtils = par.utils || appUtils();
-  const cache = CacheService.getScriptCache();
 
   const myBaseUrls = [
     {
