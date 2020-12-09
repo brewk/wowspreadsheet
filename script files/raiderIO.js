@@ -95,7 +95,7 @@ function appWowRaiderIO(par) {
       return ' '; // If there's nothing in the column, don't even bother calling the API
     }
 
-    toonName = myUtils.lowerCaseAllWordsExceptFirstLetters(toonName.toUpperCase());
+    toonName = myUtils.titleCase(toonName);
     const fetchUrl = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${realmName}&name=${toonName}&fields=mythic_plus_scores%2Cmythic_plus_recent_runs%2Cmythic_plus_best_runs%2Cmythic_plus_highest_level_runs%2Cmythic_plus_weekly_highest_level_runs`;
 
     let data;
