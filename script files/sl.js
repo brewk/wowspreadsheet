@@ -278,7 +278,7 @@ function appWowSl(par) {
         // no raids played in current xpac
         progressionOut = [...progressionOut, ...myUtils.initializedArray(outputLength - dungeonOutputLength, 'N/A')];
       } else {
-        let o = dungeonOutputLength; // index of output array
+        let offset = dungeonOutputLength + 1; // index of output array offset (dungeons output + torghast)
         // get list of all raids for the current x-pac
         const currentXpacRaids = progression.expansions[currentXpacRaidIndex].instances || [];
         // loop through raid info list
@@ -313,14 +313,14 @@ function appWowSl(par) {
                   }
                 }
                 // overwrite placeholder zeros with actual data
-                progressionOut[o + j] = `${progressLockoutKills}/${raidList[i].bosses}`; // lockout infos
+                progressionOut[offset + j] = `${progressLockoutKills}/${raidList[i].bosses}`; // lockout infos
                 progressionOut[
-                  o + j + raidModes.length
+                  offset + j + raidModes.length
                 ] = `${progressCompletedCount}/${raidList[i].bosses} [${progressWeeks}] (${progressTotalKills})`; // progress infos
               }
             }
           }
-          o += 2 * raidModes.length; // next raid instance block
+          offset += 2 * raidModes.length; // next raid instance block
         }
       }
     } else {
