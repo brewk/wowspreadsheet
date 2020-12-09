@@ -67,6 +67,21 @@ function appUtils(par = {}) {
   }
 
   /**
+   * utility function to title case input string
+   * @param {string} string input string to title case
+   * @return {string} return input string in title case
+   */
+  function titleCase(string) {
+    return string
+      .toLowerCase()
+      .split(' ')
+      .map((word) => {
+        return `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
+      })
+      .join(' ');
+  }
+
+  /**
    * utility function to create an array of given length filled with defined default values
    * @param {number} length length of array to create
    * @param {any} defaultValue value to fill the array with
@@ -238,6 +253,7 @@ function appUtils(par = {}) {
     fixNames,
     flatten,
     lowerCaseAllWordsExceptFirstLetters,
+    titleCase,
     initializedArray,
     zippedStringArray,
     unzippedStringArray,
