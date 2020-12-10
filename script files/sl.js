@@ -525,12 +525,13 @@ function appWowSl(par) {
       // enchant checks - check if enchantable slot, meets ilvl requirements, check primeStat to see if it's required or optional (do not mark optionals as 'none')
       if (
         enchantableItems.indexOf(item.slot.type) > -1 &&
-        item.level.value >= mySettings.getAppSetting('AuditIlvl') &&
-        (optionalSlots[item.slot.type] == primeStat || !optionalSlots[item.slot.type])
+        item.level.value >= mySettings.getAppSetting('AuditIlvl')
       ) {
         // initialize defaults
         const enchantIndex = enchantOrder[item.slot.type];
-        enchants[enchantIndex] = 'None';
+        if (optionalSlots[item.slot.type] == primeStat || !optionalSlots[item.slot.type]) {
+          enchants[enchantIndex] = 'None';
+        }
         if (
           item.slot.type === 'OFF_HAND' &&
           !(item.inventory_type.type === 'TWOHWEAPON' || item.inventory_type.type === 'WEAPON')
