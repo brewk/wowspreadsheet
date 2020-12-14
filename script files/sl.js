@@ -166,7 +166,8 @@ function appWowSl(par) {
     dungeonList.sort((a, b) => a.order - b.order);
     const currentXpacDungeonCount = dungeonList.length; // dungeon count for current x-pac
     const dungeonOutputLength = 4; // array offset for dungeon/mythic dungeons HC (2) and mythic (2) dungeon infos
-    const outputLength = raidList.length * (raidModes.length * 2) + dungeonOutputLength; // for each raid 2 times the difficulty count (progress and lockout for each difficulty) plus dungeon infos
+    const raidOutputLength = raidList.length * (raidModes.length * 2); // for each raid 2 times the difficulty count (progress and lockout for each difficulty)
+    const outputLength = raidOutputLength + dungeonOutputLength + 1; // raid infos + dungeon infos + torghast
 
     // get raid API data
     let progression;
@@ -196,12 +197,12 @@ function appWowSl(par) {
       return myUtils.initializedArray(outputLength, strApiError);
     }
 
-    // helpers and ouput
+    // helpers
     const lastWeeklyReset = myUtils.getWowWeeklyResetTimestamp(region);
     const lastDailyReset = myUtils.getWowDailyResetTimestamp(region);
-    let progressionOut = []; // output variable
 
     // dungeon part
+    let dungeonProgressOutput = [];
     const dungeonMythicIds = []; // list of mythic lockout dungeon ids
     let dungeonMythicIdShorts = []; // list of mythic lockout dungeon names
     const dungeonLockouts = []; // dungeon lockout infos
@@ -252,7 +253,7 @@ function appWowSl(par) {
         }
 
         // attach dungeon info to output
-        progressionOut.push(
+        dungeonProgressOutput.push(
           `${dungeonLockouts.MYTHIC}/${currentXpacDungeonCount} [${dungeonMythicIdShorts.join('|')}]`,
           `${dungeonProgress.MYTHIC}/${currentXpacDungeonCount} (${dungeonTotals.MYTHIC})`,
           `${dungeonLockouts.HEROIC}/${currentXpacDungeonCount}`,
@@ -260,31 +261,43 @@ function appWowSl(par) {
         );
       } else {
         // not played any dungeon in this xpac
-        progressionOut = [...progressionOut, ...myUtils.initializedArray(dungeonOutputLength, 'N/A')];
+        dungeonProgressOutput = myUtils.initializedArray(dungeonOutputLength, 'N/A');
       }
     } else {
       // never played any dungeon at all
-      progressionOut = [...progressionOut, ...myUtils.initializedArray(dungeonOutputLength, 'N/A')];
+      dungeonProgressOutput = myUtils.initializedArray(dungeonOutputLength, 'N/A');
     }
 
     // torghast things?
-    progressionOut.push('Torghast???');
+    // to be added
+
+    // preparation for great vault rewards
+    const greatVaultRewards = [];
+    const gameData = myUtils.getLookupData('gameDataLookup');
+    const greatVaultKillCounter = [];
+    const greatVaultRewardDifficulties = gameData.greatVault.raidRewardDifficulties;
+    greatVaultRewardDifficulties.forEach((el) => (greatVaultKillCounter[el] = 0));
 
     // raid part
+    let raidProgressOutput = [];
+
     if (progression.expansions) {
       // find index of the expansion array entry for the current x-pac id
       const currentXpacRaidIndex = progression.expansions.findIndex((el) => el.expansion.id === currentXpacId);
       if (currentXpacRaidIndex < 0) {
         // no raids played in current xpac
-        progressionOut = [...progressionOut, ...myUtils.initializedArray(outputLength - dungeonOutputLength, 'N/A')];
+        raidProgressOutput = myUtils.initializedArray(raidOutputLength, 'N/A');
       } else {
-        let offset = dungeonOutputLength + 1; // index of output array offset (dungeons output + torghast)
+        let offset = 0;
         // get list of all raids for the current x-pac
         const currentXpacRaids = progression.expansions[currentXpacRaidIndex].instances || [];
         // loop through raid info list
         for (let i = 0; i < raidList.length; i++) {
           // by default zero everything out
-          progressionOut = [...progressionOut, ...myUtils.initializedArray(8, `${0}/${raidList[i].bosses}`)];
+          raidProgressOutput = [
+            ...raidProgressOutput,
+            ...myUtils.initializedArray(2 * raidModes.length, `${0}/${raidList[i].bosses}`),
+          ];
 
           const thisRaid = currentXpacRaids.find((el) => el.instance.id === raidList[i].id);
           // if raid has been played
@@ -310,11 +323,19 @@ function appWowSl(par) {
                   }
                   if (thisRaid.modes[modeIndex].progress.encounters[k].last_kill_timestamp > lastWeeklyReset) {
                     progressLockoutKills += 1;
+                    // great vault rewards stuff
+                    const rewardDifficultyIndex = greatVaultRewardDifficulties.findIndex((el) => el === raidModes[j]);
+                    if (rewardDifficultyIndex > -1) {
+                      for (let l = rewardDifficultyIndex; l > -1; l--) {
+                        // each kill counts for current difficulty and lower difficulties
+                        greatVaultKillCounter[greatVaultRewardDifficulties[l]] += 1;
+                      }
+                    }
                   }
                 }
                 // overwrite placeholder zeros with actual data
-                progressionOut[offset + j] = `${progressLockoutKills}/${raidList[i].bosses}`; // lockout infos
-                progressionOut[
+                raidProgressOutput[offset + j] = `${progressLockoutKills}/${raidList[i].bosses}`; // lockout infos
+                raidProgressOutput[
                   offset + j + raidModes.length
                 ] = `${progressCompletedCount}/${raidList[i].bosses} [${progressWeeks}] (${progressTotalKills})`; // progress infos
               }
@@ -325,10 +346,26 @@ function appWowSl(par) {
       }
     } else {
       // never played any raid at all
-      progressionOut = [...progressionOut, ...myUtils.initializedArray(outputLength - dungeonOutputLength, 'N/A')];
+      raidProgressOutput = myUtils.initializedArray(raidOutputLength, 'N/A');
     }
 
-    return progressionOut;
+    // calculate great vault rewards
+    for (let i = greatVaultRewardDifficulties.length - 1; i > -1; i--) {
+      // loop through all difficulties with reward
+      const rewardDifficulty = greatVaultRewardDifficulties[i];
+      for (let j = 0; j < gameData.greatVault.raidRewardSteps.length; j++) {
+        // loop through all kill thresholds
+        if (j > greatVaultRewards.length - 1) {
+          // only if reward threshold is no already taken by higher difficulty
+          const rewardBossKills = gameData.greatVault.raidRewardSteps[j];
+          if (greatVaultKillCounter[rewardDifficulty] >= rewardBossKills) {
+            greatVaultRewards.push(rewardDifficulty.charAt(0));
+          }
+        }
+      }
+    }
+
+    return [...dungeonProgressOutput, 'Torghast???', greatVaultRewards.join(' | '), ...raidProgressOutput];
   }
 
   /**
@@ -523,10 +560,7 @@ function appWowSl(par) {
       }
 
       // enchant checks - check if enchantable slot, meets ilvl requirements, check primeStat to see if it's required or optional (do not mark optionals as 'none')
-      if (
-        enchantableItems.indexOf(item.slot.type) > -1 &&
-        item.level.value >= mySettings.getAppSetting('AuditIlvl')
-      ) {
+      if (enchantableItems.indexOf(item.slot.type) > -1 && item.level.value >= mySettings.getAppSetting('AuditIlvl')) {
         // initialize defaults
         const enchantIndex = enchantOrder[item.slot.type];
         if (optionalSlots[item.slot.type] == primeStat || !optionalSlots[item.slot.type]) {

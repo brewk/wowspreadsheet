@@ -118,10 +118,29 @@ function appWowRaiderIO(par) {
     const highestRun = parseRunData(data.mythic_plus_highest_level_runs);
     const bestRun = parseRunData(data.mythic_plus_best_runs);
 
+    // calculate great vault rewards
+    const rewardOutput = [];
+    const rewardRuns = data.mythic_plus_weekly_highest_level_runs.sort((a, b) => b.mythic_level - a.mythic_level); // sort just to be sure
+    const gameData = myUtils.getLookupData('gameDataLookup');
+    for (let i = 0; i < gameData.greatVault.mythicPlusRewardSteps.length; i++) {
+      const runCount = gameData.greatVault.mythicPlusRewardSteps[i];
+      if (rewardRuns.length >= runCount) {
+        const runLevel = rewardRuns[runCount - 1].mythic_level;
+        if (runLevel > gameData.greatVault.mythicPlusRewardIlvls.length) {
+          rewardOutput.push(
+            gameData.greatVault.mythicPlusRewardIlvls[gameData.greatVault.mythicPlusRewardIlvls.length - 1]
+          );
+        } else {
+          rewardOutput.push(gameData.greatVault.mythicPlusRewardIlvls[runLevel]);
+        }
+      }
+    }
+
     const toonInfo = [
       thumbnail,
       profile,
       scoreAll,
+      rewardOutput.join(' | '),
 
       weeklyHighest.mythicLevel,
       weeklyHighest.dungeon,
