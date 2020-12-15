@@ -120,21 +120,21 @@ function refreshSoulbind() {
  * function used by custom menu to force a refresh
  */
 function refreshProg() {
-  refreshCell('BS3');
+  refreshCell('BU3');
 }
 
 /**
  * function used by custom menu to force a refresh
  */
 function refreshProf() {
-  refreshCell('CG3');
+  refreshCell('CI3');
 }
 
 /**
  * function used by custom menu to force a refresh
  */
 function refreshRep() {
-  refreshCell('CJ3');
+  refreshCell('CL3');
 }
 
 /**
