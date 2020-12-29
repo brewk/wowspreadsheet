@@ -131,7 +131,7 @@ function appWowRaiderIO(par) {
             gameData.greatVault.mythicPlusRewardIlvls[gameData.greatVault.mythicPlusRewardIlvls.length - 1]
           );
         } else {
-          rewardOutput.push(gameData.greatVault.mythicPlusRewardIlvls[runLevel]);
+          rewardOutput.push(gameData.greatVault.mythicPlusRewardIlvls[runLevel - 1]);
         }
       }
     }
