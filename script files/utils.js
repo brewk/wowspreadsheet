@@ -214,30 +214,48 @@ function appUtils(par = {}) {
    * @return {any} JSON parsed return object of the url fetch
    */
   function jsonFetch(requestUrl, options = { muteHttpExceptions: true }) {
-    const response = responseFetch(requestUrl, options);
-    const responseData = JSON.parse(response.getContentText());
-    switch (response.getResponseCode()) {
-      case 200:
-        return responseData;
-      case 403: {
-        if (responseData.code && responseData.detail) {
-          throw new Error(`${responseData.code} (${responseData.type}): ${responseData.detail}`);
-        } else {
-          console.error('Error getting API data (403)', requestUrl, response);
-          throw new Error('Error getting API data (403)');
+    try {
+      const response = responseFetch(requestUrl, options);
+      const responseData = JSON.parse(response.getContentText());
+      switch (response.getResponseCode()) {
+        case 200:
+          // handle WCL errors
+          if (responseData.errors) {
+            console.error('WCL API error', JSON.stringify(responseData.errors));
+            if (Array.isArray(responseData.errors) && responseData.errors.length > 3) {
+              throw new Error(
+                `WCL API error: ${JSON.stringify(responseData.errors[0])} and ${
+                  responseData.errors.length - 1
+                } more errors`
+              );
+            }
+            throw new Error(`WCL API error: ${JSON.stringify(responseData.errors)}`);
+          }
+
+          return responseData;
+        case 403: {
+          if (responseData.code && responseData.detail) {
+            throw new Error(`${responseData.code} (${responseData.type}): ${responseData.detail}`);
+          } else {
+            console.error('Error getting API data (403)', requestUrl, response);
+            throw new Error('Error getting API data (403)');
+          }
         }
-      }
-      case 404: {
-        if (responseData.code && responseData.detail) {
-          throw new Error(`${responseData.code} (${responseData.type}): ${responseData.detail}`);
-        } else {
-          console.error('Error getting API data (404)', requestUrl, response);
-          throw new Error('Error getting API data (404)');
+        case 404: {
+          if (responseData.code && responseData.detail) {
+            throw new Error(`${responseData.code} (${responseData.type}): ${responseData.detail}`);
+          } else {
+            console.error('Error getting API data (404)', requestUrl, response);
+            throw new Error('Error getting API data (404)');
+          }
         }
+        default:
+          console.error('Error getting API data', requestUrl, response);
+          throw new Error('Error getting API data');
       }
-      default:
-        console.error('Error getting API data', requestUrl, response);
-        throw new Error('Error getting API data');
+    } catch (e) {
+      console.error('Error getting API data', requestUrl, e, e.message);
+      throw new Error(`Error getting API data ${e.message}`);
     }
   }
 

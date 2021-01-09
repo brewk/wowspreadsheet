@@ -3,7 +3,7 @@
  * @OnlyCurrentDoc
  */
 
-/* globals appUtils, appSettings, appWowRaiderIO, appWowGuildRoster, appWowSl, appBlizzData */
+/* globals appUtils, appSettings, appWowRaiderIO, appWowGuildRoster, appWowSl, appBlizzData, appWowWarcraftLogs */
 
 /**
  * function to build global environment
@@ -36,6 +36,10 @@ function buildEnv() {
       utils: this.Utils,
       blizzData: this.BlizzData,
       raiderIO: this.RaiderIO,
+    });
+    this.WowWcl = appWowWarcraftLogs({
+      settings: this.Settings,
+      utils: this.Utils,
     });
   } catch (error) {
     console.error(error);
