@@ -12,6 +12,15 @@ module.exports = {
     ],
     "extends": "eslint:recommended",
     "rules": {
+        "max-len": [
+            "error",
+            {
+                "code": 120,
+                "ignoreComments": true,
+                "ignoreUrls": true,
+                "ignoreTemplateLiterals": true,
+            }
+        ],
         // Braces should be on their own lines
         "brace-style": [
             "error",
@@ -33,7 +42,8 @@ module.exports = {
             "error",
             {
                 "multiline": true,
-                "minProperties": 5
+                "minProperties": 5,
+                "consistent": true
             }
         ],
         // Objects should have spaces around curly braces for readability

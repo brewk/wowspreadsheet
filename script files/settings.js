@@ -13,7 +13,8 @@
 function appSettings(par = {}) {
   const objectName = 'appSettings';
   const strAppSettings = 'AppSettings';
-  const strStoredToken = 'BlizzAccessToken';
+  const strBlizzToken = 'BlizzAccessToken';
+  const strWclToken = 'WclAccessToken';
   const myUtils = par.utils || appUtils();
   const cache = CacheService.getScriptCache();
 
@@ -276,12 +277,45 @@ function appSettings(par = {}) {
    * @return {string} Blizz access token
    */
   function getBlizzAccessToken(region) {
+    const clientId = getAppSetting('BlizzClientId');
+    const clientSecret = getAppSetting('BlizzClientSecret');
+    if (clientId === '' || clientSecret === '') {
+      throw new Error('Error missing Blizz client id or client secret');
+    }
+
+    const tokenUrl = `https://${region}.battle.net/oauth/token`;
+    return getAccessToken(strBlizzToken, tokenUrl, clientId, clientSecret);
+  }
+
+  /**
+   * function to retrieve or refresh WCL access token
+   * @return {string} WCL access token
+   */
+  function getWclAccessToken() {
+    const clientId = getAppSetting('WclClientId');
+    const clientSecret = getAppSetting('WclClientSecret');
+    if (clientId === '' || clientSecret === '') {
+      throw new Error('Error missing WCL client id or client secret');
+    }
+
+    const tokenUrl = 'https://www.warcraftlogs.com/oauth/token';
+    return getAccessToken(strWclToken, tokenUrl, clientId, clientSecret);
+  }
+
+  /**
+   * function to retrieve or refresh API access tokens
+   * @param {string} tokenName name of the token to store in cache/properties
+   * @param {string} endpoint API token endpoint
+   * @param {string} clientId API client id / username
+   * @param {string} clientSecret API client secret / password
+   */
+  function getAccessToken(tokenName, endpoint, clientId, clientSecret) {
     // first try to get token from cache or script properties
-    let tokenString = cache.get(strStoredToken);
+    let tokenString = cache.get(tokenName);
     if (!tokenString) {
-      tokenString = PropertiesService.getScriptProperties().getProperty(strStoredToken);
+      tokenString = PropertiesService.getScriptProperties().getProperty(tokenName);
       if (tokenString) {
-        cache.put(strStoredToken, tokenString);
+        cache.put(tokenName, tokenString);
       }
     }
     // check validity
@@ -293,14 +327,12 @@ function appSettings(par = {}) {
       }
     }
 
-    // if no longer valid or missing, refresh token from Blizz API
-    const clientId = getAppSetting('BlizzClientId');
-    const clientSecret = getAppSetting('BlizzClientSecret');
+    // if no longer valid or missing, refresh token
     if (clientId === '' || clientSecret === '') {
       throw new Error('Error missing client id or client secret');
     }
 
-    const tokenResponse = UrlFetchApp.fetch(`https://${region}.battle.net/oauth/token`, {
+    const tokenResponse = myUtils.responseFetch(endpoint, {
       headers: {
         Authorization: `Basic ${Utilities.base64Encode(`${clientId}:${clientSecret}`)}`,
         'Cache-Control': 'max-age=0',
@@ -310,16 +342,15 @@ function appSettings(par = {}) {
     if (tokenResponse.getResponseCode() === 200) {
       // success, store new token and use it
       const token = JSON.parse(tokenResponse.getContentText()).access_token;
-      const expiry = new Date();
-      expiry.setHours(expiry.getHours() + 24);
+      const expiry = JSON.parse(tokenResponse.getContentText()).expires_in / 3600;
       tokenString = JSON.stringify({ token, expiry });
-      PropertiesService.getScriptProperties().setProperty(strStoredToken, tokenString);
-      cache.put(strStoredToken, tokenString);
+      PropertiesService.getScriptProperties().setProperty(tokenName, tokenString);
+      cache.put(tokenName, tokenString);
       return token;
     }
 
-    console.error('Error getting Blizzard access token', tokenResponse);
-    throw new Error('Error getting an API token. Please visit https://develop.battle.net/ and sign up for an account');
+    console.error('Error getting access token', tokenResponse);
+    throw new Error('Error getting an API token.');
   }
 
   return Object.freeze({
@@ -329,5 +360,7 @@ function appSettings(par = {}) {
     saveAppSettingsFromSheet,
     getGuildRosterSettingsFromSheet,
     getBlizzAccessToken,
+    getWclAccessToken,
+    getAccessToken,
   });
 }
