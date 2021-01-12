@@ -85,7 +85,7 @@ function appWowWarcraftLogs(par) {
       return 'WCL not enabled, provide API credentials on settings page';
     }
     // are there any members provided?
-    if (!members || members.length < 1) {
+    if (!members || !Array.isArray(members) || members.length < 1) {
       return 'No members found!';
     }
     // are all member properties loaded already?
@@ -100,6 +100,8 @@ function appWowWarcraftLogs(par) {
     if (!Number.isInteger(startTime) || !Number.isInteger(difficulty) || !Number.isInteger(zoneId)) {
       return 'Illegal parameter values provided';
     }
+
+    const fixedNames = myUtils.fixNames(region, serverName, guildName, false, false);
 
     // prepare memberData object that stores basic WCL player data
     const memberData = {};
@@ -120,10 +122,10 @@ function appWowWarcraftLogs(par) {
     // prepare query 1 to retrieve player WCL data
     let charQuery = '';
     let index = 0;
-    Object.entries(memberData).forEach(([toon, el]) => {
-      charQuery = `${charQuery}c${index}: character(name: "${toon}", serverSlug: "${el.realm}", serverRegion: "${region}"){
+    Object.entries(memberData).forEach(([memberName, mData]) => {
+      charQuery = `${charQuery}c${index}: character(name: "${memberName}", serverSlug: "${mData.realm}", serverRegion: "${fixedNames.region}"){
         name
-        zoneRankings(metric: ${el.metric}, difficulty: ${difficulty}, zoneID: ${zoneId})
+        zoneRankings(metric: ${mData.metric}, difficulty: ${difficulty}, zoneID: ${zoneId})
       }`;
       index++;
     });
@@ -139,11 +141,15 @@ function appWowWarcraftLogs(par) {
       // populate memberData object with API data for each member
       Object.keys(apiData.data.characterData).forEach((el) => {
         const member = apiData.data.characterData[el];
-        memberData[member.name].bestPerformanceAverage = member.zoneRankings.bestPerformanceAverage;
-        memberData[member.name].medianPerformanceAverage = member.zoneRankings.medianPerformanceAverage;
-        memberData[member.name].rank = member.zoneRankings.allStars[member.zoneRankings.allStars.length - 1].rank;
-        memberData[member.name].rankPercent =
-          member.zoneRankings.allStars[member.zoneRankings.allStars.length - 1].rankPercent;
+        if (member.zoneRankings) {
+          memberData[member.name].bestPerformanceAverage = member.zoneRankings.bestPerformanceAverage || 0;
+          memberData[member.name].medianPerformanceAverage = member.zoneRankings.medianPerformanceAverage || 0;
+          if (Array.isArray(member.zoneRankings.allStars) && member.zoneRankings.allStars.length > 0) {
+            memberData[member.name].rank = member.zoneRankings.allStars[member.zoneRankings.allStars.length - 1].rank;
+            memberData[member.name].rankPercent =
+              member.zoneRankings.allStars[member.zoneRankings.allStars.length - 1].rankPercent;
+          }
+        }
       });
     }
 
@@ -175,9 +181,9 @@ function appWowWarcraftLogs(par) {
     }
     `;
     const queryVariables = {
-      r: region,
-      sn: serverName,
-      gn: guildName,
+      r: fixedNames.region,
+      sn: fixedNames.realm,
+      gn: fixedNames.name,
       st: startTime,
       zi: zoneId,
       page: 1,
@@ -370,7 +376,7 @@ function appWowWarcraftLogs(par) {
       });
 
       // get week day for weekly reset based on region
-      const resetWeekDay = new Date(myUtils.getWowWeeklyResetTimestamp(region)).getDay();
+      const resetWeekDay = new Date(myUtils.getWowWeeklyResetTimestamp(fixedNames.region)).getDay();
       // sort raid week days starting with weekly reset week day
       totals.raidDays.sort((a, b) => ((6 + a - resetWeekDay) % 6) - ((6 + b - resetWeekDay) % 6));
       // create list of week day names
@@ -418,8 +424,8 @@ function appWowWarcraftLogs(par) {
           rData.raids / totals.raids, // percentage
           rData.fights / totals.fights, // percentage
           rData.kills / totals.kills, // percentage
-          ...totals.raidDays.map((raidDay) =>
-            rData.attendance[raidDay] ? rData.attendance[raidDay] / totals.raidDayRaids[raidDay] : 0 // percentage
+          ...totals.raidDays.map(
+            (raidDay) => (rData.attendance[raidDay] ? rData.attendance[raidDay] / totals.raidDayRaids[raidDay] : 0) // percentage
           ),
           ...myUtils.initializedArray(7 - totals.raidDays.length, ''), // empty placeholder
           ...totals.encounters.reduceRight((result, encounter, encounterIndex) => {

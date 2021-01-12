@@ -20,16 +20,16 @@ function appUtils(par = {}) {
    * @param {boolean} asArray return result as array (or as object)
    * @return fixed names as array or object based on input.
    */
-  function fixNames(region, realm, toon, asArray = false) {
+  function fixNames(region, realm, toon, asArray = false, forWoW = true) {
     const lReg = region.replace(/\s/g, '').toLowerCase();
-    let lRealm = realm
-      .replace(/[\u200B-\u200D\uFEFF']/g, '')
-      .replace(/\s/g, '-')
-      .toLowerCase();
-    const lToon = toon.toLowerCase().replace(/\s/g, '-');
-
-    if (lRealm === 'arak-arahm' || lRealm === 'azjol-nerub' || lRealm === 'король-лич') {
-      lRealm = lRealm.replace('-', '');
+    let lRealm = realm.replace(/[\u200B-\u200D\uFEFF']/g, '').toLowerCase();
+    let lToon = toon.toLowerCase();
+    if (forWoW) {
+      lRealm = lRealm.replace(/\s/g, '-');
+      lToon = lToon.replace(/\s/g, '-');
+      if (lRealm === 'arak-arahm' || lRealm === 'azjol-nerub' || lRealm === 'король-лич') {
+        lRealm = lRealm.replace('-', '');
+      }
     }
 
     // return either as array or as object
