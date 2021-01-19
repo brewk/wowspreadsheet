@@ -13,27 +13,27 @@ function appUtils(par = {}) {
   // const cache = CacheService.getScriptCache();
 
   /**
-   * utility function to fix names of toons, realms, etc.
-   * @param {string} region toon region
-   * @param {string} realm toon realm
-   * @param {string} toon toon name
+   * utility function to fix names of character/guild names, realms, etc.
+   * @param {string} region char/guild region
+   * @param {string} realm char/guild realm
+   * @param {string} name char/guild name
    * @param {boolean} asArray return result as array (or as object)
    * @return fixed names as array or object based on input.
    */
-  function fixNames(region, realm, toon, asArray = false, forWoW = true) {
+  function fixNames(region, realm, name, asArray = false, forWoW = true) {
     const lReg = region.replace(/\s/g, '').toLowerCase();
     let lRealm = realm.replace(/[\u200B-\u200D\uFEFF']/g, '').toLowerCase();
-    let lToon = toon.toLowerCase();
+    let lName = name.toLowerCase();
+    lRealm = lRealm.replace(/\s/g, '-');
     if (forWoW) {
-      lRealm = lRealm.replace(/\s/g, '-');
-      lToon = lToon.replace(/\s/g, '-');
+      lName = lName.replace(/\s/g, '-');
       if (lRealm === 'arak-arahm' || lRealm === 'azjol-nerub' || lRealm === 'король-лич') {
         lRealm = lRealm.replace('-', '');
       }
     }
 
     // return either as array or as object
-    return asArray ? [lReg, lRealm, lToon] : { region: lReg, realm: lRealm, name: lToon };
+    return asArray ? [lReg, lRealm, lName] : { region: lReg, realm: lRealm, name: lName };
   }
 
   /**
