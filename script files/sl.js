@@ -150,7 +150,7 @@ function appWowSl(par) {
     }
 
     // Due to changes in the API this now has to be updated everytime a raid is added
-    const currentXpacId = 499; // Shadowlands
+    const currentXpacId = 503; // Dragonflight
     // raid info list
     const raidList = myUtils.getLookupData('raidsLookup');
     // const raidList = [
@@ -646,8 +646,11 @@ function appWowSl(par) {
                   gemAudit[3].issue += ` ${item.slot.type}`;
                 } else if (!auditLookupItem || auditLookupItem[alIndex.quality].toUpperCase() !== 'RARE') {
                   // cheap, old or unkown
-                  gemAudit[gemAuditIndex].bool = 1;
-                  gemAudit[gemAuditIndex].issue += ` ${item.slot.type}`;
+                  if(gemAudit[gemAuditIndex])
+                  {
+                    gemAudit[gemAuditIndex].bool = 1;
+                    gemAudit[gemAuditIndex].issue += ` ${item.slot.type}`;
+                  }
                 }
               }
 
@@ -1006,9 +1009,10 @@ function appWowSl(par) {
         [2454, 2526, 2479, 2550, 2542, 2566, 2534, 2500, 2487, 2586, 2558, 2518, 2508],
         [2437, 2525, 2478, 2549, 2541, 2565, 2533, 2499, 2486, 2585, 2557, 2517, 2507],
         [2751, 2758, 2750, 2760, 2752, 2761, 2759, 2755, 2753, 2754, 2762, 2757, 2756],
+        [2822, 2830, 2823, 2832, 2824, 2833, 2831, 2827, 2825, 2826, 2834, 2829, 2828]
       ];
       // initialize output with defaults
-      const profOut = ['Va-', 'Bc-', 'Lk-', 'Ca-', 'Pa-', 'Wa-', 'Lg-', 'Ba-', 'Sl-'];
+      const profOut = ['Va-', 'Bc-', 'Lk-', 'Ca-', 'Pa-', 'Wa-', 'Lg-', 'Ba-', 'Sl-', 'Df-'];
 
       // loop through all tiers
       for (let i = 0; i < prof.tiers.length; i++) {
