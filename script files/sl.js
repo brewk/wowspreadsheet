@@ -458,7 +458,7 @@ function appWowSl(par) {
     const gemAudit = [
       { bool: 0, issue: 'Old:', category: 'Old', text: ' UnCom:' },
       { bool: 0, issue: 'Cheap:', category: 'Cheap', text: ' Rare:' },
-      { bool: 0, issue: 'No Leviathan', category: 'Leviathan', text: ' PrimeEpic:' },
+      { bool: 0, issue: 'No Unique Epic', category: 'No Unique Epic', text: ' Unique:' },
       { bool: 0, issue: 'Missing Epic:', category: 'Epic', text: ' Epic:' },
       { bool: 0, issue: 'Missing Trinket Punchcard', category: 'Punchcard', text: ' Punchcard:' },
     ];
@@ -488,13 +488,14 @@ function appWowSl(par) {
       'FINGER_1',
       'FINGER_2',
     ]; // slots available for enchants
-
+    
     // helper variables
     const uniqueStatsCount = Object.values(statOrder).filter((el, i, self) => {
       return self.indexOf(el) === i; // get array of distinct values
     }).length; // count of distinct stats (so only counting INT, AGI or STR - not all of them)
     const equippedGems = myUtils.initializedArray(4, 0); // count equipped gems per category (see gemAudit)
     const slotsWithEmptySockets = []; // all slots with empty sockets
+    let markTier = false; // this should be added into settings
 
     // output variables
     let averageIlvl = 0; // calculated average iLvl
@@ -505,6 +506,7 @@ function appWowSl(par) {
     const itemInfos = []; // details of item (name, slot, stats etc.)
     const bonusStats = myUtils.initializedArray(gemStats.length, 0); // stats gained from item enhancements
     itemInfos[15] = ''; //init this to blank for folks with out offhands to maintain array size
+    let tierCount = 0; // tier bonus    
 
     // loop through all items
     for (let i = 0; i < gear.equipped_items.length; i++) {
@@ -552,10 +554,18 @@ function appWowSl(par) {
         itemInfos[slotIndex] += `\n${item.spells[0].description}`; // add spell description line to item info
       }
 
+
+
       // handle legendary items
       if (item.quality.type === 'LEGENDARY') {
         if (mySettings.getAppSetting('MarkLegendary')) {
           slotData[slotIndex] += '+';
+        }
+      }
+      // handle tier items
+      if (item.set) {
+        if (markTier) {
+          slotData[slotIndex] += '+T';
         }
       }
 
@@ -641,7 +651,7 @@ function appWowSl(par) {
                 // not epic
                 if (item.level.value > mySettings.getAppSetting('EpicGemIlvl')) {
                   // iLvl high enough to force epic gem
-                  gemAudit[2].bool = 1;
+                  // gemAudit[2].bool = 1;  //unique gems - removed for now
                   gemAudit[3].bool = 1;
                   gemAudit[3].issue += ` ${item.slot.type}`;
                 } else if (!auditLookupItem || auditLookupItem[alIndex.quality].toUpperCase() !== 'RARE') {
@@ -691,8 +701,8 @@ function appWowSl(par) {
       for (let i = 0; i < equippedGems.length; i++) {
         if (equippedGems[i] > 0) {
           gemInfo += `${gemAudit[i].text}${equippedGems[i]}`; // add category:count to info string
-          if (i === 2) {
-            gemAudit[i].bool = 0; // Leviathan gem exists, so no issues here
+         if (i === 2) {
+            gemAudit[i].bool = 0; // Unique Epic gem exists, so no issues here
           }
         }
       }
@@ -719,7 +729,27 @@ function appWowSl(par) {
       } Empty Sockets (${slotsWithEmptySockets.join(', ')})`;
     }
 
-    return myUtils.flatten([averageIlvl, slotData, enchants, gemInfo, totalStats, itemInfos, bonusStats]);
+    // Find the biggest bonus tier set to add to the tier column
+    if (gear.equipped_item_sets)
+    {
+      for(j=0; j<gear.equipped_item_sets.length; j++)
+      {
+        let setCounter = 0;
+        for (i=0; i< gear.equipped_item_sets[j].items.length; i++)
+        {
+          if(gear.equipped_item_sets[j].items[i].is_equipped)
+          {
+            setCounter++;
+          }
+        }
+        if (setCounter > tierCount)
+        {
+          tierCount = setCounter;
+        }
+      }
+    }
+
+    return myUtils.flatten([averageIlvl, tierCount, slotData, enchants, gemInfo, totalStats, itemInfos, bonusStats]);
   }
 
   /**

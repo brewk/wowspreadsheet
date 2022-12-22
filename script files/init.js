@@ -73,8 +73,9 @@ function onOpen() {
   const sheet = SpreadsheetApp.getActiveSpreadsheet();
   const entries = [
     { name: 'Refresh All', functionName: 'refreshAll' },
+    { name: 'Refresh Profile', functionName: 'refreshProfile' },
     { name: 'Refresh Gear', functionName: 'refreshGear' },
-    { name: 'Refresh Soulbind', functionName: 'refreshSoulbind' },
+    //{ name: 'Refresh Soulbind', functionName: 'refreshSoulbind' },
     { name: 'Refresh Progression', functionName: 'refreshProg' },
     { name: 'Refresh Professions', functionName: 'refreshProf' },
     { name: 'Refresh Reputation', functionName: 'refreshRep' },
@@ -110,36 +111,44 @@ function refreshAll() {
  * function used by custom menu to force a refresh
  */
 function refreshGear() {
-  refreshCell('AG3');
+  refreshCell('AH3');
 }
 
 /**
  * function used by custom menu to force a refresh
  */
-function refreshSoulbind() {
-  refreshCell('AP3');
-}
+/** function refreshSoulbind() {
+  refreshCell('AQ3');
+} */
 
 /**
  * function used by custom menu to force a refresh
  */
 function refreshProg() {
-  refreshCell('BU3');
+  refreshCell('BV3');
 }
 
 /**
  * function used by custom menu to force a refresh
  */
 function refreshProf() {
-  refreshCell('CI3');
+  refreshCell('CJ3');
 }
 
 /**
  * function used by custom menu to force a refresh
  */
 function refreshRep() {
-  refreshCell('CL3');
+  refreshCell('CM3');
 }
+
+/**
+ * function used by custom menu to force a refresh
+ */
+function refreshProfile() {
+  refreshCell('AG3');
+}
+
 
 /**
  * function to create compressed string of data
