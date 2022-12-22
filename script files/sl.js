@@ -564,7 +564,8 @@ function appWowSl(par) {
       }
       // handle tier items
       if (item.set) {
-        if (markTier) {
+        if (markTier && item.set.items.length === 5) {
+          
           slotData[slotIndex] += '+T';
         }
       }
@@ -735,14 +736,17 @@ function appWowSl(par) {
       for(j=0; j<gear.equipped_item_sets.length; j++)
       {
         let setCounter = 0;
-        for (i=0; i< gear.equipped_item_sets[j].items.length; i++)
+        if(gear.equipped_item_sets[j].items.length === 5)
         {
-          if(gear.equipped_item_sets[j].items[i].is_equipped)
+          for (i=0; i< gear.equipped_item_sets[j].items.length; i++)
           {
-            setCounter++;
+            if(gear.equipped_item_sets[j].items[i].is_equipped)
+            {
+              setCounter++;
+            }
           }
         }
-        if (setCounter > tierCount)
+          if (setCounter > tierCount)
         {
           tierCount = setCounter;
         }
