@@ -429,7 +429,7 @@ function appWowSl(par) {
     enchantOrder.BACK = 2;
     enchantOrder.CHEST = 3;
     enchantOrder.WRIST = 4;
-    enchantOrder.HANDS = 5;
+    enchantOrder.LEGS = 5;
     enchantOrder.FEET = 6;
     enchantOrder.FINGER_1 = 7;
     enchantOrder.FINGER_2 = 8;
@@ -483,7 +483,7 @@ function appWowSl(par) {
       'BACK',
       'CHEST',
       'WRIST',
-      'HANDS',
+      'LEGS',
       'FEET',
       'FINGER_1',
       'FINGER_2',
