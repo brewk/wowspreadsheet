@@ -96,7 +96,7 @@ function appWowRaiderIO(par) {
     }
 
     toonName = myUtils.titleCase(toonName);
-    const fetchUrl = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${realmName}&name=${toonName}&fields=mythic_plus_scores%2Cmythic_plus_recent_runs%2Cmythic_plus_best_runs%2Cmythic_plus_highest_level_runs%2Cmythic_plus_weekly_highest_level_runs`;
+    const fetchUrl = `https://raider.io/api/v1/characters/profile?region=${region}&realm=${realmName}&name=${toonName}&fields=mythic_plus_recent_runs%2Cmythic_plus_best_runs%2Cmythic_plus_highest_level_runs%2Cmythic_plus_weekly_highest_level_runs%2Cmythic_plus_scores_by_season%3Acurrent`;
 
     let data;
     try {
@@ -110,7 +110,7 @@ function appWowRaiderIO(par) {
 
     const profile = data.profile_url;
     const thumbnail = data.thumbnail_url;
-    const scoreAll = data.mythic_plus_scores.all;
+    const scoreAll = data.mythic_plus_scores_by_season[0].scores.all;
 
     // parsing data for runs
     const weeklyHighest = parseRunData(data.mythic_plus_weekly_highest_level_runs);
