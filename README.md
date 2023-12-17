@@ -19,7 +19,7 @@ World of Warcraft character tracking spreadsheet for Google Docs
  </ul>
  
  Main code is within wow.js, you can copy this into a googlespreadsheets script, or copy a template from here:
- ### [Template](https://docs.google.com/spreadsheets/u/2/d/1y1__KqE5XpPQLFxQKhPM8v1d5WffpbqPXsb9LhPzGYg/template/preview?usp=drive_web&ouid=%7BuserId%7D )
+ ### [Template](https://docs.google.com/spreadsheets/u/2/d/1Zn-MDN9XludD4uIMVBsuvL_u6m98wEZV1t4n8lS29c4/template/preview?usp=drive_web&ouid=%7BuserId%7D )
  
 
 Contributing
