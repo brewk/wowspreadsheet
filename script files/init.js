@@ -125,21 +125,21 @@ function refreshGear() {
  * function used by custom menu to force a refresh
  */
 function refreshProg() {
-  refreshCell('BV3');
+  refreshCell('BX3');
 }
 
 /**
  * function used by custom menu to force a refresh
  */
 function refreshProf() {
-  refreshCell('CJ3');
+  refreshCell('CL3');
 }
 
 /**
  * function used by custom menu to force a refresh
  */
 function refreshRep() {
-  refreshCell('CM3');
+  refreshCell('CO3');
 }
 
 /**

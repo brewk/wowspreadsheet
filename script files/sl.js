@@ -426,13 +426,15 @@ function appWowSl(par) {
     const enchantOrder = {};
     enchantOrder.MAIN_HAND = 0;
     enchantOrder.OFF_HAND = 1;
-    enchantOrder.BACK = 2;
-    enchantOrder.CHEST = 3;
-    enchantOrder.WRIST = 4;
-    enchantOrder.LEGS = 5;
-    enchantOrder.FEET = 6;
-    enchantOrder.FINGER_1 = 7;
-    enchantOrder.FINGER_2 = 8;
+    enchantOrder.HEAD = 2;
+    enchantOrder.BACK = 3;
+    enchantOrder.CHEST = 4;
+    enchantOrder.WRIST = 5;
+    enchantOrder.WAIST = 6;
+    enchantOrder.LEGS = 7;
+    enchantOrder.FEET = 8;
+    enchantOrder.FINGER_1 = 9;
+    enchantOrder.FINGER_2 = 10;
 
     // Some slots are optional depending on your primeStat
     let primeStat = '';
@@ -480,9 +482,11 @@ function appWowSl(par) {
     const enchantableItems = [
       'MAIN_HAND',
       'OFF_HAND',
+      'HEAD',
       'BACK',
       'CHEST',
       'WRIST',
+      'WAIST',
       'LEGS',
       'FEET',
       'FINGER_1',
@@ -495,7 +499,7 @@ function appWowSl(par) {
     }).length; // count of distinct stats (so only counting INT, AGI or STR - not all of them)
     const equippedGems = myUtils.initializedArray(4, 0); // count equipped gems per category (see gemAudit)
     const slotsWithEmptySockets = []; // all slots with empty sockets
-    let markTier = false; // this should be added into settings
+    //let markTier = false; // this should be added into settings
 
     // output variables
     let averageIlvl = 0; // calculated average iLvl
@@ -564,7 +568,7 @@ function appWowSl(par) {
       }
       // handle tier items
       if (item.set) {
-        if (markTier && item.set.items.length === 5) {
+        if (mySettings.getAppSetting('MarkTier')&& item.set.items.length === 5) {
           
           slotData[slotIndex] += '+T';
         }

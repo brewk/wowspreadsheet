@@ -141,7 +141,7 @@ function appWowWarcraftLogs(par) {
       // populate memberData object with API data for each member
       Object.keys(apiData.data.characterData).forEach((el) => {
         const member = apiData.data.characterData[el];
-        if (member.zoneRankings) {
+        if (member && member.zoneRankings) {
           memberData[member.name].bestPerformanceAverage = member.zoneRankings.bestPerformanceAverage || 0;
           memberData[member.name].medianPerformanceAverage = member.zoneRankings.medianPerformanceAverage || 0;
           if (Array.isArray(member.zoneRankings.allStars) && member.zoneRankings.allStars.length > 0) {
