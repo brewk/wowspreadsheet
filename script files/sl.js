@@ -150,7 +150,7 @@ function appWowSl(par) {
     }
 
     // Due to changes in the API this now has to be updated everytime a raid is added
-    const currentXpacId = 503; // Dragonflight
+    const currentXpacId = 514; // TWW
     // raid info list
     const raidList = myUtils.getLookupData('raidsLookup');
     // const raidList = [
@@ -426,22 +426,21 @@ function appWowSl(par) {
     const enchantOrder = {};
     enchantOrder.MAIN_HAND = 0;
     enchantOrder.OFF_HAND = 1;
-    enchantOrder.HEAD = 2;
-    enchantOrder.BACK = 3;
-    enchantOrder.CHEST = 4;
-    enchantOrder.WRIST = 5;
-    enchantOrder.WAIST = 6;
-    enchantOrder.LEGS = 7;
-    enchantOrder.FEET = 8;
-    enchantOrder.FINGER_1 = 9;
-    enchantOrder.FINGER_2 = 10;
+    enchantOrder.BACK = 2;
+    enchantOrder.CHEST = 3;
+    enchantOrder.WRIST = 4;
+    enchantOrder.LEGS = 5;
+    enchantOrder.FEET = 6;
+    enchantOrder.FINGER_1 = 7;
+    enchantOrder.FINGER_2 = 8;
 
-    // Some slots are optional depending on your primeStat
-    let primeStat = '';
-    const optionalSlots = [];
+    // Some slots are optional depending on your primeStat 
+   let primeStat = '';
+   // - deprecated in tww
+     /* const optionalSlots = [];
     optionalSlots.HANDS = 'STRENGTH';
     optionalSlots.WRIST = 'INTELLECT';
-    optionalSlots.FEET = 'AGILITY';
+    optionalSlots.FEET = 'AGILITY';*/
 
     // stat order
     const statOrder = [];
@@ -578,9 +577,11 @@ function appWowSl(par) {
       if (enchantableItems.indexOf(item.slot.type) > -1 && item.level.value >= mySettings.getAppSetting('AuditIlvl')) {
         // initialize defaults
         const enchantIndex = enchantOrder[item.slot.type];
-        if (optionalSlots[item.slot.type] == primeStat || !optionalSlots[item.slot.type]) {
-          enchants[enchantIndex] = 'None';
-        }
+        // deprecated in tww
+        // if (optionalSlots[item.slot.type] == primeStat || !optionalSlots[item.slot.type]) {
+        //   enchants[enchantIndex] = 'None';
+        // }
+        enchants[enchantIndex] = 'None';
         if (
           item.slot.type === 'OFF_HAND' &&
           !(item.inventory_type.type === 'TWOHWEAPON' || item.inventory_type.type === 'WEAPON')
@@ -1030,7 +1031,7 @@ function appWowSl(par) {
       if (!prof.profession) {
         // prof input has no profession data
         return 'none';
-      }
+      }2505
       if (!prof.tiers) {
         // profession without tier information, directly return skill values
         return `${prof.profession.name} ${prof.skill_points}/${prof.max_skill_points}`;
@@ -1038,6 +1039,7 @@ function appWowSl(par) {
 
       // lookup matrix: each row is a tier, each column a profession in that tier
       const profIdLookup = [
+        // bs,   lw, alch, herb, cook,  mine, tail, ENG, ench, fish, skin,   jc, insc    
         [2477, 2532, 2485, 2556, 2548, 2572, 2540, 2506, 2494, 2592, 2564, 2524, 2514],
         [2476, 2531, 2484, 2555, 2547, 2571, 2539, 2505, 2493, 2591, 2563, 2523, 2513],
         [2475, 2530, 2483, 2554, 2546, 2570, 2538, 2504, 2492, 2590, 2562, 2522, 2512],
@@ -1047,10 +1049,11 @@ function appWowSl(par) {
         [2454, 2526, 2479, 2550, 2542, 2566, 2534, 2500, 2487, 2586, 2558, 2518, 2508],
         [2437, 2525, 2478, 2549, 2541, 2565, 2533, 2499, 2486, 2585, 2557, 2517, 2507],
         [2751, 2758, 2750, 2760, 2752, 2761, 2759, 2755, 2753, 2754, 2762, 2757, 2756],
-        [2822, 2830, 2823, 2832, 2824, 2833, 2831, 2827, 2825, 2826, 2834, 2829, 2828]
+        [2822, 2830, 2823, 2832, 2824, 2833, 2831, 2827, 2825, 2826, 2834, 2829, 2828],
+        [2872, 2880, 2871, 2877, 2873, 2881, 2883, 2875, 2874, 2876, 2882, 2879, 2878],    
       ];
       // initialize output with defaults
-      const profOut = ['Va-', 'Bc-', 'Lk-', 'Ca-', 'Pa-', 'Wa-', 'Lg-', 'Ba-', 'Sl-', 'Df-'];
+      const profOut = ['Va-', 'Bc-', 'Lk-', 'Ca-', 'Pa-', 'Wa-', 'Lg-', 'Ba-', 'Sl-', 'Df-', 'TWW-'];
 
       // loop through all tiers
       for (let i = 0; i < prof.tiers.length; i++) {
