@@ -433,6 +433,7 @@ function appWowSl(par) {
     enchantOrder.FEET = 6;
     enchantOrder.FINGER_1 = 7;
     enchantOrder.FINGER_2 = 8;
+    enchantOrder.HEAD = 9;
 
     // Some slots are optional depending on your primeStat 
    let primeStat = '';
@@ -490,6 +491,7 @@ function appWowSl(par) {
       'FEET',
       'FINGER_1',
       'FINGER_2',
+      'HEAD',
     ]; // slots available for enchants
     
     // helper variables
