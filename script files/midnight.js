@@ -588,7 +588,7 @@ function appWowSl(par) {
 
       // handle tier items
       if (item.set) {
-        if (mySettings.getAppSetting('MarkTier')&& item.set.items.length === 5) {   
+        if (mySettings.getAppSetting('MarkTier')!="false" && item.set.items.length === 5) {   
         slotData[slotIndex] += '+T';
         }
       }

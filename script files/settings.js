@@ -120,7 +120,7 @@ function appSettings(par = {}) {
     // read all values from data region around named range (starting point in settings sheet)
     const appSettingsData = SpreadsheetApp.getActiveSpreadsheet()
       .getRangeByName('appSettings')
-      .offset(0, 0, appSettingsLookup.length, 4) // 4 matches getAppSettingsForSheet output length + 1 for new values
+      .offset(0, 0, appSettingsLookup.length, 7) // 4 matches getAppSettingsForSheet output length + 1 for new values
       .getValues();
 
     // helper index
