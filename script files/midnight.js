@@ -426,14 +426,14 @@ function appWowSl(par) {
     const enchantOrder = {};
     enchantOrder.MAIN_HAND = 0;
     enchantOrder.OFF_HAND = 1;
-    enchantOrder.BACK = 2;
+    enchantOrder.SHOULDER = 2;
     enchantOrder.CHEST = 3;
-    enchantOrder.WRIST = 4;
+    enchantOrder.HEAD = 4;
     enchantOrder.LEGS = 5;
     enchantOrder.FEET = 6;
     enchantOrder.FINGER_1 = 7;
     enchantOrder.FINGER_2 = 8;
-    enchantOrder.HEAD = 9;
+    
 
     // Some slots are optional depending on your primeStat 
    let primeStat = '';
@@ -456,13 +456,16 @@ function appWowSl(par) {
     statOrder.CORRUPTION = 6;
     statOrder.CORRUPTION_RESISTANCE = 7;
 
+    const EPIC_GEMS_EXIST = false; //enable this if non-unique epics are released 
+
     // initialize audit result with default values and useful attributes
     const gemAudit = [
       { bool: 0, issue: 'Old:', category: 'Old', text: ' UnCom:' },
       { bool: 0, issue: 'Cheap:', category: 'Cheap', text: ' Rare:' },
-      { bool: 0, issue: 'No Unique Epic', category: 'No Unique Epic', text: ' Unique:' },
+      { bool: 1, issue: 'No Unique Epic', category: 'No Unique Epic', text: ' Unique:' },
       { bool: 0, issue: 'Missing Epic:', category: 'Epic', text: ' Epic:' },
       { bool: 0, issue: 'Missing Trinket Punchcard', category: 'Punchcard', text: ' Punchcard:' },
+      { bool: 0, issue: 'Missing Setting:', category: 'Missing Jeweler\'s Settings', text: ' Missing Settings:' }, // New entry
     ];
 
     // initialize gem infos with default values and useful attributes
@@ -476,6 +479,7 @@ function appWowSl(par) {
       { value: 0, stat: 'Strength', shortStat: 'Str' },
       { value: 0, stat: 'Agility', shortStat: 'Agi' },
       { value: 0, stat: 'Intellect', shortStat: 'Int' },
+      { value: 0, stat: 'Primary Stat', shortStat: 'Prime' },
       { value: 0, stat: 'N/A', shortStat: 'OLD GEMS' },
     ];
 
@@ -483,25 +487,21 @@ function appWowSl(par) {
       'MAIN_HAND',
       'OFF_HAND',
       'HEAD',
-      'BACK',
+      'SHOULDER',
       'CHEST',
-      'WRIST',
-      'WAIST',
       'LEGS',
       'FEET',
       'FINGER_1',
       'FINGER_2',
-      'HEAD',
     ]; // slots available for enchants
     
     // helper variables
     const uniqueStatsCount = Object.values(statOrder).filter((el, i, self) => {
       return self.indexOf(el) === i; // get array of distinct values
     }).length; // count of distinct stats (so only counting INT, AGI or STR - not all of them)
-    const equippedGems = myUtils.initializedArray(4, 0); // count equipped gems per category (see gemAudit)
+    const equippedGems = myUtils.initializedArray(6, 0); // count equipped gems per category (see gemAudit)
     const slotsWithEmptySockets = []; // all slots with empty sockets
-    //let markTier = false; // this should be added into settings
-
+    
     // output variables
     let averageIlvl = 0; // calculated average iLvl
     const slotData = myUtils.initializedArray(Object.keys(sortOrder).length, ''); // info shown in slot columns
@@ -511,7 +511,27 @@ function appWowSl(par) {
     const itemInfos = []; // details of item (name, slot, stats etc.)
     const bonusStats = myUtils.initializedArray(gemStats.length, 0); // stats gained from item enhancements
     itemInfos[15] = ''; //init this to blank for folks with out offhands to maintain array size
-    let tierCount = 0; // tier bonus    
+    let tierCount = 0; // tier bonus   
+
+    //bruk's ocd swap - higher ilvl ring/trinket always in the first position
+    let ring1Item, ring2Item, trinket1Item, trinket2Item;
+    for (let i = 0; i < gear.equipped_items.length; i++) {
+      const item = gear.equipped_items[i];
+      if (item.slot.type === 'FINGER_1') ring1Item = item;
+      if (item.slot.type === 'FINGER_2') ring2Item = item;
+      if (item.slot.type === 'TRINKET_1') trinket1Item = item;
+      if (item.slot.type === 'TRINKET_2') trinket2Item = item;
+    }
+
+    // Swap ring positions if needed
+    if (ring1Item && ring2Item && ring2Item.level.value > ring1Item.level.value) {
+      [ring1Item.slot.type, ring2Item.slot.type] = [ring2Item.slot.type, ring1Item.slot.type];
+    }
+
+    // Swap trinket positions if needed
+    if (trinket1Item && trinket2Item && trinket2Item.level.value > trinket1Item.level.value) {
+      [trinket1Item.slot.type, trinket2Item.slot.type] = [trinket2Item.slot.type, trinket1Item.slot.type];
+    } 
 
     // loop through all items
     for (let i = 0; i < gear.equipped_items.length; i++) {
@@ -559,19 +579,17 @@ function appWowSl(par) {
         itemInfos[slotIndex] += `\n${item.spells[0].description}`; // add spell description line to item info
       }
 
-
-
       // handle legendary items
       if (item.quality.type === 'LEGENDARY') {
         if (mySettings.getAppSetting('MarkLegendary')) {
           slotData[slotIndex] += '+';
         }
       }
+
       // handle tier items
       if (item.set) {
-        if (mySettings.getAppSetting('MarkTier')&& item.set.items.length === 5) {
-          
-          slotData[slotIndex] += '+T';
+        if (mySettings.getAppSetting('MarkTier')&& item.set.items.length === 5) {   
+        slotData[slotIndex] += '+T';
         }
       }
 
@@ -618,65 +636,75 @@ function appWowSl(par) {
         }
       }
 
+
       // gem audit stuff.. oh boy!
-      if (item.item.id === 167555) {
-        // some temporary punch card stuff, not sure how robust this'll be
-        if (!item.sockets[2].item) {
-          // it's always (99% of the time) that last blue punch card that's missing
-          gemAudit[4].bool = 1;
-        }
-        // check if item is valid for gem check
-      } else if (item.level.value > mySettings.getAppSetting('AuditIlvl') && item.sockets) {
+      if (item.level.value > 100 && item.item.id !== 228411 && item.item.id !== 235499) { // Skip Cyrce's Circlet and reshii wraps (for now)
+       // Only check sockets if they exist
+       if (item.sockets) {  
         // loop through all sockets
         for (let j = 0; j < item.sockets.length; j++) {
-          if (item.sockets[j].socket_type.type === 'PRISMATIC' && item.quality.type !== 'ARTIFACT') {
-            // don't check artifacts in case people are still using those!
-
-            if (!item.sockets[j].item) {
-              // empty socket
-              slotsWithEmptySockets.push(item.slot.type);
+          if (!item.sockets[j].item) {
+            // empty socket
+            slotsWithEmptySockets.push(item.slot.type);
+          } else {
+            const gem = item.sockets[j].item; // current gem
+            const auditLookupItem = auditLookup.find((el) => el[alIndex.id] === gem.id); // search for current gem in lookup table
+            if (auditLookupItem) {
+              // add gem stat value to the list
+              const gemStatIndex = gemStats.findIndex((el) => el.stat === auditLookupItem[alIndex.stat]);
+              const value = parseInt(auditLookupItem[alIndex.value], 10);
+              if (gemStatIndex >= 0 && value >= 0) {
+                gemStats[gemStatIndex].value += value;
+              }
             } else {
-              const gem = item.sockets[j].item; // current gem
-              const auditLookupItem = auditLookup.find((el) => el[alIndex.id] === gem.id); // search for current gem in lookup table
-              if (auditLookupItem) {
-                // add gem stat value to the list
-                const gemStatIndex = gemStats.findIndex((el) => el.stat === auditLookupItem[alIndex.stat]);
-                const value = parseInt(auditLookupItem[alIndex.value], 10);
-                if (gemStatIndex >= 0 && value >= 0) {
-                  gemStats[gemStatIndex].value += value;
-                }
-              } else {
-                // unknown gem, add it to the last entry 'old'
-                gemStats[gemStats.length - 1].value += 1;
-              }
-
-              // do stuff based on gem category
-              const gemAuditIndex = auditLookupItem
-                ? gemAudit.findIndex((el) => el.category === auditLookupItem[alIndex.auditCategory])
-                : 0;
-
-              if (gemAuditIndex < 2) {
-                // not epic
-                if (item.level.value > mySettings.getAppSetting('EpicGemIlvl')) {
-                  // iLvl high enough to force epic gem
-                  // gemAudit[2].bool = 1;  //unique gems - removed for now
-                  gemAudit[3].bool = 1;
-                  gemAudit[3].issue += ` ${item.slot.type}`;
-                } else if (!auditLookupItem || auditLookupItem[alIndex.quality].toUpperCase() !== 'RARE') {
-                  // cheap, old or unkown
-                  if(gemAudit[gemAuditIndex])
-                  {
-                    gemAudit[gemAuditIndex].bool = 1;
-                    gemAudit[gemAuditIndex].issue += ` ${item.slot.type}`;
-                  }
-                }
-              }
-
-              equippedGems[gemAuditIndex] += 1; // add gem to total count
+              // unknown gem, add it to the last entry 'old'
+              gemStats[gemStats.length - 1].value += 1;
             }
+
+            // do stuff based on gem category
+            const gemAuditIndex = auditLookupItem
+              ? gemAudit.findIndex((el) => el.category === auditLookupItem[alIndex.auditCategory])
+              : 0;
+            if(auditLookupItem[alIndex.auditCategory] === 'Unique')
+            {
+              gemAudit[2].bool = 0;  //unique gem found, unflag issue
+            }
+
+            if (gemAuditIndex < 2) {
+              // not epic
+              if (item.level.value > mySettings.getAppSetting('EpicGemIlvl') && EPIC_GEMS_EXIST && auditLookupItem[alIndex.auditCategory] !== 'Unique') {
+                // iLvl high enough to force epic gem
+                gemAudit[3].bool = 1;
+                gemAudit[3].issue += ` ${item.slot.type}`;
+              } else if (!auditLookupItem || auditLookupItem[alIndex.quality].toUpperCase() !== 'RARE') {
+                // cheap, old or unkown
+                if(gemAudit[gemAuditIndex])
+                {
+                  gemAudit[gemAuditIndex].bool = 1;
+                  gemAudit[gemAuditIndex].issue += ` ${item.slot.type}`;
+                }
+              }
+            }
+            equippedGems[gemAuditIndex] += 1; // add gem to total count
           }
         }
+       }
       }
+
+      // Check for missing Jeweler's Settings in rings and neck ONLY if above AuditIlvl
+      if (['FINGER_1', 'FINGER_2', 'NECK'].includes(item.slot.type) && 
+        item.level.value > mySettings.getAppSetting('AuditIlvl') &&
+        item.item.id !== 228411) {  // Skip Cyrce's Circlet
+        const socketCount = item.sockets ? item.sockets.filter(s => s.socket_type && s.socket_type.type === 'PRISMATIC').length : 0;
+        const missingSettings = 2 - socketCount;
+        
+        if (missingSettings > 0) {
+          gemAudit[5].bool += missingSettings;
+          gemAudit[5].issue += ` ${item.slot.type}(${missingSettings})`;
+          equippedGems[5] += missingSettings; // Add to equippedGems count
+        }
+      }
+
 
       // adjust ilvl for 2h weapons
       if (
@@ -703,9 +731,9 @@ function appWowSl(par) {
     averageIlvl /= 16; // calculated average iLvl
 
     // build gem audit info string
-    if (equippedGems.some((el) => el > 0)) {
+    if (equippedGems) {
       // gems exist!
-      gemInfo += 'Gems';
+      // gemInfo += 'Gems';   //removed because it's redundant now that this column is only for gem stuff
       for (let i = 0; i < equippedGems.length; i++) {
         if (equippedGems[i] > 0) {
           gemInfo += `${gemAudit[i].text}${equippedGems[i]}`; // add category:count to info string
@@ -760,7 +788,7 @@ function appWowSl(par) {
       }
     }
 
-    return myUtils.flatten([averageIlvl, tierCount, slotData, enchants, gemInfo, totalStats, itemInfos, bonusStats]);
+    return myUtils.flatten([averageIlvl, tierCount, slotData, enchants, "placeholder1", "placeholder2", gemInfo, totalStats, itemInfos, bonusStats]);
   }
 
   /**
@@ -1052,10 +1080,11 @@ function appWowSl(par) {
         [2437, 2525, 2478, 2549, 2541, 2565, 2533, 2499, 2486, 2585, 2557, 2517, 2507],
         [2751, 2758, 2750, 2760, 2752, 2761, 2759, 2755, 2753, 2754, 2762, 2757, 2756],
         [2822, 2830, 2823, 2832, 2824, 2833, 2831, 2827, 2825, 2826, 2834, 2829, 2828],
-        [2872, 2880, 2871, 2877, 2873, 2881, 2883, 2875, 2874, 2876, 2882, 2879, 2878],    
+        [2872, 2880, 2871, 2877, 2873, 2881, 2883, 2875, 2874, 2876, 2882, 2879, 2878],
+        [2907, 2915, 2906, 2912, 2908, 2916, 2918, 2910, 2909, 2911, 2917, 2914, 2913],    
       ];
       // initialize output with defaults
-      const profOut = ['Va-', 'Bc-', 'Lk-', 'Ca-', 'Pa-', 'Wa-', 'Lg-', 'Ba-', 'Sl-', 'Df-', 'TWW-'];
+      const profOut = ['Va-', 'Bc-', 'Lk-', 'Ca-', 'Pa-', 'Wa-', 'Lg-', 'Ba-', 'Sl-', 'Df-', 'TWW-', 'Mid-'];
 
       // loop through all tiers
       for (let i = 0; i < prof.tiers.length; i++) {
