@@ -665,7 +665,7 @@ function appWowSl(par) {
             const gemAuditIndex = auditLookupItem
               ? gemAudit.findIndex((el) => el.category === auditLookupItem[alIndex.auditCategory])
               : 0;
-            if(auditLookupItem[alIndex.auditCategory] === 'Unique')
+            if (auditLookupItem && auditLookupItem[alIndex.auditCategory] === 'Unique') 
             {
               gemAudit[2].bool = 0;  //unique gem found, unflag issue
             }
