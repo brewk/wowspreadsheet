@@ -961,7 +961,7 @@ function appWowSl(par) {
     return [
       media.assets[0].value, //avatar
       media.assets[1].value, //bust
-      media.assets[2].value, //render
+      //media.assets[2].value, //render
       `https://worldofwarcraft.com/en-${region}/character/${region}/${realmName}/${toonName}`,
     ];
   }
